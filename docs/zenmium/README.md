@@ -42,12 +42,13 @@ validation, and handoff.
 - [`PLAN.md`](PLAN.md) — S001 phased plan, acceptance checks, proof rungs, competitive rubric.
 - [`ISSUES.md`](ISSUES.md) — ZEN ticket slate with recommended fixes and provenance.
 - [`AGENT_ERGONOMICS.md`](AGENT_ERGONOMICS.md) — the addressable agent tower, Reference object, `@` tags, bookmarks, filetree.
+- [`SECRETS.md`](SECRETS.md) — the 1Password secret lane and the names-only rule.
 
 ## Decisions locked
 
 1. **Shell.** Electron v1 with the `BrowserCore` seam for a later native Chromium/CEF core.
 2. **Repo home.** `nicharacci/zenmium`, instantiated from the Goalpost Factory Template.
-3. **BeUI Pro.** Available; `BEUI_PRO_TOKEN` lives only in the Workspace Vault / Computer, never in git.
+3. **BeUI Pro.** Available; `BEUI_PRO_TOKEN` lives in 1Password, never in git.
 4. **Agent kernel.** OpenCode in a monorepo; DeepSeek v4.1 Flash as a model via OpenRouter.
 5. **Panel UI.** Dropped.
 
@@ -60,7 +61,7 @@ validation, and handoff.
 
 ## Secret handling
 
-The BeUI Pro token was supplied in chat and is treated as exposed. It must never be written to this plan set, the repo, config, or logs. Place it in the Workspace Vault / Computer under the name `BEUI_PRO_TOKEN`, then rotate it. The only form this project records is the name.
+The BeUI Pro token was supplied in chat and is treated as exposed. Rotate it and store the new value in 1Password. Every secret, data-store credential, and key uses the same lane: the 1Password browser extension in Zen. No CLI. The only form this project records is the name. Full policy: [`SECRETS.md`](SECRETS.md).
 
 
 ## Provenance
