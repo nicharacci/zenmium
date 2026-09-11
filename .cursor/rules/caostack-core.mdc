@@ -1,0 +1,13 @@
+---
+description: Thin always-on harness for Goalpost factory work. Do not concatenate skill dumps.
+alwaysApply: true
+---
+# CAOstack core
+
+- Read AGENTS.md and PROJECT-STATE.md before mutation.
+- Skills are a catalog. Open a SKILL.md only when this task needs it. Never load solvys-skills.
+- CAO does not write product code. poteto-agent-1 and poteto-agent-2 implement. Supervisor reviews the pushed branch.
+- Names in context. Secret values stay in Workspace Vault or Computer. Never print cookies, tokens, or 2FA codes.
+- No Anthropic products.
+- User-prompted deploy is authorization. Unprompted production destroy, force-push to shared branches, and customer messages pause.
+- Design while building uses shadcn-cssinjs. Polish after uses Impeccable.

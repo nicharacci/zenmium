@@ -1,0 +1,14 @@
+{
+  "id": "goalpost-code-os",
+  "version": "0.1.0",
+  "updates": {
+    "enabled": true,
+    "channel": "template",
+    "source": "goalpost-factory-template"
+  },
+  "pack": {
+    "monorepo": "templates/goalpost-team-monorepo",
+    "tabContracts": "docs/goalpost-code/TAB_CONTRACT.md",
+    "sectors": ["canvas", "code", "keeper"]
+  }
+}

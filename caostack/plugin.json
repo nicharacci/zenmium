@@ -1,0 +1,9 @@
+{
+  "name": "caostack",
+  "displayName": "CAOstack",
+  "version": "0.1.0",
+  "description": "Goalpost Code and Cloudflare Computer load path. pstack playbooks with Solvys station names, no Anthropic, no solvys-skills dump.",
+  "license": "MIT",
+  "skills": "./skills/",
+  "agents": "./agents/"
+}

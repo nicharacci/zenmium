@@ -1,0 +1,13 @@
+version: 1
+kinds:
+  - devops
+  - bizops
+example:
+  company: acme
+  teams:
+    - id: acme-engineering
+      kind: devops
+      manages: [acme-ops, acme-client-alpha]
+    - id: acme-ops
+      kind: bizops
+      manages: []
