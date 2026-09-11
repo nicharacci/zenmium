@@ -1,8 +1,8 @@
 ---
 version: 1
-projectId: company-workspace
-stateRevision: unset
-activeSprint: unset
+projectId: zenmium
+stateRevision: 1
+activeSprint: S001
 sourceRef: main
 sourceCommit: unset
 authorityEnvironment: goalpost-code
@@ -15,12 +15,15 @@ One Git-tracked truth file. Chat is not the source of truth. No secrets.
 
 ## Current intent
 
-(clone this template, then replace this paragraph)
+Build Zenmium, a standalone macOS browser: a Chromium content core behind a `BrowserCore` seam, a web-technology chrome wrapped in BeUI, and one Arc-style sidebar whose bottom half is a collapsible agent rail running an embedded OpenCode kernel. Product spec lives in `docs/zenmium/`. Decisions, phases, acceptance checks, and the competitive rubric are in `docs/zenmium/PLAN.md`.
 
 ## Protected zones
 
 - Do not commit `.env`, cookie jars, Browser Profiles, or Workspace Vault values.
+- Never place `BEUI_PRO_TOKEN` or any license token in git; record names only.
+- The agent kernel and the provider gateway are single-owner. No second agent loop, no keys in renderers.
+- `main` stays clean and deployable; work arrives through dated integration branches and reviewed draft PRs.
 
 ## Next safe action
 
-Run `bash caostack/install.sh`, then `pnpm install`.
+Review and merge the Zenmium spec in `docs/zenmium/` and the BeUI design bank in `design/banks/beui.md`. Then open the first work item: scaffold the Electron shell monorepo per `docs/zenmium/PLAN.md` phase P0.
