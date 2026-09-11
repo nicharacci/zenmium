@@ -6,7 +6,7 @@ Goal: deploy the Goalpost factory for Zenmium and wire intake so issue #3 runs u
 
 - Vercel account that owns the project. The CLI reports the active user as `tp-solvys`.
 - GitHub access to `nicharacci/zenmium`. The `gh` CLI reports `nicharacci`.
-- 1Password for every value. The `op` CLI currently has no account configured, so sign in before any value retrieval. Browser sign-ins use the 1Password extension in Zen.
+- 1Password for every value, through the browser extension in Zen. No CLI. Operating the browser needs a browser MCP wired into opencode and the browser running.
 - Do not build locally. Capacity is Critical (about 7 GB free) and the factory needs Node 24.x while local is 22.22.3. Builds happen on Vercel.
 
 ## Steps
@@ -27,7 +27,7 @@ Goal: deploy the Goalpost factory for Zenmium and wire intake so issue #3 runs u
 ## What the agent can and cannot do here
 
 - Can: prepare this runbook and the exact commands, verify repo and CLI identity, and open or adjust issues.
-- Cannot: sign in to 1Password (`op` has no account), import the repo into Vercel, or retrieve any value. Those are the two human gates: `op` sign-in, and the Vercel import.
+- Cannot: operate Zen's 1Password extension (no browser tool is wired into this opencode session), import the repo into Vercel, or reach any value. The human gates are the browser tool setup and the Vercel import.
 
 ## Names only
 
