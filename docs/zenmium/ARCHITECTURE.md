@@ -1,9 +1,6 @@
 # Zenmium architecture
 
-Zenmium is one application with three cooperating planes: a web-technology shell, a Chromium
-content core organized as tabs and spaces, and an embedded agent plane. A single Arc-style
-sidebar is the shared control surface. The browser owns the top of that sidebar; the agent owns a
-collapsible bottom section with a right-aligned caret that carries its state.
+Zenmium is Mori's Chromium engine and bridge wearing a web chrome. The entire product UI is a web surface built from BeUI and BeUI Pro. A thin AppKit host presents that surface and hands browser control to Mori's Objective-C++ bridge. Chromium still owns pages, renderers, extensions, permissions, and downloads.
 
 ## System map
 
@@ -11,152 +8,143 @@ collapsible bottom section with a right-aligned caret that carries its state.
 flowchart TD
     operator[Operator]
 
-    subgraph shell[Shell plane - Electron]
-        chrome[BeUI chrome: sidebar tabs address bar command bar]
+    subgraph chrome[Web chrome - BeUI and BeUI Pro]
+        sidebar[Arc sidebar: spaces folders tabs]
         rail[Agent rail: collapsible bottom half]
+        strip[Tab strip address bar command bar]
+        panels[Panels: downloads history extensions]
+    end
+
+    subgraph host[AppKit host]
+        webview[Web surface host]
         ipc[Typed IPC bridge]
     end
 
-    subgraph core[Browser core plane]
-        seam[BrowserCore seam]
-        ecore[electron-chromium adapter v1]
-        ncore[native-chromium adapter v2 later]
-        spaces[Spaces folders bookmarks sleep archive]
-        ext[Extension host and compat matrix]
-        pwa[App windows for installable web apps]
+    subgraph mori[Mori bridge - Objective-C++]
+        mcb[mori_chrome_bridge.mm]
+        mbw[mori_browser_window.mm]
+        mext[mori_chrome_extensions.mm]
+        mperm[mori_permission_prompt.mm]
+    end
+
+    subgraph engine[Chromium - ungoogled]
+        pages[Pages renderers session]
+        exts[Extension system]
+        perms[Permissions downloads]
     end
 
     subgraph agent[Agent plane]
-        ocs[OpenCode server - opencode serve]
-        sdk[opencode-ai SDK session turn events]
-        tools[MCP ACP custom tools plugins skills]
+        rail --> ipc
+        ipc --> ocs[OpenCode server]
+        ocs --> tools[MCP ACP custom tools plugins]
+        ocs --> gateway[OpenRouter gateway]
     end
 
-    subgraph data[Data and providers]
-        refs[Reference registry bookmarks files docs nodes]
-        gateway[OpenRouter gateway]
-        vault[Workspace Vault secrets names only]
-    end
+    refs[Reference registry: bookmarks folders files tags]
 
-    operator --> chrome
-    chrome --> ipc
-    rail --> ipc
-    ipc --> seam
-    seam --> ecore
-    seam -. later swap .-> ncore
-    ecore --> spaces
-    ecore --> ext
-    ecore --> pwa
-    rail --> sdk
-    sdk --> ocs
-    ocs --> tools
-    sdk --> gateway
+    operator --> sidebar
+    operator --> strip
+    sidebar --> webview
+    rail --> webview
+    strip --> webview
+    panels --> webview
+    webview --> ipc
+    ipc --> mcb
+    mcb --> mbw
+    mcb --> mext
+    mcb --> mperm
+    mbw --> pages
+    mext --> exts
+    mperm --> perms
+    ipc --> refs
     tools --> refs
-    ocs --> refs
-    gateway --> vault
 ```
 
-Green = working or packaged; red = missing live evidence. In this planning state there is no
-live source, so treat every node as planned.
+Green is working or packaged, red is missing live evidence. In this planning state every node is planned.
 
 ## Plain-English description
 
-Think of Zenmium as a house with three floors and one staircase. The staircase is the sidebar.
-The top floor is the browser: spaces, tabs, folders, bookmarks, and the web pages themselves.
-The bottom floor is the agent: a chat and control surface that can be collapsed or opened with a
-small caret on the right edge. The basement is the plumbing that connects both floors to real
-engines: one Chromium for pages, one agent runtime for the assistant, and one gateway for models.
+Mori is a real Chromium engine with a Mac app around it. Today that Mac app is built in SwiftUI. Zenmium keeps the engine and the wiring, and rebuilds the app around it out of web parts, so the BeUI library can style everything. Think of a car where we keep the engine, the transmission, and the dashboard wiring, and replace the dashboard itself with one we can shape freely.
 
-The web pages are the only part the user does not build. Everything around them — the sidebar,
-the tab strip, the address bar, the agent rail — is web technology, which is why BeUI can style
-the entire product. The browser engine sits behind a seam so we can start on Electron and later
-replace it with a native Chromium core without rewriting the chrome or the agent.
+The dashboard is the whole product: the Arc sidebar, the tab strip, the address bar, the panels, and the agent rail. It runs in a web view. When you click a tab or type a URL, the web view does not touch Chromium directly. It sends a typed message to a bridge, the bridge calls Mori's Objective-C++ layer, and Chromium does the real work. Browser state flows back the same way, so the web surface always reflects the engine.
 
 ## Technical description
 
-- **Shell plane (Electron).** The main process owns windows, the `BrowserCore` seam, the OpenCode
-  server, permissions, and the extension host. Renderers hold the BeUI chrome and the agent rail.
-  All cross-plane traffic goes through a typed IPC bridge with context isolation on.
-- **Browser core plane.** Each tab is a Chromium `WebContentsView`. A `BrowserCore` interface
-  abstracts navigation, tab lifecycle, sessions, extensions, and app windows. v1 implements it
-  with Electron; v2 can implement it with a native Chromium or CEF core. Product features
-  (spaces, folders, bookmarks, sleep, archive) sit above the seam and stay engine-agnostic.
-- **Agent plane.** An embedded `opencode serve` process exposes a local HTTP/SSE API. The rail
-  talks to it through `@opencode-ai/sdk`. The agent reaches files, bookmarks, docs, and canvas
-  nodes through the Reference registry and custom tools. BYO agents attach through MCP/ACP.
-- **Data and providers.** The Reference registry is the single addressable object store. The
-  OpenRouter gateway is the only model egress. Secrets live in the Workspace Vault; only names
-  appear in context, config, or logs.
+- Web chrome. A React 19 and Tailwind v4 application built from BeUI and BeUI Pro. It owns presentation and interaction only. It renders the Arc sidebar (spaces, pinned and today tabs, folders), the tab strip, the address bar, the command bar, the panels, and the agent rail.
+- AppKit host. A thin native host presents the web surface. Two options are open (see Open items): a WKWebView dedicated to chrome, or a Mori Chromium WebContents dedicated to chrome, separate from page content. The host owns window lifecycle, menus, and the notch or full-window layout.
+- Typed IPC bridge. A single typed API between the web chrome and Mori's Objective-C++ bridge. Commands: tab lifecycle, navigation, space and folder moves, bookmark and reference writes, extension actions, downloads, and permission prompts. Every call returns `{ ok, seam, reason }` and fails closed.
+- Mori bridge. Unchanged in ownership. `mori_chrome_bridge.mm`, `mori_browser_window.mm`, `mori_chrome_extensions.mm`, and `mori_permission_prompt.mm` translate commands into Chromium operations and forward state back.
+- Chromium. Pages, renderers, session, extensions, permissions, and downloads stay with the engine.
+- Agent plane. An embedded `opencode serve` process exposes a local HTTP and SSE API. The rail talks to it through `@opencode-ai/sdk`. BYO agents attach through MCP and ACP.
+- Reference registry. One addressable object store for bookmarks, folders, URLs, files, and tags, reachable from the UI and from agent tools.
 
 ## Ownership and protected zones
 
 | Surface | Owner | Protected zone |
 | --- | --- | --- |
-| Shell chrome, sidebar, rail presentation | BeUI / BeUI Pro + Zenmium UI package | Product state, routing, and security never move into the UI library |
-| Tab lifecycle, navigation, sessions | Browser core seam | No product feature depends on Electron-only types above the seam |
-| Extensions and app windows | Extension host package | Chrome extension API surface is documented and tested, never claimed beyond the matrix |
-| Agent sessions, turns, events | OpenCode kernel | Zenmium does not write a second agent loop |
-| Model routing and keys | Provider gateway | Raw keys never reach a renderer, log, or model |
-| Reference registry | Reference package | Every object has one id used identically in UI, IPC, and agent tools |
-| Security policy | Security package | CSP, permission handlers, egress allowlist, and injection defenses are centralized |
+| Web chrome presentation | BeUI, BeUI Pro, product UI package | Product state, routing, security, and the agent session never move into the UI library |
+| Browser control | IPC bridge plus Mori Objective-C++ | No product feature calls Chromium directly; every call goes through the bridge |
+| Engine behavior | Chromium | Pages, renderers, session, and extension execution stay with the engine |
+| Agent sessions | OpenCode kernel | No second agent loop |
+| Model routing | OpenRouter gateway | Raw keys never reach the web chrome, a log, or a model |
+| Reference registry | Reference package | Every object has one id used identically in the UI, IPC, and agent tools |
+| Security policy | Security package on the host | CSP, permission handlers, egress allowlist, and injection defenses are centralized |
 
 ## Data flow
 
-1. The operator acts in the BeUI chrome or the agent rail.
-2. The renderer sends a typed IPC message.
-3. Browser actions resolve at the `BrowserCore` seam; agent actions resolve at the OpenCode server.
-4. Chromium or the agent emits state; the shell subscribes and re-renders.
+1. The operator acts in the web chrome.
+2. The web surface sends a typed IPC message.
+3. The bridge resolves it through Mori's Objective-C++ layer, or the agent plane resolves it through the OpenCode server.
+4. Chromium or the agent emits state; the bridge forwards it and the web chrome re-renders.
 5. Any durable object is written through the Reference registry with a stable id.
 
-## Chrome extension model (v1, Electron)
+## Agent rail
 
-Electron supports a documented subset. The extension package must publish and enforce a compat
-matrix; unsupported APIs fail closed with `{ ok, status, reason }`.
+The sidebar is one column. The top half is browser navigation. The bottom half is the agent rail: a BeUI Chat App surface that collapses to a bar with a right-aligned caret carrying state (idle, working, blocked, done). It runs in the same web surface as the rest of the chrome and reaches the OpenCode kernel over localhost. Collapsing the rail keeps the session alive.
 
-| Capability | v1 status | Notes |
+## Reference registry
+
+Mori already persists bookmarks, folders, contexts, history, and archives. The registry wraps those stores in stable ids so the agent can be pointed at an object by tag.
+
+| Scheme | Meaning | Backed by |
 | --- | --- | --- |
-| Load unpacked extension | Supported | `session.extensions.loadExtension(path)`; must reload each boot; persistent session only |
-| Load `.crx` | Not supported | Pipeline must download and unzip the CRX to a directory first |
-| Chrome Web Store install | Not available | Provide an in-app sideload flow instead; document the difference |
-| `chrome.devtools.*`, `chrome.scripting`, `chrome.webRequest` | Supported | Full per Electron docs |
-| `chrome.runtime`, `chrome.tabs`, `chrome.storage.local`, `chrome.management` | Partial | Storage sync/managed unsupported |
-| `chrome.bookmarks`, `nativeMessaging`, `declarativeNetRequest` | Not supported | Own these in product code; never advertise otherwise |
-| Manifest V2 background | Supported key | MV3 background service worker not documented as supported |
+| `ref:bookmark/<slug>` | A saved bookmark | Mori `BookmarkStore` |
+| `ref:folder/<slug>` | A tab or bookmark folder | Mori `TabFolder` |
+| `ref:url/<hash>` | A live or historical URL | Tab or `HistoryStore` |
+| `ref:file/<path>` | A local file or repo path | Local filetree |
+| `ref:node/<id>` | A canvas or map node | Product store |
 
-**v2 path.** If full parity becomes gating, implement `native-chromium` behind the same seam and
-carry the compat matrix forward. The chrome and agent do not change.
+## Chrome extension model
+
+Mori already runs ungoogled-chromium and ships `mori_chrome_extensions.mm`, so extension execution is native to the engine. The parity work is in the ungoogled path and the update path, not a reimplementation. The ticket slate in `ISSUES.md` covers the Web Store install flow, the post-update re-disable, Widevine, and MV2. The extension host publishes an enforced compat matrix; unsupported calls fail closed.
 
 ## Security model
 
-- Electron hardened defaults: `contextIsolation: true`, `sandbox: true`, `nodeIntegration: false`,
-  a strict CSP on chrome renderers, and a permission request handler that denies by default.
-- Page content is untrusted data. The agent never follows instructions from a page; navigation and
-  local-file access require explicit, scoped approval. The Reference registry is allowlist-based.
+- Page content is untrusted data. The agent never follows instructions from a page; navigation and local-file access require explicit, scoped approval.
+- The web chrome runs under a strict content security policy and has no direct engine access; all control flows through the typed bridge.
 - Egress is limited to the OpenRouter gateway and an explicit destination allowlist.
-- Secrets live in the Workspace Vault. Config stores names only.
-- Supply chain: Renovate with age gates, OSV/Grype dependency scanning, Semgrep SAST, gitleaks
-  secret scanning, and a Syft SBOM per release. Chromium security reaches Zenmium by Electron
-  dependency bump on its 8-week even-version cadence.
+- Secrets live in 1Password and are used through the browser extension in Zen. Config stores names only.
+- Supply chain: Renovate with age gates, OSV and Grype scanning, Semgrep, gitleaks, and a Syft SBOM per release. Chromium security reaches Zenmium by rebuilding the engine on upstream security releases, planned as a pipeline, not a dependency bump.
+- Harden the Mori audit findings: prompt-injection bounds, passkey handling, local agent server auth, automation read redaction, and CRX install validation.
 
 ## Stack
 
 | Layer | Choice |
 | --- | --- |
-| Shell | Electron, TypeScript |
-| Chrome UI | React 19, Tailwind CSS v4, BeUI, BeUI Pro (gated blocks) |
-| Content | Chromium via Electron `WebContentsView`; `BrowserCore` seam |
+| Base engine and bridge | Mori, ungoogled-chromium, Objective-C++ |
+| Host | Thin AppKit host presenting a web surface |
+| Chrome UI | React 19, Tailwind CSS v4, BeUI, BeUI Pro |
+| Motion | `motion` only, one runtime |
+| Icons | Iconly facade |
 | Agent kernel | OpenCode (`opencode serve`, `@opencode-ai/sdk`, MIT) |
 | Agent extensions | MCP, ACP, custom tools, plugins, skills |
 | Model gateway | OpenRouter; default `deepseek/deepseek-v4.1-flash` |
-| State | Zustand for shell state; Reference registry for durable objects |
-| Motion | `motion` only (one runtime; remove any second runtime) |
-| Icons | Iconly facade |
-| Build | pnpm + Turborepo; GitHub-hosted ARM64 macOS runners |
-| Secrets | Workspace Vault (names only: `BEUI_PRO_TOKEN`, `OPENROUTER_API_KEY`) |
+| State | Zustand in the web chrome; Reference registry for durable objects |
+| Build | Mori GN/ninja on a Cloud macOS runner; web chrome built with pnpm |
+| Secrets | 1Password browser extension in Zen; names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN` |
 
 ## Unverified or to confirm
 
-- Electron extension behavior against a pinned set of real extensions (needs a compat test).
-- Whether an app-window wrapper satisfies the operator's wonder.so expectation fully.
-- BeUI Pro token availability. The token is not yet in the vault by this plan.
-- Exact OpenCode Windows/Linux packaging path for a later cross-platform release.
+- Whether a WKWebView chrome or a Mori Chromium WebContents chrome is the better host.
+- The cost of replacing Mori's SwiftUI chrome layer without disturbing the GN target list.
+- Electron extension behavior against a pinned set of real extensions is no longer relevant; the Chromium compat test still applies.
