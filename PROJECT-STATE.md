@@ -27,4 +27,4 @@ Build Zenmium from the needed Mori source landed in this repo: keep the ungoogle
 
 ## Next safe action
 
-Run `docs/zenmium/S001-P0-execution.md`: land the needed Mori source in this repo, reproduce the Chromium build on a Cloud macOS runner, package `Zenmium.app`, and map the three workstreams to source.
+P0 B1 is done: the Mori overlay baseline (101 files) and `BUILD.md` are landed on `main` at commit `2b17ef8`. Next is P0 B2, reproduce the Chromium build. That is blocked until a Cloud macOS host (100 GB or more free, Xcode, depot_tools) is provisioned; local capacity is Critical and GitHub-hosted macOS runners are too small.
