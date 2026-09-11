@@ -1,153 +1,89 @@
-# S001-P0 — Zenmium shell scaffold
+# S001-P0 — Land the Mori source and baseline the build
 
 Status: planned. Owner: poteto-agent-1 (implementer). Reviewer: supervisor on the pushed branch. Parent spec: `docs/zenmium/PLAN.md` (S001), `docs/zenmium/ARCHITECTURE.md`.
 
 ## Original problem
 
-Zenmium has a spec and a factory but no source. Nothing downstream (agent rail, references, extensions, security) can be built or proven until a runnable shell exists: one Electron window, a real Chromium tab, the BrowserCore seam, and a live OpenCode kernel probe. This tranche creates that floor.
+Zenmium is defined as Mori's engine and bridge wearing a BeUI web chrome, but the needed source has not been landed in this repo, the Chromium build has never been reproduced outside the author's machine, and the three workstreams have not been mapped to source. Nothing downstream can start until the source lands, the build reproduces, and the app runs.
 
 ## Outcome
 
-Deliver the Zenmium shell so the operator can launch a packaged macOS app, open a real site in a Chromium tab through the BrowserCore seam, see a BeUI-styled Arc sidebar skeleton, and confirm the embedded OpenCode server is healthy. The agent rail, references, extensions, and the security package stay stubbed until later tranches.
+Deliver a packaged `Zenmium.app` built from the landed Mori source on a Cloud macOS runner, launched and exercised, with a source map that places the chat rail, the reference stores, and the extension path.
 
-## Prerequisites (factory, separate from this tranche)
+## Prerequisites (human and host, separate from this tranche)
 
-The factory must be able to run before it can execute this tranche.
+1. Land the needed Mori source in this repo. No separate fork, no imported history, no extra branches. Import the engine integration, the Objective-C++ bridge, the extension and permission glue, and the persisted browser stores.
+2. Provision a Cloud macOS build host with at least 100 GB free, Xcode, depot_tools, and 16 GB of RAM or more. GitHub-hosted macOS runners are too small and time-capped for a Chromium build, so use MacStadium or an AWS EC2 Mac host.
+3. No local build. Local capacity is Critical and the Chromium checkout is tens of GB.
 
-1. Deploy the factory with `eve deploy` and provision GitHub and Linear connectors with `vercel connect`.
-2. Set `GITHUB_CONNECTOR`, `LINEAR_CONNECTOR`, and `FACTORY_REPO=nicharacci/zenmium` in the Vercel project.
-3. Install the GitHub App behind `GITHUB_CONNECTOR` with access to `nicharacci/zenmium`.
-4. Run product builds on a GitHub-hosted ARM64 macOS runner. Local is at Critical capacity (8.3 GB free), so no local checkout or build.
-
-## System map
-
-```mermaid
-flowchart TD
-    factory[Factory app - repo root agent and evals]
-
-    subgraph product[Zenmium product workspace - additive]
-        desktop[apps/desktop Electron main preload renderer]
-        ui[packages/ui BeUI chrome]
-        core[packages/browser BrowserCore seam]
-        ecore[electron-chromium adapter]
-        ag[packages/agent OpenCode wrapper]
-        refs[packages/references stub]
-        sec[packages/security stub]
-        cfg[packages/config shared tsconfig and biome]
-    end
-
-    factory -->|pnpm workspace additive| product
-    desktop --> ui
-    desktop --> core
-    core --> ecore
-    desktop --> ag
-    ag -->|opencode serve| health[global.health]
-    desktop --> refs
-    desktop --> sec
-    cfg --> desktop
-    cfg --> ui
-    cfg --> core
-```
-
-Working or packaged areas are the factory app and this plan. Every product node is red until the tranche lands.
-
-## Workspace integration
-
-The factory app owns the repo root (`agent/`, `evals/`, root `package.json`, root `tsconfig.json`). The product is added as a pnpm workspace beside it.
-
-- `pnpm-workspace.yaml`: add `packages: ["apps/*", "packages/*"]` above the existing `allowBuilds` block.
-- Root `tsconfig.json`: leave scoped to `agent/**` and `evals/**`. Each product package gets its own `tsconfig.json` extending `packages/config/tsconfig.base.json`.
-- `biome.jsonc`: add overrides for `apps/**` and `packages/**` so React, JSX, and Electron code do not fight the factory's Ultracite rules. Keep the factory's rules unchanged.
-- `pnpm validate` must stay green for the factory after every batch. Product typecheck runs through `pnpm -r typecheck`.
-
-## Exact paths
-
-Create these. Names are fixed so later tranches can address them.
+## Exact paths (Mori upstream, for reference)
 
 ```text
-apps/desktop/
-  package.json
-  tsconfig.json
-  electron.vite.config.ts
-  src/main/index.ts
-  src/main/security.ts
-  src/preload/index.ts
-  src/renderer/index.html
-  src/renderer/main.tsx
-  src/renderer/App.tsx
-packages/config/
-  package.json
-  tsconfig.base.json
-  biome.json
-  tailwind.preset.css
-packages/ui/
-  package.json
-  src/Sidebar.tsx
-  src/TabStrip.tsx
-  src/AddressBar.tsx
-packages/browser/
-  package.json
-  src/BrowserCore.ts
-  src/electron-chromium.ts
-packages/agent/
-  package.json
-  src/kernel.ts
-packages/references/
-  package.json
-  src/Reference.ts
-packages/security/
-  package.json
-  src/policy.ts
+ungoogled-chromium-macos/build/src/chrome/browser/ui/mori/
+  MoriRoot.swift
+  RootView.swift
+  Sidebar.swift
+  Toolbar.swift
+  TabRow.swift
+  LauncherOverlay.swift
+  BrowserStore.swift
+  BrowserTab.swift
+  Contexts.swift
+  TabFolder.swift
+  BookmarkStore.swift
+  ExtensionStore.swift
+  HistoryStore.swift
+  ArchiveStore.swift
+  AIPanel.swift
+  CodexAppServerClient.swift
+  BrowserAutomation.swift
+  ShortcutRegistry.swift
+  mori_chrome_bridge.mm
+  mori_browser_window.mm
+  mori_chrome_extensions.mm
+  mori_permission_prompt.mm
+ungoogled-chromium-macos/build/src/chrome/browser/ui/BUILD.gn
 ```
 
 ## Batches
 
-Each batch is one commit and one checkpoint. Run the batch's check before the next.
-
-- B1 Workspace wiring. `pnpm-workspace.yaml`, `packages/config`, per-package tsconfigs, biome overrides. Check: factory `pnpm validate` green, `pnpm -r typecheck` green.
-- B2 Electron shell. Main, preload, renderer, hardened defaults in `src/main/security.ts`. Check: app launches, build produces a macOS app bundle.
-- B3 BrowserCore seam. Interface plus `electron-chromium` adapter, one real tab with back, forward, reload, and an address bar. Check: navigate a real site and exercise navigation.
-- B4 BeUI sidebar and kernel probe. Sidebar skeleton from BeUI components, embedded `opencode serve` with a `global.health` call surfaced in the UI. Check: sidebar renders, health reports healthy.
-
-## Dependencies
-
-`electron`, `electron-builder`, `electron-vite`, `typescript`, `react`, `react-dom`, `tailwindcss` v4, `@tailwindcss/postcss`, `motion` (one motion runtime only), `zustand`, `zod`, `@opencode-ai/sdk`, `vitest`. BeUI components are added from the `@beui` shadcn registry as copy-source, with BeUI Pro from the private registry when a gated block is needed.
+- B1 Land and pin. Land the needed source in this repo, record the upstream commit, and add continuity notes. Check: the source is present on `main` and the upstream commit is recorded.
+- B2 Reproduce the build. On the Cloud macOS host, place depot_tools and binshims on `PATH`, set `DEVELOPER_DIR`, and run `ninja -j 16 -l 24 -C out/Default chrome`. Check: ninja exits 0 and produces `out/Default/Mori.app`.
+- B3 Package and launch. Package with `ditto` to `Zenmium.app` and launch it with an isolated `--user-data-dir`. Check: the app opens, opens a page, and quits cleanly.
+- B4 Baseline and map. Exercise spaces, folders, tabs, extensions, and the AI panel. Produce a source map that names the files for the chat rail, references, and extensions. Check: the map covers every workstream entry point.
 
 ## Acceptance checks
 
-- Given the repo, when I run the factory validate command, then check, typecheck, and `eve info` all report zero errors and the product workspace resolves.
-- Given a built Zenmium app, when I launch it, then one window opens with the BeUI sidebar, tab strip, and address bar, and no Node access in the renderer.
-- Given the app, when I enter a real URL, then a Chromium tab loads the page and back, forward, and reload work through the BrowserCore interface.
-- Given the app, when it starts, then the embedded OpenCode server responds healthy and the state shows in the sidebar footer.
-- Given the packaged app, when I quit, then it exits cleanly with no crash.
+- Given the landed source, when the Cloud host runs the build, then ninja exits 0 and produces the app bundle.
+- Given the packaged app, when it launches on macOS, then a page loads and the app quits without a crash.
+- Given the running app, when the operator uses spaces, folders, tabs, and an installed extension, then the baseline behavior is recorded.
+- Given the source tree, when reviewed, then the three workstreams each have a named entry point and the GN target list is understood.
 
 ## Proof rungs
 
-Source (branch pushed), build (`pnpm -r build` plus the packaged app on the Cloud macOS runner), installed app (operator launches `Zenmium.app`), and a short interaction recording for the sidebar, navigation, and health probe. The highest rung for this tranche is the installed app.
+Source (fork pushed), build (ninja exit 0 on the Cloud host), installed app (operator launches the packaged bundle), and a baseline interaction recording. The highest rung for this tranche is the installed app.
 
 ## Protected zones
 
-- The factory's `agent/`, `evals/`, root scripts, and `biome.jsonc` factory rules. Product changes must not alter factory behavior. `pnpm validate` is the guard.
-- One motion runtime. Do not add a second animation library.
-- Secrets. `OPENROUTER_API_KEY` and `BEUI_PRO_TOKEN` are names only. Values live in 1Password and are resolved with `op` at the point of use, or through the 1Password extension in Zen for web work. Nothing secret reaches the renderer, a log, or git. See `docs/zenmium/SECRETS.md`.
-- The OpenCode kernel is the only agent loop. Do not add a second.
+- Mori's `ungoogled-chromium-macos` checkout and `BUILD.gn` target list. Do not move Swift files or rename targets in this tranche.
+- No `rm -rf`. Use `trash` when replacing app bundles or build directories.
+- Secrets. `OPENROUTER_API_KEY` and `BEUI_PRO_TOKEN` are names only. Values live in 1Password and are used through the browser extension in Zen.
 
 ## Rollback
 
-The tranche is additive. Revert the tranche branch to remove `apps/` and `packages/` and restore `pnpm-workspace.yaml`, `biome.jsonc`, and `PROJECT-STATE.md`. The factory app is untouched, so reverting cannot break it.
+This tranche lands source plus a build. Revert the landing commit or reset to the pinned upstream commit to revert. Nothing in this tranche mutates the engine.
 
 ## Return path
 
-Push the tranche branch, open a draft PR with the acceptance checklist, and hand to the supervisor station for an independent verdict on the real diff. The reviewer checks the BrowserCore seam does not leak Electron types into product features, that the renderer has no Node access, and that the factory validate command stayed green.
+Push the landed source and the baseline notes, then hand to the reviewer with the build log, the packaged artifact location, and the source map.
 
 ## Risk register
 
-- Biome friction. Ultracite may reject React and Electron idioms. Mitigation: scoped overrides in `biome.jsonc`, decided in B1 before any component work.
-- Electron extension expectations. None are built in this tranche. The compat matrix lands in P4.
-- OpenCode boot timing. The server may not be ready when the window opens. Mitigation: async health poll with a visible starting state, never a blocking wait.
-- Disk gate. No local checkout or build. All builds run on the Cloud macOS runner.
-- CSP and preload. A strict content security policy can break renderer dev tooling. Mitigation: separate dev and production policy in `src/main/security.ts`.
+- Chromium build cost. Tens of GB and hours, RAM-sensitive. Mitigation: MacStadium or EC2 Mac with 16 GB or more, and a reduced `-j` if RAM pressure appears.
+- Stale binaries. Reusing a running process can load an old framework. Mitigation: launch with `open -n` and an isolated `--user-data-dir`.
+- Undocumented Codex dependency. The upstream app can crash on launch without Codex. Mitigation: record the behavior; the agent rail replaces this in P2.
+- GN target list. Swift files are listed explicitly in `BUILD.gn`; moves must update it. Mitigation: no moves in this tranche.
 
 ## Secrets manifest
 
-Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values come from 1Password and are resolved with `op` at the point of use. No values in this plan, the repo, config, or logs. See `docs/zenmium/SECRETS.md`.
+Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password and are used through the browser extension in Zen. No values in this plan, the repo, config, or logs. See `docs/zenmium/SECRETS.md`.
