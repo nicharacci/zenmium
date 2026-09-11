@@ -1,89 +1,66 @@
-# S001-P0 — Land the Mori source and baseline the build
+# S001-P0 — Scaffold the Electron app and build it
 
-Status: planned. Owner: poteto-agent-1 (implementer). Reviewer: supervisor on the pushed branch. Parent spec: `docs/zenmium/PLAN.md` (S001), `docs/zenmium/ARCHITECTURE.md`.
+Status: building. Owner: `solvys-developer-1` with `solvys-developer-2`. Reviewer: supervisor on the pushed commit. Parent: `docs/zenmium/PLAN.md`.
 
 ## Original problem
 
-Zenmium is defined as Mori's engine and bridge wearing a BeUI web chrome, but the needed source has not been landed in this repo, the Chromium build has never been reproduced outside the author's machine, and the three workstreams have not been mapped to source. Nothing downstream can start until the source lands, the build reproduces, and the app runs.
+Zenmium has no runnable shell. Nothing downstream can be built or tested until the Electron app compiles, opens a real Chromium tab through `BrowserCore`, and installs an extension through the store flow.
 
 ## Outcome
 
-Deliver a packaged `Zenmium.app` built from the landed Mori source on a Cloud macOS runner, launched and exercised, with a source map that places the chat rail, the reference stores, and the extension path.
+A buildable Electron app in `desktop/` that CI compiles on macOS, opens one window with the BeUI chrome, loads a real tab through `BrowserCore`, and has the extension host, store install pipeline, and agent kernel wired.
 
-## Prerequisites (human and host, separate from this tranche)
-
-1. Land the needed Mori source in this repo. No separate fork, no imported history, no extra branches. Import the engine integration, the Objective-C++ bridge, the extension and permission glue, and the persisted browser stores.
-2. Provision a Cloud macOS build host with at least 100 GB free, Xcode, depot_tools, and 16 GB of RAM or more. GitHub-hosted macOS runners are too small and time-capped for a Chromium build, so use MacStadium or an AWS EC2 Mac host.
-3. No local build. Local capacity is Critical and the Chromium checkout is tens of GB.
-
-## Exact paths (Mori upstream, for reference)
+## Exact paths
 
 ```text
-ungoogled-chromium-macos/build/src/chrome/browser/ui/mori/
-  MoriRoot.swift
-  RootView.swift
-  Sidebar.swift
-  Toolbar.swift
-  TabRow.swift
-  LauncherOverlay.swift
-  BrowserStore.swift
-  BrowserTab.swift
-  Contexts.swift
-  TabFolder.swift
-  BookmarkStore.swift
-  ExtensionStore.swift
-  HistoryStore.swift
-  ArchiveStore.swift
-  AIPanel.swift
-  CodexAppServerClient.swift
-  BrowserAutomation.swift
-  ShortcutRegistry.swift
-  mori_chrome_bridge.mm
-  mori_browser_window.mm
-  mori_chrome_extensions.mm
-  mori_permission_prompt.mm
-ungoogled-chromium-macos/build/src/chrome/browser/ui/BUILD.gn
+desktop/
+  package.json  tsconfig.json  electron.vite.config.ts  components.json
+  src/shared/ipc.ts
+  src/main/index.ts  security.ts  browser-core.ts  extension-host.ts  store-install.ts  agent-kernel.ts
+  src/preload/index.ts
+  src/renderer/index.html  main.tsx  App.tsx  tailwind.css  global.d.ts
+  src/renderer/components/Sidebar.tsx  AgentRail.tsx  TabStrip.tsx  AddressBar.tsx  StoreInstall.tsx
+docs/zenmium/STORE-INSTALL.md
+.github/workflows/desktop.yml
 ```
 
 ## Batches
 
-- B1 Land and pin. Land the needed source in this repo, record the upstream commit, and add continuity notes. Check: the source is present on `main` and the upstream commit is recorded.
-- B2 Reproduce the build. On the Cloud macOS host, place depot_tools and binshims on `PATH`, set `DEVELOPER_DIR`, and run `ninja -j 16 -l 24 -C out/Default chrome`. Check: ninja exits 0 and produces `out/Default/Mori.app`.
-- B3 Package and launch. Package with `ditto` to `Zenmium.app` and launch it with an isolated `--user-data-dir`. Check: the app opens, opens a page, and quits cleanly.
-- B4 Baseline and map. Exercise spaces, folders, tabs, extensions, and the AI panel. Produce a source map that names the files for the chat rail, references, and extensions. Check: the map covers every workstream entry point.
+- B1 Contract. `src/shared/ipc.ts`, preload bridge, security policy.
+- B2 Browser core. `BrowserCore` seam with the Electron `WebContentsView` adapter; tabs, navigation, bounds.
+- B3 Chrome. Sidebar, tab strip, address bar, collapsible agent rail.
+- B4 Extensions and agent. Extension host, store install pipeline, OpenCode kernel, IPC wiring in `src/main/index.ts`.
+- B5 CI. macOS workflow runs `pnpm install`, `pnpm typecheck`, `pnpm build`.
 
 ## Acceptance checks
 
-- Given the landed source, when the Cloud host runs the build, then ninja exits 0 and produces the app bundle.
-- Given the packaged app, when it launches on macOS, then a page loads and the app quits without a crash.
-- Given the running app, when the operator uses spaces, folders, tabs, and an installed extension, then the baseline behavior is recorded.
-- Given the source tree, when reviewed, then the three workstreams each have a named entry point and the GN target list is understood.
+- Given the repo, when CI runs, then typecheck and build pass on macOS.
+- Given the built app, when it launches, then one window opens with the sidebar, tab strip, and address bar, and the renderer has no Node access.
+- Given the app, when a URL is entered, then a Chromium tab loads and back, forward, and reload work through `BrowserCore`.
+- Given a Chrome Web Store id, when the install button runs, then the CRX is resolved, verified, extracted, and loaded, and it survives a restart.
+- Given the app, when it quits, then it exits cleanly and the agent process stops.
 
 ## Proof rungs
 
-Source (fork pushed), build (ninja exit 0 on the Cloud host), installed app (operator launches the packaged bundle), and a baseline interaction recording. The highest rung for this tranche is the installed app.
+Source (pushed), CI build (workflow green), installed app (operator launches the packaged bundle), and a baseline interaction recording. Highest rung for this tranche: installed app.
 
 ## Protected zones
 
-- Mori's `ungoogled-chromium-macos` checkout and `BUILD.gn` target list. Do not move Swift files or rename targets in this tranche.
-- No `rm -rf`. Use `trash` when replacing app bundles or build directories.
-- Secrets. `OPENROUTER_API_KEY` and `BEUI_PRO_TOKEN` are names only. Values live in 1Password and are used through the browser extension in Zen.
+- `BrowserCore` is the only Chromium boundary. No renderer imports Electron.
+- No keys in the renderer. Names only.
+- One agent loop (OpenCode). No second chat engine.
 
 ## Rollback
 
-This tranche lands source plus a build. Revert the landing commit or reset to the pinned upstream commit to revert. Nothing in this tranche mutates the engine.
-
-## Return path
-
-Push the landed source and the baseline notes, then hand to the reviewer with the build log, the packaged artifact location, and the source map.
+Revert the tranche commit. The extension registry under `userData/zenmium/` is product data and is not removed by a revert.
 
 ## Risk register
 
-- Chromium build cost. Tens of GB and hours, RAM-sensitive. Mitigation: MacStadium or EC2 Mac with 16 GB or more, and a reduced `-j` if RAM pressure appears.
-- Stale binaries. Reusing a running process can load an old framework. Mitigation: launch with `open -n` and an isolated `--user-data-dir`.
-- Undocumented Codex dependency. The upstream app can crash on launch without Codex. Mitigation: record the behavior; the agent rail replaces this in P2.
-- GN target list. Swift files are listed explicitly in `BUILD.gn`; moves must update it. Mitigation: no moves in this tranche.
+- ESM preload under sandbox. The renderer preload is ESM, so `sandbox` is off and `contextIsolation` stays on; revisit if Electron tightens this.
+- Electron extension subset. MV3 service workers and native messaging are out; ticket ZEN-002 tracks the matrix and the password-manager and ad-blocker cases.
+- OpenCode route drift. Routes are centralized in `agent-kernel.ts`; confirm against the pinned build.
+- Store CRX flow. No Google signature root is pinned in v1; the docs and UI must not claim cryptographic provenance.
 
 ## Secrets manifest
 
-Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password and are used through the browser extension in Zen. No values in this plan, the repo, config, or logs. See `docs/zenmium/SECRETS.md`.
+Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password and are used through the browser extension in Zen. See `docs/zenmium/SECRETS.md`.

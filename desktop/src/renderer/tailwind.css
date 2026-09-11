@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root {
+  --gp-panel: #101214;
+  --gp-ink: #e7e9ec;
+  --gp-muted: #8b9198;
+  --gp-accent: #6ee7a8;
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: var(--gp-panel);
+  color: var(--gp-ink);
+  font: 13px/1.45 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", sans-serif;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}

@@ -1,86 +1,72 @@
-# S001 — Stand up Zenmium to a competitive v1
+# S001 — Build Zenmium in Electron to a competitive v1
 
-Status: planned. Owner: poteto-agent-1 (implementer) with poteto-agent-2 (agent and security), reviewer on the pushed branch. This plan is the contract; a changed requirement revises it before work continues.
+Status: building. Owner: `solvys-developer-1` (shell, browser core) with `solvys-developer-2` (agent, extensions, security). Reviewer: supervisor on the pushed commit.
 
 ## Outcome
 
-Deliver Zenmium so the operator can install and drive a macOS browser built on Mori's engine with a BeUI web chrome, an Arc-style sidebar, Chrome-class extension and app-window behavior, and an embedded agent in the sidebar bottom half, then grade it against Zen and Arc.
+Deliver Zenmium so the operator can install and drive a macOS Electron browser with an Arc-style sidebar, real Chromium tabs, a collapsible agent rail, and Chrome-extension behavior through the wrapped store install flow, then grade it against Zen and Arc.
 
 ## Contract
 
-- Execution lane: repository-backed Cloud task on a Cloud macOS runner for the engine build, and standard CI for the web chrome. Planning stays local.
-- Owner and protected zones: see `ARCHITECTURE.md`. The engine, the bridge, and the agent kernel are protected. No second agent loop. No keys in the web chrome.
-- Highest requested proof rung: an installed application on the operator's Mac, plus human acceptance. Typecheck, build, and preview are required stops on the way.
-- Secrets manifest (names only): `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password and are used through the browser extension in Zen.
-- Dependencies to confirm before dispatch: none. The needed Mori source lands in this repo and the chrome host is decided in `ARCHITECTURE.md`.
+- Execution lane: CI on GitHub-hosted macOS runners for the Electron build; local planning only. Local capacity is Critical.
+- Protected zones: `BrowserCore`, the extension host, the store pipeline, and the agent kernel. No second agent loop. No keys in the renderer.
+- Highest requested proof rung: an installed app on the operator's Mac plus human acceptance. Typecheck and CI build are required stops.
+- Secrets (names only): `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password, used through the browser extension in Zen.
 
 ## Competitive rubric (100 points)
 
-| Dimension | Points | Zen baseline | Arc baseline | Zenmium v1 target |
+| Dimension | Points | Zen | Arc | Zenmium v1 target |
 | --- | --- | --- | --- | --- |
 | Engine and web standards | 15 | 13 | 14 | 14 |
-| Chrome extension parity | 15 | 4 | 14 | 11 |
+| Chrome extension parity | 15 | 4 | 14 | 9 |
 | Installable web apps | 5 | 2 | 5 | 4 |
 | Security and update cadence | 15 | 13 | 12 | 12 |
 | Privacy and isolation | 10 | 9 | 8 | 8 |
 | Sidebar and tab UX | 15 | 11 | 15 | 14 |
 | Customization and themes | 10 | 7 | 10 | 8 |
 | Agent integration | 15 | 0 | 4 | 14 |
-| **Total** | **100** | **59** | **82** | **85** |
+| **Total** | **100** | **59** | **82** | **83** |
 
-Scores are planning estimates from documented behavior, not benchmarks. The engine and sidebar columns start higher than a from-scratch shell because Mori already ships them; the extension column starts higher because the engine is Chromium with a native extension bridge.
+Estimates from documented behavior, not benchmarks. Extension parity concedes to Electron's subset; the store install flow recovers store reachability.
 
 ## Phases
 
-### P0 — Land and baseline
+### P0 — Scaffold and build (this tranche)
 
-- Land the needed Mori source in this repo: the engine build target, the Objective-C++ bridge, and the extension and permission glue, plus the persisted browser stores.
-- Reproduce the GN/ninja ungoogled-chromium build on a Cloud macOS runner and package `Zenmium.app`.
-- Run the app, exercise spaces, folders, tabs, extensions, and the AI panel, and record the baseline behavior.
-- Map the three workstreams to source files: the chat rail (`AIPanel.swift`, `CodexAppServerClient.swift`, `Sidebar.swift`), references (`BookmarkStore.swift`, `TabFolder.swift`, `Contexts.swift`), and extensions (`mori_chrome_extensions.mm`, `ExtensionStore.swift`).
+- Electron workspace: main, preload, renderer, `BrowserCore`, security, IPC contract.
+- Extension host and wrapped store install pipeline.
+- OpenCode kernel wrapper.
+- CI on macOS: typecheck and build.
+- Acceptance: CI green; app launches on macOS; a real tab loads and navigates; a store extension installs and survives restart.
 
-Acceptance: a packaged `Zenmium.app` builds from the landed source on the Cloud runner, launches, and a source map places every workstream file.
+### P1 — Sidebar and navigation
 
-### P1 — Web chrome shell
-
-- Add the AppKit host and the web surface that replaces Mori's SwiftUI chrome.
-- Build the Arc sidebar top half, tab strip, address bar, and command bar in BeUI.
-- Wire the typed IPC bridge to Mori's Objective-C++ layer for tab lifecycle, navigation, spaces, folders, and downloads.
-- Restyle to the Goalpost or BeUI register; keep every control real.
-
-Acceptance: open real sites, switch spaces, create and reorder folders, pin and archive tabs, all from the web chrome.
+- Arc-style sidebar: spaces, pinned and today tabs, folders, overflow controls.
+- Command bar (`Cmd+T`), the documented Arc shortcut map, tab sleep and archive.
+- Acceptance: full keyboard navigation over real sites.
 
 ### P2 — Agent rail
 
-- Collapsible bottom half of the sidebar with a right-aligned caret carrying state.
-- BeUI Chat App for messages, streaming, tools, approvals, diffs, and prompt input.
-- Replace the Codex-bound panel with the OpenCode kernel over localhost; sessions and turns are the only writer of turns.
-
-Acceptance: a prompt streams into the rail; a tool approval is required before any page action; collapsing preserves the session.
+- BeUI Chat App in the collapsible bottom half; caret carries state.
+- Session, streaming, tool approvals, diffs, prompt input through the OpenCode kernel.
+- Acceptance: a prompt streams; a page action needs approval; collapsing preserves the session.
 
 ### P3 — References
 
-- Reference registry over Mori's bookmark, folder, context, and history stores.
-- Bookmarks UI, folder tree, local filetree, and `@` tags in the composer.
-- Situation dump surfaced to the agent on first turn.
+- Reference registry over own bookmarks and files; filetree; `@` tags in the composer; situation dump.
+- Acceptance: tagging a bookmark, a folder, and a file yields three addressable ids.
 
-Acceptance: tagging a bookmark, a folder, and a local file produces three addressable ids the agent can read and act on.
+### P4 — Parity, security, polish
 
-### P4 — Extension parity, security, polish
-
-- Extension compat matrix, Web Store install path, post-update re-enable, Widevine and MV2 decisions.
-- Security package: egress allowlist, permission handlers, injection defenses, dependency and secret scanning, SBOM, and the engine rebuild pipeline.
-- Visual polish and reduced-motion and focus states.
-
-Acceptance: 80-90 rubric score, extension matrix published, security checks green, installed build passes human acceptance.
+- Extension compat matrix and store flow hardening; password-manager and ad-blocker behavior tested.
+- Security package, SBOM, scanning, egress allowlist.
+- Acceptance: 80-90 rubric, matrix published, security checks green, human acceptance.
 
 ## Batch boundaries and rollback
 
-- One phase per checkpoint; push `refs/sprints/S001/P#` before the next phase.
-- Each phase is reversible by reverting its checkpoint. The landed engine source and the web chrome are separate trees, so a chrome revert does not touch the engine.
-- Work lands on `main` directly; the reviewer verifies the pushed commit against the acceptance checks.
-- If replacing Mori's SwiftUI chrome cannot be done without disturbing the GN target list, stop and revise this plan before P1 continues.
+- One phase per checkpoint. Each phase reverts independently; the extension registry is product data and is not deleted by a revert.
+- Work lands on `main` directly. The reviewer verifies the pushed commit against the acceptance checks.
 
 ## Return path
 
-Every phase returns to the reviewer with the exact commit or ref, the proof rung reached, protected zones touched, the installed-app artifact, and human-acceptance notes. The reviewer owns acceptance; the daily integrator owns the merge.
+Each phase returns to the reviewer with the exact commit, the proof rung reached, protected zones touched, the CI run, and human-acceptance notes.
