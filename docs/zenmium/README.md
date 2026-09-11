@@ -1,73 +1,62 @@
 # Zenmium
 
-Status: **planned**. No source exists yet. This repository-local planning set is the entry point.
+Status: planned. Base source: `FujiwaraChoki/mori-browser` (MIT, macOS, a SwiftUI/AppKit chrome compiled into ungoogled-chromium). The needed Mori source lands inside this repo, `nicharacci/zenmium`: no separate fork, no imported history, no extra branches.
 
 ## Original problem
 
-TP currently tests Zen Browser as a daily driver. Zen runs on Gecko, so Chrome Web Store
-extensions do not install and installable web apps such as wonder.so do not behave like apps.
-The team also wants a browser primitive it can fold a first-class agent into, wrapped in the
-approved BeUI component language, iterated fast, and hardened with community-trusted OSS
-security primitives that patch quickly. No existing product satisfies all of that at once:
-Arc is closed and frozen, Mori is a young experimental Chromium prototype, Zen is mature on the
-wrong engine.
+The operator wants one internal browser that browses like Zen, is navigated like Arc, runs Chrome Web Store extensions and installable web apps, and carries a first-class agent in the same sidebar. Zen runs on Gecko, so Chrome extensions do not install and installable web apps such as wonder.so do not behave like apps. Arc is closed and frozen. Mori is the closest open base: a real Chromium engine behind an Arc-style sidebar and spaces, with the extension bridge already present. Mori is young and experimental, its chrome is SwiftUI, and its agent panel is bound to a local Codex app server.
 
 ## Named solution
 
-**Zenmium** — a standalone desktop browser built on a webshell + Chromium core, wrapped in
-BeUI / BeUI Pro, with an embedded OpenCode agent rail that shares one Arc-style sidebar with the
-browser, and a security layer built from trusted OSS primitives.
+**Zenmium** is Mori's engine and bridge wearing a web chrome. Keep Mori's ungoogled-chromium build and its Objective-C++ bridge. Replace the SwiftUI chrome with a web surface built entirely from BeUI and BeUI Pro. A thin AppKit host presents that surface and hands browser control to the bridge. Replace the Codex-bound AI panel with a collapsible agent rail in the same web chrome, backed by the OpenCode kernel.
 
-Outcome-owned objective: Deliver Zenmium so the operator can browse the real web with Chrome-class
-extension and app-window behavior, drive an agent from the same sidebar, and receive Chromium
-security updates on a dependency cadence. Ownership includes behavior, controls, design, security,
-validation, and handoff.
+Outcome-owned objective: Deliver Zenmium so the operator can browse with real Chrome extension and app-window behavior, drive the agent from the browser sidebar, and receive Chromium security updates on a rebuild cadence. Ownership covers chrome behavior, the agent rail, extension parity, references (bookmarks, folders, files, tags), security, validation, and handoff.
+
+## The three workstreams
+
+These are the user-named tasks and they are the spine of the plan.
+
+1. A better chat rail. The BeUI Chat App block in the web chrome, driven by the OpenCode kernel, occupying the collapsible bottom half of the shared sidebar with a right-aligned caret for state. The top half is browser navigation.
+2. Folders, filetrees, bookmarks, and `@` tags. Extend Mori's `BookmarkStore`, `TabFolder`, and `Contexts` into an addressable Reference registry so the agent can be pointed at a bookmark, a link, or a file by tag.
+3. Chrome extension parity. Fix the ungoogled-chromium extension path (Web Store install, update re-disable, Widevine, MV2) in the fork only. Every community complaint becomes a ticket.
 
 ## Decisions recorded
 
 | ID | Decision | Choice | Rationale |
 | --- | --- | --- | --- |
-| D1 | Shell | Electron (web chrome) + Chromium content; `BrowserCore` seam for a later native Chromium/CEF swap | Only shape that lets BeUI wrap the entire chrome, iterates in minutes, and updates Chromium by dependency |
-| D2 | Agent kernel | OpenCode (`opencode serve` + `@opencode-ai/sdk`) | MIT, headless, typed SDK, provider-agnostic, BYO-agent via MCP/ACP/custom tools/plugins |
-| D3 | Model gateway | OpenRouter; default `deepseek/deepseek-v4.1-flash` | One gateway, many models, DS v4.1 Flash is the default |
-| D4 | UI libraries | BeUI (free, MIT) primary; BeUI Pro for gated blocks | Approved Solvys hierarchy; free BeUI includes the Chat App block |
-| D5 | Repo shape | pnpm + Turborepo monorepo | One versioned workspace for shell, core, agent, ui, security, references |
-| D6 | Build lane | GitHub-hosted ARM64 macOS runners | Electron builds are minutes; a Chromium fork would force MacStadium/EC2 Mac |
-| D7 | Scope v1 | macOS first | Matches the operator's machine and the highest-fidelity proof surface |
-| D8 | Panel UI | Dropped | React Native/Expo; not in the approved stack; cannot wrap a web product |
+| D1 | Base | Land the needed Mori source inside this repo: the ungoogled-chromium build target and the Objective-C++ bridge, extension, and permission glue (MIT). No separate fork, no imported history or branches | One repo, one lineage, and only what the objectives need |
+| D2 | Product UI | The entire chrome is a web surface (React 19, Tailwind v4, BeUI, BeUI Pro) | The only way to wrap the whole product in BeUI |
+| D3 | Host | A thin AppKit host presents the web surface over Mori's engine; Mori's SwiftUI chrome is replaced | Keeps the engine, swaps the UI layer |
+| D4 | Bridge | A typed IPC API over Mori's Objective-C++ bridge for tabs, navigation, extensions, downloads, permissions | Product state stays in the app, not in the UI library |
+| D5 | Sidebar | One Arc-style sidebar: top half browser navigation, bottom half collapsible agent rail with a right-aligned caret | One shared surface for browser and agent, as specified |
+| D6 | Agent runtime | OpenCode (`opencode serve` + `@opencode-ai/sdk`), MIT | Headless, typed SDK, provider-agnostic, BYO-agent via MCP/ACP/custom tools |
+| D7 | Model gateway | OpenRouter; default `deepseek/deepseek-v4.1-flash` | One gateway, many models |
+| D8 | Build | Mori's GN/ninja ungoogled-chromium build on a Cloud macOS runner | The Chromium checkout needs tens of GB and hours; local capacity is Critical |
+| D9 | Scope v1 | macOS first | Mori is macOS only and that matches the operator's machine |
+| D10 | Dropped | Panel UI (React Native) | Cannot wrap a native app and is not in the approved stack |
+| D11 | Import scope | Import the engine integration and the persisted browser stores (bookmarks, folders, history, extensions); rebuild every view in BeUI | Only what we need, and the chrome is new |
 
 ## Docs map
 
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) — system map, ownership, seams, extension model, security model, stack.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — Mori layers, the web chrome, the agent rail, the Reference registry, the extension model, the security model, the stack.
 - [`PLAN.md`](PLAN.md) — S001 phased plan, acceptance checks, proof rungs, competitive rubric.
-- [`ISSUES.md`](ISSUES.md) — ZEN ticket slate with recommended fixes and provenance.
+- [`ISSUES.md`](ISSUES.md) — ZEN ticket slate with fixes and provenance, sourced from the Mori community and the Chromium extension path.
 - [`AGENT_ERGONOMICS.md`](AGENT_ERGONOMICS.md) — the addressable agent tower, Reference object, `@` tags, bookmarks, filetree.
-- [`SECRETS.md`](SECRETS.md) — the 1Password secret lane and the names-only rule.
+- [`SECRETS.md`](SECRETS.md) — the 1Password browser-extension lane and the names-only rule.
+- [`S001-P0-execution.md`](S001-P0-execution.md) — the first executable tranche.
 
-## Decisions locked
+## Open items
 
-1. **Shell.** Electron v1 with the `BrowserCore` seam for a later native Chromium/CEF core.
-2. **Repo home.** `nicharacci/zenmium`, instantiated from the Goalpost Factory Template.
-3. **BeUI Pro.** Available; `BEUI_PRO_TOKEN` lives in 1Password, never in git.
-4. **Agent kernel.** OpenCode in a monorepo; DeepSeek v4.1 Flash as a model via OpenRouter.
-5. **Panel UI.** Dropped.
-
-## Open authority items
-
-1. **Repo role.** Is `nicharacci/zenmium` the factory workspace (targeting a separate product repo through `FACTORY_REPO`) or the product repo itself with the factory embedded?
-2. **Product repo home.** Where the Zenmium browser source lives, and therefore the value of `FACTORY_REPO`.
-3. **Design bank.** The factory's `design/banks` rule defaults to `shadcn-cssinjs` and warns against vendoring BeUI as the default. Adding BeUI means adding a bank file that names registry, license, and when to load it.
-4. **Extension priority.** Confirm that a documented partial parity is acceptable for v1, or that full Chrome Web Store behavior is the gating requirement.
+None at this time. The source lands in this repo, and the chrome host is decided in `ARCHITECTURE.md`: a privileged Chromium WebContents.
 
 ## Secret handling
 
-The BeUI Pro token was supplied in chat and is treated as exposed. Rotate it and store the new value in 1Password under `BEUI_PRO_TOKEN`. Every secret, data-store credential, and key uses the same lane: `op` locally, or the 1Password extension in Zen for web sign-in. The only form this project records is the name. Full policy: [`SECRETS.md`](SECRETS.md).
-
+The BeUI Pro token was supplied in chat and is treated as exposed. Rotate it and store the new value in 1Password. Every secret, data-store credential, and key uses the same lane: the 1Password browser extension in Zen. No CLI. This project records only the name. Full policy: [`SECRETS.md`](SECRETS.md).
 
 ## Provenance
 
-- Electron extension API and limits: official Electron docs (`session.extensions.loadExtension`; extensions support matrix).
-- OpenCode headless server, SDK, MCP, ACP, providers, license: `opencode.ai/docs`, MIT.
-- BeUI: `github.com/starc007/ui-components` (MIT), `beui.dev`; BeUI Pro: `pro.beui.dev` (paid, private registry).
-- GitHub-hosted macOS runner limits: GitHub Actions docs.
-- Competitor facts: Mori repo docs and issues; Zen repo metadata; Arc help center and The Browser Company statements.
+- Mori base: `github.com/FujiwaraChoki/mori-browser` (MIT), its `README.md`, `docs/ARCHITECTURE.md`, `docs/SOURCE_LAYOUT.md`, `BUILDING.md`, and `AGENTS.md`.
+- Chromium extension path: ungoogled-chromium behavior and the derived-repo fixes (Web Store `webstorePrivate`, update re-disable, Widevine, MV2).
+- OpenCode kernel: `opencode.ai/docs` (server, SDK, MCP, ACP), MIT.
+- BeUI: `github.com/starc007/ui-components` (MIT), `beui.dev`; BeUI Pro: `pro.beui.dev`.
+- Competitor facts: Mori repo and issues, Zen repo metadata, Arc help center and The Browser Company statements.
