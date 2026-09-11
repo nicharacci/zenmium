@@ -147,4 +147,4 @@ Mori already runs ungoogled-chromium and ships `mori_chrome_extensions.mm`, so e
 
 - The mechanics of a privileged WebContents chrome (a WebUI-style surface) in the Mori GN target, including strict isolation from page content.
 - The cost of replacing Mori's SwiftUI chrome layer without disturbing the GN target list.
-- Electron extension behavior against a pinned set of real extensions is no longer relevant; the Chromium compat test still applies.
+- The extension compat matrix against a pinned set of real Chrome extensions in the ungoogled engine.
