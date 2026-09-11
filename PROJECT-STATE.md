@@ -19,8 +19,9 @@ Build Zenmium, a standalone macOS browser: a Chromium content core behind a `Bro
 
 ## Protected zones
 
-- Do not commit `.env`, cookie jars, Browser Profiles, or Workspace Vault values.
-- Never place `BEUI_PRO_TOKEN` or any license token in git; record names only.
+- Do not commit `.env`, cookie jars, Browser Profiles, or any secret value.
+- Secrets, data-store credentials, and keys come from the 1Password browser extension in Zen. Names in context, values never. No 1Password CLI. See `docs/zenmium/SECRETS.md`.
+- Never place `BEUI_PRO_TOKEN`, `OPENROUTER_API_KEY`, or any key in git.
 - The agent kernel and the provider gateway are single-owner. No second agent loop, no keys in renderers.
 - `main` stays clean and deployable; work arrives through dated integration branches and reviewed draft PRs.
 
