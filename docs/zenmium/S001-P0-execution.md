@@ -129,7 +129,7 @@ Source (branch pushed), build (`pnpm -r build` plus the packaged app on the Clou
 
 - The factory's `agent/`, `evals/`, root scripts, and `biome.jsonc` factory rules. Product changes must not alter factory behavior. `pnpm validate` is the guard.
 - One motion runtime. Do not add a second animation library.
-- Secrets. `OPENROUTER_API_KEY` and `BEUI_PRO_TOKEN` are names only. Values live in the Workspace Vault or Computer. Nothing secret reaches the renderer, a log, or git.
+- Secrets. `OPENROUTER_API_KEY` and `BEUI_PRO_TOKEN` are names only. Values live in 1Password and are used through the 1Password browser extension in Zen. No CLI. Nothing secret reaches the renderer, a log, or git. See `docs/zenmium/SECRETS.md`.
 - The OpenCode kernel is the only agent loop. Do not add a second.
 
 ## Rollback
@@ -150,4 +150,4 @@ Push the tranche branch, open a draft PR with the acceptance checklist, and hand
 
 ## Secrets manifest
 
-Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. No values in this plan, the repo, config, or logs.
+Names only: `OPENROUTER_API_KEY`, `BEUI_PRO_TOKEN`. Values live in 1Password and are used through the browser extension in Zen. No values in this plan, the repo, config, or logs. See `docs/zenmium/SECRETS.md`.
