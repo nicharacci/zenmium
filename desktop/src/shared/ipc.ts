@@ -24,6 +24,7 @@ export const ARC_IPC = {
   newTab: "arc:newTab",
   closeTab: "arc:closeTab",
   activateTab: "arc:activateTab",
+  updateTab: "arc:updateTab",
   navigate: "arc:navigate",
   back: "arc:back",
   forward: "arc:forward",
@@ -76,6 +77,32 @@ export interface Tab {
   loading: boolean;
   folderId: string | null;
   lastActiveAt: number;
+  /** Optional Zen presentation state, persisted by ArcCore when present. */
+  iconUrl?: string;
+  originalIconUrl?: string;
+  pinnedChanged?: boolean;
+  audio?: boolean;
+  muted?: boolean;
+  blocked?: boolean;
+  discarded?: boolean;
+  glance?: boolean;
+  containerColor?: string | null;
+  sublabel?: string | null;
+}
+
+export interface TabUpdate {
+  title?: string;
+  url?: string;
+  iconUrl?: string | null;
+  originalIconUrl?: string | null;
+  pinnedChanged?: boolean;
+  audio?: boolean;
+  muted?: boolean;
+  blocked?: boolean;
+  discarded?: boolean;
+  glance?: boolean;
+  containerColor?: string | null;
+  sublabel?: string | null;
 }
 
 export interface ArchiveEntry {

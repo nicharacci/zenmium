@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { EventEmitter } from "node:events";
 import { BrowserWindow, WebContentsView, shell } from "electron";
 import { JsonStore } from "./state-store";
-import type { ArcState, ArchiveEntry, Folder, Rect, Space, Tab } from "../shared/ipc";
+import type { ArcState, ArchiveEntry, Folder, Rect, Space, Tab, TabUpdate } from "../shared/ipc";
 import { SPACE_COLORS, emptyState } from "../shared/ipc";
 
 const HOME_URL = "https://github.com/nicharacci/zenmium";
@@ -183,6 +183,29 @@ export class ArcCore {
     tab.lastActiveAt = now();
     this.ensureView(tab);
     this.attachActive();
+    this.emit();
+  }
+
+  updateTab(tabId: string, patch: TabUpdate): void {
+    const tab = this.tab(tabId);
+    if (!tab) return;
+
+    if (patch.title !== undefined) tab.title = patch.title.trim() || tab.title;
+    if (patch.url !== undefined && patch.url.trim() && patch.url !== tab.url) {
+      tab.url = patch.url.trim();
+      this.ensureView(tab);
+      this.navigate(tab.id, tab.url);
+    }
+    if ("iconUrl" in patch) tab.iconUrl = patch.iconUrl ?? undefined;
+    if ("originalIconUrl" in patch) tab.originalIconUrl = patch.originalIconUrl ?? undefined;
+    if (patch.pinnedChanged !== undefined) tab.pinnedChanged = patch.pinnedChanged;
+    if (patch.audio !== undefined) tab.audio = patch.audio;
+    if (patch.muted !== undefined) tab.muted = patch.muted;
+    if (patch.blocked !== undefined) tab.blocked = patch.blocked;
+    if (patch.discarded !== undefined) tab.discarded = patch.discarded;
+    if (patch.glance !== undefined) tab.glance = patch.glance;
+    if ("containerColor" in patch) tab.containerColor = patch.containerColor ?? null;
+    if ("sublabel" in patch) tab.sublabel = patch.sublabel ?? null;
     this.emit();
   }
 

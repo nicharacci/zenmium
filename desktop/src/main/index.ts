@@ -62,6 +62,10 @@ function wireIpc(): void {
   ipcMain.handle(ARC_IPC.newTab, (_e, p) => core().newTab((p as { url?: string; spaceId?: string }) ?? {}));
   ipcMain.handle(ARC_IPC.closeTab, (_e, p) => core().closeTab(String(p)));
   ipcMain.handle(ARC_IPC.activateTab, (_e, p) => core().activateTab(String(p)));
+  ipcMain.handle(ARC_IPC.updateTab, (_e, p) => {
+    const { id, patch } = p as { id: string; patch: Parameters<ArcCore["updateTab"]>[1] };
+    core().updateTab(id, patch);
+  });
   ipcMain.handle(ARC_IPC.navigate, (_e, p) => {
     const { id, url } = p as { id: string; url: string };
     core().navigate(id, url);

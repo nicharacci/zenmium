@@ -90,8 +90,8 @@ export default function App() {
   return (
     <div className="flex h-full w-full overflow-hidden bg-background">
       <Sidebar state={state} invoke={invoke} active={active} onCommand={() => setCommandOpen(true)} />
-      <main className="flex min-w-0 flex-1 flex-col">
-        <div ref={contentRef} className="min-h-0 flex-1 bg-background" />
+      <main className="zen-main-shell">
+        <div ref={contentRef} className="zen-content-card" />
       </main>
       <CommandPalette
         items={items}

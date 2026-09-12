@@ -1,116 +1,533 @@
-/* Ported from Zen Browser (zen-browser/desktop) vertical-tabs.css / zen-workspaces.css.
-   Values kept verbatim; XUL selectors translated to classes. MPL-2.0 upstream. */
+/* Zen sidebar parity layer.
+   Values are translated from Zen Browser's vertical-tabs, compact-mode,
+   workspace, and pinned-tab styles in ZEN_SIDEBAR_SPEC.md. */
 
 .zen-sidebar {
+  --zen-sidebar-width: 230px;
+  --zen-min-toolbox-padding: 6px;
   --zen-toolbox-padding: 6px;
-  --zen-radius: 14px; /* --border-radius-medium */
-  --zen-tab-radius: 8px; /* --tab-border-radius */
-  --zen-tab-height: 36px; /* upstream --tab-min-height */
-  --zen-tab-inline: 8px; /* --tab-inline-padding */
+  --zen-radius: 14px;
+  --zen-tab-radius: 8px;
+  --zen-tab-height: 36px;
+  --zen-tab-inline: 8px;
+  --zen-tab-min-width: 48px;
   --zen-active-tab-scale: 0.985;
+  --zen-element-separation: 8px;
   --zen-elem-bg: color-mix(in oklch, var(--foreground) 15%, transparent);
   --zen-elem-bg-hover: rgba(255, 255, 255, 0.1);
   --zen-selected: color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--primary));
   --zen-shadow: 0 0.8px 1.5px 0 rgba(0, 0, 0, 0.05);
   --zen-urlbar-bg: color-mix(in srgb, var(--primary) 4%, rgb(24, 24, 24) 96%);
-  --zen-sep: 8px; /* --zen-element-separation */
-  --zen-ws-icon-fill: color-mix(in srgb, var(--primary) 15%, #ebebeb);
-
+  --zen-border: color-mix(in srgb, var(--secondary) 20%, rgb(79, 79, 79));
+  --zen-workspace-fill: color-mix(in srgb, var(--primary) 15%, #ebebeb);
   position: relative;
+  z-index: 30;
   display: flex;
-  flex-direction: column;
+  flex: 0 0 var(--zen-sidebar-width);
+  width: var(--zen-sidebar-width);
   height: 100%;
-  padding: var(--zen-toolbox-padding);
+  min-width: 0;
+  order: 0;
   background: var(--background);
+  color: var(--foreground);
+  transition: flex-basis 0.2s ease, width 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zen-sidebar[data-side="right"] {
+  order: 2;
+  border-left: 1px solid var(--border);
+}
+
+.zen-sidebar[data-side="left"] {
   border-right: 1px solid var(--border);
+}
+
+.zen-sidebar[data-expanded="false"] {
+  --zen-sidebar-width: 60px;
+  --zen-toolbox-padding: 6px;
+}
+
+.zen-sidebar-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 0 var(--zen-toolbox-padding);
   overflow: hidden;
-  transition: width 0.2s ease;
 }
 
-.zen-sidebar[data-open="false"] {
-  --zen-tab-min: 48px;
+/* The sidebar and content surface float inside the app window, matching
+   Zen's card-based shell instead of reading as one flat full-window plane. */
+.zen-main-shell {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 12px;
+  background: #0b0d0f;
 }
 
-/* --- Top toolbar (single-toolbar: nav + URL bar live in the sidebar) --- */
+.zen-content-card {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  background: #101214;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22), 0 24px 70px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Compact mode is intentionally off-canvas, with an 8px keep-alive rail. */
+.zen-sidebar[zen-compact-mode] {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  flex-basis: var(--zen-sidebar-width);
+  box-shadow: 0 0 0 1px transparent, 0 16px 48px rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.zen-sidebar[zen-compact-mode][data-side="left"] {
+  left: 0;
+  transform: translateX(calc(-100% + var(--zen-element-separation)));
+}
+
+.zen-sidebar[zen-compact-mode][data-side="right"] {
+  right: 0;
+  transform: translateX(calc(100% - var(--zen-element-separation)));
+}
+
+.zen-sidebar[zen-compact-mode][zen-has-hover],
+.zen-sidebar[zen-compact-mode][zen-user-show],
+.zen-sidebar[zen-compact-mode][data-compact-visible="true"] {
+  transform: translateX(0);
+  transition: transform 0.25s linear(0, 0.012 7%, 0.072 18%, 0.205 32%, 0.45 49%, 0.77 70%, 0.96 86%, 1);
+}
+
+.zen-sidebar[zen-compact-mode]:not([zen-has-hover]):not([zen-user-show])[data-compact-visible="false"] {
+  box-shadow: none;
+}
+
+/* A collapsed sidebar remains a small floating card. The edge zone owns the
+   thin gutter at the window boundary and temporarily reveals this card. */
+.zen-sidebar[data-persistent-expanded="false"] {
+  position: fixed;
+  top: 8px;
+  bottom: 8px;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--background);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.34);
+}
+
+.zen-sidebar[data-persistent-expanded="false"][data-side="left"] {
+  left: 8px;
+}
+
+.zen-sidebar[data-persistent-expanded="false"][data-side="right"] {
+  right: 8px;
+}
+
+.zen-sidebar[data-persistent-expanded="false"] .zen-sidebar-splitter {
+  display: none;
+}
+
+.zen-edge-zone {
+  position: fixed;
+  top: 0;
+  z-index: 25;
+  width: 200px;
+  height: 100px;
+  background: transparent;
+}
+
+.zen-edge-zone[data-side="left"] {
+  left: 0;
+}
+
+.zen-edge-zone[data-side="right"] {
+  right: 0;
+}
+
+.zen-edge-zone[data-collapsed="true"] {
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  height: auto;
+}
+
+.zen-edge-zone[data-collapsed="true"][data-side="left"] {
+  left: 0;
+}
+
+.zen-edge-zone[data-collapsed="true"][data-side="right"] {
+  right: 0;
+}
+
+/* --- Top toolbar and docked URL bar --- */
 .zen-top {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: calc(var(--zen-toolbox-padding) / 2) 0;
-  padding-top: 2px;
+  min-height: 48px;
+  margin: calc(var(--zen-toolbox-padding) / 2) 0 0;
+  padding: 2px 0 0;
+  background: transparent;
 }
 
-.zen-top-btn {
-  display: flex;
+.zen-top-btn,
+.zen-foot-btn,
+.zen-foot-command {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
   color: var(--muted-foreground);
+  cursor: pointer;
+  transition: color 0.12s ease, background 0.12s ease, transform 0.12s ease;
 }
-.zen-top-btn:hover {
+
+.zen-top-btn:hover,
+.zen-foot-btn:hover,
+.zen-foot-command:hover {
   background: var(--zen-elem-bg-hover);
   color: var(--foreground);
+}
+
+.zen-top-btn:active,
+.zen-foot-btn:active,
+.zen-foot-command:active,
+.zen-urlbar-action:active,
+.zen-new-tab:active {
+  transform: scale(0.985) rotate(0.01deg);
+}
+
+.zen-top-btn:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.zen-top-separator {
+  width: 1px;
+  height: 18px;
+  margin: 0 2px;
+  background: var(--zen-border);
+}
+
+.zen-top-spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+.zen-urlbar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  padding: 6px 0;
+  background: transparent;
 }
 
 .zen-urlbar {
   width: 100%;
   height: 36px;
-  margin-top: 3px;
-  border-radius: 12px;
-  background: var(--zen-urlbar-bg);
+  min-width: 0;
+  margin: 0;
   border: 1px solid transparent;
-  padding: 0 12px;
+  border-radius: 18px;
+  outline: none;
+  background: var(--zen-urlbar-bg);
   color: var(--foreground);
+  padding: 0 38px 0 30px;
   font-size: 12.5px;
   text-align: center;
-  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
+
 .zen-urlbar::placeholder {
   color: var(--muted-foreground);
 }
+
 .zen-urlbar:focus {
-  text-align: left;
   border-color: color-mix(in srgb, var(--primary) 40%, transparent);
-}
-.zen-sidebar[data-open="false"] .zen-urlbar {
-  padding: 0 4px;
+  background: color-mix(in srgb, var(--zen-urlbar-bg) 88%, var(--foreground));
+  text-align: left;
 }
 
-/* --- Essentials (pinned) grid --- */
+.zen-urlbar-search {
+  position: absolute;
+  left: 11px;
+  z-index: 1;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+.zen-urlbar-action {
+  position: absolute;
+  right: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.zen-urlbar-action:hover {
+  background: var(--zen-elem-bg-hover);
+  color: var(--foreground);
+}
+
+.zen-sidebar[data-expanded="false"] .zen-top {
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 108px;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-top-separator,
+.zen-sidebar[data-expanded="false"] .zen-top-spacer,
+.zen-sidebar[data-expanded="false"] .zen-urlbar-action {
+  display: none;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-top-btn {
+  flex-basis: 36px;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-urlbar-container {
+  justify-content: center;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-urlbar {
+  width: 36px;
+  padding: 0;
+  color: transparent;
+  cursor: pointer;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-urlbar-search {
+  left: 50%;
+  display: block;
+  transform: translateX(-50%);
+}
+
+.zen-sidebar[data-expanded="false"] .zen-urlbar {
+  background: var(--zen-elem-bg);
+}
+
+/* --- Essentials grid --- */
+.zen-essentials-section {
+  flex: 0 0 auto;
+  margin-top: var(--zen-element-separation);
+}
+
+.zen-section-heading {
+  display: flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 4px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.zen-section-count {
+  margin-left: auto;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.zen-section-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 3px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.zen-section-toggle:hover {
+  background: var(--zen-elem-bg-hover);
+  color: var(--foreground);
+}
+
 .zen-essentials {
   display: grid;
-  gap: 4px;
   grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
-  padding-bottom: 4px;
+  gap: 4px;
+  padding: 6px 0 2px;
 }
-.zen-sidebar[data-open="false"] .zen-essentials {
-  grid-template-columns: 1fr;
-}
+
 .zen-essential {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 46px; /* --tab-min-height for essentials */
+  min-width: 0;
+  height: 46px;
+  overflow: hidden;
   border-radius: var(--zen-radius);
   background: var(--zen-elem-bg);
+  transition: background 0.12s ease, transform 0.12s ease, opacity 0.12s ease;
 }
+
+.zen-essential::before {
+  position: absolute;
+  inset: -50%;
+  border-radius: 50%;
+  background: var(--zen-elem-bg);
+  content: "";
+  filter: blur(20px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
 .zen-essential:hover {
   background: var(--zen-elem-bg-hover);
 }
+
 .zen-essential[data-active="true"] {
   background: rgba(255, 255, 255, 0.2);
+  box-shadow: var(--zen-shadow);
 }
 
-/* --- Vertical tabs --- */
-.zen-tabs {
+.zen-essential[data-dragging="true"] {
+  opacity: 0.45;
+  transform: scale(0.985);
+}
+
+.zen-essential-hit {
+  position: relative;
+  z-index: 1;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.zen-essential .zen-tab-leading,
+.zen-essential .zen-tab-icon-stack {
+  width: 22px;
+  height: 22px;
+}
+
+.zen-essential-reset {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--background) 75%, transparent);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.zen-essential-reset:hover {
+  background: var(--zen-selected);
+}
+
+.zen-essentials-promo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 46px;
+  margin-top: 6px;
+  border: 1px dashed color-mix(in srgb, var(--primary) 70%, transparent);
+  border-radius: var(--zen-radius);
+  color: color-mix(in srgb, var(--primary) 76%, var(--foreground));
+  font-size: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.zen-essentials-promo[data-dragover="true"],
+.zen-essentials[data-dragover="true"] {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: var(--primary);
+}
+
+.zen-sidebar[data-expanded="false"] .zen-section-heading {
+  justify-content: center;
+  padding: 0;
+  font-size: 0;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-section-heading .zen-section-count,
+.zen-sidebar[data-expanded="false"] .zen-section-heading .zen-section-toggle {
+  display: none;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-essentials {
+  grid-template-columns: 1fr;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-essentials-promo span {
+  display: none;
+}
+
+/* --- Vertical tab list --- */
+.zen-tabs-section {
+  display: flex;
+  flex: 1;
   flex-direction: column;
   min-height: 0;
+  margin-top: var(--zen-element-separation);
+}
+
+.zen-tabs-heading {
+  flex: 0 0 auto;
+}
+
+.zen-tabs {
+  display: flex;
   flex: 1;
-  overflow-y: auto;
+  flex-direction: column;
+  min-height: 0;
+  margin: 2px -2px 0;
+  padding: 0 2px;
   overflow-x: clip;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--zen-border) transparent;
+}
+
+.zen-tab-slot {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
 }
 
 .zen-tab {
@@ -118,131 +535,792 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  height: var(--zen-tab-height);
-  margin: var(--zen-tab-block, 2px) 0;
+  min-width: 0;
+  min-height: var(--zen-tab-height);
+  margin: 2px 0;
   padding: 0 var(--zen-tab-inline);
   border-radius: var(--zen-radius);
-  transition: background 0.12s ease, scale 0.1s ease;
+  background: transparent;
+  transition: background 0.12s ease, transform 0.1s ease, opacity 0.12s ease;
 }
+
 .zen-tab:hover {
   background: var(--zen-elem-bg-hover);
 }
+
 .zen-tab[data-active="true"] {
   background: var(--zen-selected);
   box-shadow: var(--zen-shadow);
-  scale: var(--zen-active-tab-scale);
+  transform: scale(var(--zen-active-tab-scale)) rotate(0.01deg);
 }
-.zen-sidebar[data-open="false"] .zen-tab {
+
+.zen-tab[data-pending="true"],
+.zen-tab[data-discarded="true"] {
+  opacity: 0.5;
+}
+
+.zen-tab[data-glance="true"] {
+  min-height: 24px;
+  margin-left: 14px;
+  padding-block: 0;
+  border-radius: 8px;
+}
+
+.zen-tab[data-glance="true"] .zen-tab-label,
+.zen-tab[data-glance="true"] .zen-tab-copy {
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+}
+
+.zen-tab[data-nested="true"] {
+  margin-left: 10px;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-tab {
+  justify-content: center;
+  width: 48px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 0;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-tab-main {
+  justify-content: center;
+  gap: 0;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-tab-copy,
+.zen-sidebar[data-expanded="false"] .zen-tab-label,
+.zen-sidebar[data-expanded="false"] .zen-tab-sublabel,
+.zen-sidebar[data-expanded="false"] .zen-tab-close,
+.zen-sidebar[data-expanded="false"] .zen-pinned-reset,
+.zen-sidebar[data-expanded="false"] .zen-glance-note,
+.zen-sidebar[data-expanded="false"] .zen-folder-label,
+.zen-sidebar[data-expanded="false"] .zen-folder-heading .zen-section-count,
+.zen-sidebar[data-expanded="false"] .zen-current-workspace-copy,
+.zen-sidebar[data-expanded="false"] .zen-workspace-actions,
+.zen-sidebar[data-expanded="false"] .zen-new-tab span {
+  display: none;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-folder-heading {
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-folder-heading svg:first-child {
+  display: none;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-new-tab {
   justify-content: center;
   padding: 0;
 }
-.zen-tab-icon {
+
+.zen-sidebar[data-expanded="false"] .zen-current-workspace {
+  justify-content: center;
+  padding: 0;
+}
+
+.zen-tab-main {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.zen-tab-leading {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 16px;
+}
+
+.zen-tab-icon-stack {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
   width: 16px;
   height: 16px;
-  border-radius: 4px;
-  flex-shrink: 0;
 }
+
+.zen-tab-icon {
+  display: block;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  object-fit: cover;
+  opacity: 0.92;
+}
+
+.zen-tab-icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zen-elem-bg);
+  color: var(--muted-foreground);
+}
+
+.zen-tab-status {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 13px;
+  height: 13px;
+  padding: 1px;
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--primary);
+}
+
+.zen-tab-status-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--destructive);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.zen-tab-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
 .zen-tab-label {
   min-width: 0;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 12.5px;
 }
-.zen-sidebar[data-open="false"] .zen-tab-label {
-  display: none;
+
+.zen-tab-sublabel {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  opacity: 0.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.zen-tab-close {
+
+.zen-tab-rename {
+  min-width: 0;
+  width: 100%;
+  height: 24px;
+  padding: 0 5px;
+  border: 1px solid color-mix(in srgb, var(--primary) 50%, transparent);
+  border-radius: 6px;
+  outline: none;
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  color: var(--foreground);
+  font-size: 12px;
+}
+
+.zen-container-line {
   position: absolute;
-  right: 6px;
-  display: flex;
+  top: 7px;
+  bottom: 7px;
+  left: 3px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--zen-container-color);
+}
+
+.zen-tab[data-nested="true"] .zen-container-line {
+  left: 9px;
+}
+
+.zen-pinned-reset {
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 20px;
   height: 20px;
-  border-radius: var(--zen-tab-radius);
-  color: var(--muted-foreground);
-  opacity: 0;
-  transition: opacity 0.1s ease, background 0.1s ease;
-}
-.zen-tab:hover .zen-tab-close {
-  opacity: 1;
-}
-.zen-tab-close:hover {
-  background: color-mix(in srgb, currentColor 10%, transparent);
-}
-.zen-sidebar[data-open="false"] .zen-tab-close {
-  display: none;
+  margin-left: -3px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
 }
 
-/* --- Workspaces + foot --- */
-.zen-foot {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px solid var(--border);
+.zen-pinned-reset::before {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  width: 2.5px;
+  border-radius: 2px;
+  background: var(--muted-foreground);
+  content: "";
+  transform: rotate(18deg);
 }
-.zen-ws {
-  display: flex;
+
+.zen-pinned-reset:hover {
+  background: var(--zen-elem-bg-hover);
+}
+
+.zen-glance-note {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  font-size: 12px;
-  filter: grayscale(1);
-  opacity: 0.7;
-  transition: filter 0.2s, opacity 0.2s, transform 0.2s;
-}
-.zen-ws:hover {
-  background: var(--zen-elem-bg);
-}
-.zen-ws[data-active="true"] {
-  filter: none;
-  opacity: 1;
-  background: var(--zen-elem-bg-hover);
-  color: var(--zen-ws-icon-fill);
-}
-.zen-sidebar[data-open="false"] .zen-foot {
-  flex-direction: column;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: var(--primary);
+  font-size: 11px;
 }
 
-/* --- Agent dock --- */
-.zen-agent {
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px solid var(--border);
+.zen-tab-close {
+  position: absolute;
+  right: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--zen-tab-radius);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.1s ease, background 0.1s ease, color 0.1s ease;
 }
-.zen-agent-btn {
+
+.zen-tab:hover .zen-tab-close,
+.zen-tab:focus-within .zen-tab-close {
+  opacity: 1;
+}
+
+.zen-tab-close:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--foreground);
+}
+
+.zen-drag-indicator {
+  position: absolute;
+  right: 6px;
+  bottom: -1px;
+  left: 6px;
+  z-index: 1000;
+  height: 2px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--primary) 50%, var(--foreground) 50%);
+  pointer-events: none;
+}
+
+.zen-folder {
+  position: relative;
+  margin: 2px 0;
+  border-radius: var(--zen-radius);
+  transition: background 0.12s ease;
+}
+
+.zen-folder[data-dragover="true"] {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+.zen-folder-heading {
   display: flex;
   align-items: center;
-  gap: 8px;
   width: 100%;
-  padding: 6px 8px;
-  border-radius: var(--zen-radius);
-  font-size: 11px;
+  min-height: 30px;
+  gap: 7px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
   color: var(--muted-foreground);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
 }
-.zen-agent-btn:hover {
+
+.zen-folder-heading:hover {
   background: var(--zen-elem-bg-hover);
   color: var(--foreground);
 }
-.zen-agent-form {
+
+.zen-folder-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-folder-tab-slot .zen-tab {
+  margin-left: 8px;
+}
+
+.zen-tabs-empty {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 6px;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+  opacity: 0.7;
 }
-.zen-agent-input {
+
+.zen-new-tab {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 9px;
+  min-height: 36px;
+  margin: 2px 0 0;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--zen-radius);
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.zen-new-tab:hover {
+  background: var(--zen-elem-bg-hover);
+  color: var(--foreground);
+}
+
+.zen-tabs[data-overflow="true"] .zen-new-tab {
+  display: none;
+}
+
+/* --- Folders, workspaces, agent dock, and footer --- */
+.zen-agent-shell {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-top: var(--zen-element-separation);
+  overflow: hidden;
+}
+
+.zen-agent-shell section {
+  border-top-color: var(--zen-border);
+}
+
+.zen-sidebar[data-expanded="false"] .zen-agent-shell {
+  display: none;
+}
+
+.zen-workspace-indicator {
+  position: relative;
+  flex: 0 0 auto;
+  height: 44px;
+  margin-top: var(--zen-element-separation);
+}
+
+.zen-current-workspace {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 44px;
+  gap: 9px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: var(--zen-radius);
+  background: transparent;
+  color: var(--foreground);
+  text-align: left;
+  cursor: pointer;
+}
+
+.zen-current-workspace:hover,
+.zen-current-workspace:focus-visible {
+  background: var(--zen-elem-bg-hover);
+  outline: none;
+}
+
+.zen-workspace-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 17px;
+}
+
+.zen-current-workspace-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.zen-current-workspace-name {
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-current-workspace-subtitle {
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zen-workspace-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.zen-current-workspace:hover .zen-workspace-actions,
+.zen-current-workspace:focus-visible .zen-workspace-actions {
+  opacity: 1;
+}
+
+.zen-workspace-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.zen-workspace-action:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: var(--foreground);
+}
+
+.zen-workspace-popover,
+.zen-top-menu,
+.zen-context-menu {
+  position: absolute;
+  z-index: 1200;
+  min-width: 238px;
+  padding: 6px;
+  overflow: hidden;
+  border: 1px solid var(--zen-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--popover) 96%, transparent);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36), var(--zen-shadow);
+  animation: zen-menu-enter 0.16s ease both;
+  backdrop-filter: blur(20px);
+}
+
+.zen-workspace-popover {
+  right: 0;
+  bottom: calc(100% + 6px);
+}
+
+.zen-top-menu {
+  top: 50px;
+  left: 5px;
+}
+
+.zen-sidebar[data-side="right"] .zen-top-menu {
+  right: 5px;
+  left: auto;
+}
+
+.zen-context-menu {
+  position: fixed;
+  min-width: 276px;
+  max-width: min(276px, calc(100vw - 16px));
+}
+
+@keyframes zen-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.zen-popover-title,
+.zen-context-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 0 8px 4px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.zen-context-heading span {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 11px;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.zen-menu-item,
+.zen-workspace-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 32px;
+  gap: 9px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.zen-menu-item:hover,
+.zen-workspace-option:hover,
+.zen-workspace-option[data-active="true"] {
+  background: var(--zen-elem-bg-hover);
+}
+
+.zen-menu-item:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.zen-menu-item-danger {
+  color: var(--destructive);
+}
+
+.zen-menu-shortcut,
+.zen-menu-badge {
+  margin-left: auto;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.zen-menu-badge {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: var(--zen-elem-bg);
+}
+
+.zen-menu-separator {
+  display: block;
+  height: 1px;
+  margin: 5px 4px;
+  background: var(--zen-border);
+}
+
+.zen-workspace-option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  font-size: 15px;
+}
+
+.zen-menu-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.zen-menu-editor label {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+
+.zen-menu-editor input {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--zen-border);
+  border-radius: 7px;
+  outline: none;
+  background: var(--zen-elem-bg);
+  color: var(--foreground);
+  font-size: 11px;
+}
+
+.zen-menu-editor input:focus {
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent);
+}
+
+.zen-menu-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.zen-menu-secondary,
+.zen-menu-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  gap: 5px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.zen-menu-secondary {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+
+.zen-menu-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+}
+
+.zen-foot {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-height: 44px;
+  gap: 3px;
+  margin-top: var(--zen-element-separation);
+  padding: 4px 0 6px;
+  background: transparent;
+}
+
+.zen-workspace-strip {
+  display: flex;
+  align-items: center;
   flex: 1;
   min-width: 0;
-  height: 32px;
-  border-radius: var(--zen-radius);
+  gap: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.zen-workspace-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.zen-ws {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+  filter: grayscale(1);
+  opacity: 0.7;
+  cursor: pointer;
+  transition: filter 0.2s, opacity 0.2s, background 0.12s ease;
+}
+
+.zen-ws:hover {
   background: var(--zen-elem-bg);
-  padding: 0 10px;
-  font-size: 12px;
-  outline: none;
+}
+
+.zen-ws[data-active="true"] {
+  background: var(--zen-elem-bg-hover);
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.zen-foot-command {
+  flex-basis: 42px;
+  width: 42px;
+  font-size: 11px;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-foot {
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-workspace-strip {
+  flex: 0 0 auto;
+  flex-direction: column;
+  overflow-x: visible;
+}
+
+.zen-sidebar[data-expanded="false"] .zen-foot-command {
+  flex-basis: 30px;
+  width: 36px;
+  height: 30px;
+}
+
+.zen-sidebar-splitter {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  z-index: 50;
+  width: 8px;
+  cursor: col-resize;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease;
+}
+
+.zen-sidebar[data-side="right"] .zen-sidebar-splitter {
+  right: auto;
+  left: -4px;
+}
+
+.zen-sidebar:hover .zen-sidebar-splitter {
+  opacity: 1;
+}
+
+.zen-sidebar-splitter:hover {
+  background: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.zen-sidebar[data-expanded="false"] .zen-sidebar-splitter,
+.zen-sidebar[zen-compact-mode] .zen-sidebar-splitter {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-sidebar,
+  .zen-sidebar[zen-compact-mode],
+  .zen-tab,
+  .zen-top-btn,
+  .zen-foot-btn,
+  .zen-foot-command {
+    transition-duration: 0.01ms;
+  }
 }
