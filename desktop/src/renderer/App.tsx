@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AddressBar } from "./components/AddressBar";
+import { CommandBar } from "./components/CommandBar";
 import { Sidebar } from "./components/Sidebar";
-import { TabStrip } from "./components/TabStrip";
-import { BROWSER_EVENT_CHANNEL, BROWSER_IPC, type BrowserEvent, type BrowserTab } from "@shared/ipc";
+import { useShortcuts } from "./hooks/useShortcuts";
+import { ARC_IPC, ARC_STATE_EVENT, emptyState, type ArcState } from "@shared/ipc";
 
 export default function App() {
-  const [tabs, setTabs] = useState<BrowserTab[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [state, setState] = useState<ArcState>(emptyState());
+  const [commandOpen, setCommandOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const invoke = useCallback(
@@ -14,28 +15,20 @@ export default function App() {
     [],
   );
 
+  useEffect(() => window.zenmium.on(ARC_STATE_EVENT, (p) => setState(p as ArcState)), []);
+
   useEffect(() => {
-    return window.zenmium.on(BROWSER_EVENT_CHANNEL, (payload) => {
-      const event = payload as BrowserEvent;
-      if (event.type === "tabs") {
-        setTabs(event.tabs);
-        setActiveId(event.activeId);
-      } else if (event.type === "active") {
-        setActiveId(event.activeId);
-      } else if (event.type === "loading") {
-        setTabs((rows) => rows.map((t) => (t.id === event.id ? { ...t, loading: event.loading } : t)));
-      } else if (event.type === "url") {
-        setTabs((rows) => rows.map((t) => (t.id === event.id ? { ...t, url: event.url } : t)));
-      }
+    void invoke(ARC_IPC.snapshot).then((s) => {
+      if (s && typeof s === "object" && "spaces" in (s as object)) setState(s as ArcState);
     });
-  }, []);
+  }, [invoke]);
 
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
     const report = () => {
       const r = el.getBoundingClientRect();
-      void invoke(BROWSER_IPC.setContentBounds, {
+      void invoke(ARC_IPC.setContentBounds, {
         x: Math.round(r.left),
         y: Math.round(r.top),
         width: Math.round(r.width),
@@ -46,7 +39,7 @@ export default function App() {
     const observer = new ResizeObserver(report);
     observer.observe(el);
     window.addEventListener("resize", report);
-    const timer = window.setInterval(report, 800);
+    const timer = window.setInterval(report, 700);
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", report);
@@ -54,25 +47,38 @@ export default function App() {
     };
   }, [invoke]);
 
-  const active = tabs.find((t) => t.id === activeId) ?? null;
-  const select = (id: string) => void invoke(BROWSER_IPC.activateTab, { id });
-  const close = (id: string) => void invoke(BROWSER_IPC.closeTab, { id });
-  const newTab = (url?: string) => void invoke(BROWSER_IPC.createTab, url ? { url } : {});
+  const active = state.tabs.find((t) => t.id === state.activeTabId) ?? null;
+
+  useShortcuts({
+    state,
+    invoke,
+    openCommand: () => setCommandOpen(true),
+  });
 
   return (
-    <div className="flex h-full w-full overflow-hidden">
-      <Sidebar tabs={tabs} activeId={activeId} onSelect={select} onClose={close} onNewTab={() => newTab()} />
+    <div className="relative flex h-full w-full overflow-hidden">
+      <Sidebar state={state} invoke={invoke} onCommand={() => setCommandOpen(true)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <TabStrip tabs={tabs} activeId={activeId} onSelect={select} onClose={close} onNew={() => newTab()} />
         <AddressBar
           tab={active}
-          onNavigate={(url) => active && void invoke(BROWSER_IPC.navigate, { id: active.id, url })}
-          onBack={() => active && void invoke(BROWSER_IPC.back, { id: active.id })}
-          onForward={() => active && void invoke(BROWSER_IPC.forward, { id: active.id })}
-          onReload={() => active && void invoke(BROWSER_IPC.reload, { id: active.id })}
+          title={active?.title ?? ""}
+          url={active?.url ?? ""}
+          loading={active?.loading ?? false}
+          onNavigate={(url) => active && void invoke(ARC_IPC.navigate, { id: active.id, url })}
+          onBack={() => active && void invoke(ARC_IPC.back, active.id)}
+          onForward={() => active && void invoke(ARC_IPC.forward, active.id)}
+          onReload={() => active && void invoke(ARC_IPC.reload, active.id)}
+          onPin={() => active && void invoke(active.id ? (state.tabs.find((t) => t.id === active.id)?.kind === "pinned" ? ARC_IPC.unpinTab : ARC_IPC.pinTab) : "", active.id)}
         />
         <div ref={contentRef} className="min-h-0 flex-1 bg-[var(--gp-panel)]" />
       </div>
+      {commandOpen ? (
+        <CommandBar
+          state={state}
+          invoke={invoke}
+          onClose={() => setCommandOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }
