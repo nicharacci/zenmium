@@ -1,0 +1,698 @@
+[
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "01-Pasted-SVG.svg",
+    "bytes": 970,
+    "style": {
+      "layout": {
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 131541,
+        "left": 135503,
+        "width": 14,
+        "height": 14
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "02-Pasted-SVG.svg",
+    "bytes": 970,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135503,
+        "top": 131541,
+        "width": 14,
+        "height": 14,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "03-Pasted-SVG.svg",
+    "bytes": 723,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135419,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "04-Pasted-SVG.svg",
+    "bytes": 723,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135419
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "05-Pasted-SVG.svg",
+    "bytes": 496,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135142,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "06-Pasted-SVG.svg",
+    "bytes": 496,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "left": 135142,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "07-Pasted-SVG.svg",
+    "bytes": 369,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135184,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "08-Pasted-SVG.svg",
+    "bytes": 369,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135184
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "09-Pasted-SVG.svg",
+    "bytes": 566,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135459,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "10-Pasted-SVG.svg",
+    "bytes": 566,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135459
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "11-Pasted-SVG.svg",
+    "bytes": 566,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135041,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "12-Pasted-SVG.svg",
+    "bytes": 566,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135041
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "13-Pasted-SVG.svg",
+    "bytes": 1053,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135094,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "14-Pasted-SVG.svg",
+    "bytes": 1053,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135094
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "15-Pasted-SVG.svg",
+    "bytes": 678,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135272,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "16-Pasted-SVG.svg",
+    "bytes": 678,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "left": 135272,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "17-Pasted-SVG.svg",
+    "bytes": 589,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135503,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "18-Pasted-SVG.svg",
+    "bytes": 589,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135503
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "19-Pasted-SVG.svg",
+    "bytes": 656,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 134995,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "20-Pasted-SVG.svg",
+    "bytes": 656,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 134995
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "21-Pasted-SVG.svg",
+    "bytes": 619,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135370,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "22-Pasted-SVG.svg",
+    "bytes": 619,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "left": 135370,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "23-Pasted-SVG.svg",
+    "bytes": 874,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135321,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "24-Pasted-SVG.svg",
+    "bytes": 874,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "top": 132316,
+        "left": 135321
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "25-Pasted-SVG.svg",
+    "bytes": 1318,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135234,
+        "top": 132316,
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "26-Pasted-SVG.svg",
+    "bytes": 1318,
+    "style": {
+      "layout": {
+        "width": 32,
+        "height": 32,
+        "flexShrink": 0,
+        "position": "absolute",
+        "left": 135234,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "27-Pasted-SVG.svg",
+    "bytes": 413,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135547,
+        "top": 132316,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "28-Pasted-SVG.svg",
+    "bytes": 413,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "left": 135547,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "29-Pasted-SVG.svg",
+    "bytes": 343,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135591,
+        "top": 132316,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "30-Pasted-SVG.svg",
+    "bytes": 343,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "left": 135591,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "31-Pasted-SVG.svg",
+    "bytes": 411,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135628,
+        "top": 132316,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "32-Pasted-SVG.svg",
+    "bytes": 411,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "left": 135628,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "33-Pasted-SVG.svg",
+    "bytes": 265,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135669,
+        "top": 132316,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "34-Pasted-SVG.svg",
+    "bytes": 265,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "left": 135669,
+        "top": 132316
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "35-Pasted-SVG.svg",
+    "bytes": 861,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135706,
+        "top": 132316,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "36-Pasted-SVG.svg",
+    "bytes": 861,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "top": 132316,
+        "left": 135706
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "37-Pasted-SVG.svg",
+    "bytes": 384,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135743,
+        "top": 132317,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "38-Pasted-SVG.svg",
+    "bytes": 384,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "top": 132317,
+        "left": 135743
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "39-Pasted-SVG.svg",
+    "bytes": 590,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135780,
+        "top": 132317,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "40-Pasted-SVG.svg",
+    "bytes": 590,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "left": 135780,
+        "top": 132317
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "41-Pasted-SVG.svg",
+    "bytes": 922,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135827,
+        "top": 132317,
+        "width": 32,
+        "height": 32
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "42-Pasted-SVG.svg",
+    "bytes": 922,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "width": 32,
+        "height": 32,
+        "top": 132317,
+        "left": 135827
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "43-Pasted-SVG.svg",
+    "bytes": 599,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "left": 135874,
+        "top": 132317,
+        "width": 32,
+        "height": 32,
+        "rotate": 0,
+        "scale": {
+          "x": -1,
+          "y": 1
+        }
+      }
+    }
+  },
+  {
+    "label": "Pasted SVG",
+    "type": "svg",
+    "file": "44-Pasted-SVG.svg",
+    "bytes": 599,
+    "style": {
+      "layout": {
+        "position": "absolute",
+        "scale": {
+          "x": -1,
+          "y": 1
+        },
+        "rotate": 0,
+        "height": 32,
+        "width": 32,
+        "left": 135874,
+        "top": 132317
+      }
+    }
+  }
+]
