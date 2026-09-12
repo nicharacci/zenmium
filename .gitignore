@@ -10,5 +10,6 @@ vendor
 .output
 .nitro
 dist
+out
 .DS_Store
 *.tsbuildinfo
