@@ -27,4 +27,4 @@ Build Zenmium as an Electron browser: real Chromium content through one WebConte
 
 ## Next safe action
 
-Run the CI workflow in `.github/workflows/desktop.yml` on macOS. Fix any typecheck or build failure until green, then package and install on the operator's Mac for the installed-app proof.
+P0 is verified locally. `tsc` is clean, `electron-vite build` produces main, preload, and renderer, and the app launches with the React chrome and a live Chromium tab loading a page through `BrowserCore`. GitHub Actions cannot start a runner on this account, so verification is local for now. Next is P1: replace the Tailwind placeholders with BeUI and BeUI Pro components and build out the Arc-style sidebar and command bar.
