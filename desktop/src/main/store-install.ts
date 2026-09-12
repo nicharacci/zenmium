@@ -661,18 +661,35 @@ export class StoreInstaller {
       reason: null,
     });
 
-    const response = await request(url, {
-      method: "GET",
-      maxRedirections: 10,
-      signal,
-      headersTimeout: DOWNLOAD_TIMEOUT_MS,
-      bodyTimeout: DOWNLOAD_TIMEOUT_MS,
-      headers: {
-        accept: "application/x-chrome-extension, application/octet-stream, */*",
-        "user-agent": `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ` +
-          `(KHTML, like Gecko) Chrome/${this.chromeVersion} Safari/537.36`,
-      },
-    });
+    const fetchOnce = (target: string) =>
+      request(target, {
+        method: "GET",
+        signal,
+        headersTimeout: DOWNLOAD_TIMEOUT_MS,
+        bodyTimeout: DOWNLOAD_TIMEOUT_MS,
+        headers: {
+          accept: "application/x-chrome-extension, application/octet-stream, */*",
+          "user-agent": `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 ` +
+            `(KHTML, like Gecko) Chrome/${this.chromeVersion} Safari/537.36`,
+        },
+      });
+
+    let currentUrl = url;
+    let response = await fetchOnce(currentUrl);
+    for (let hop = 0; hop < 10 && response.statusCode >= 300 && response.statusCode < 400; hop += 1) {
+      const location = response.headers["location"];
+      const next = Array.isArray(location) ? location[0] : location;
+      await response.body.dump();
+      if (typeof next !== "string" || next.length === 0) {
+        throw new StoreInstallError("downloading", `Redirect ${response.statusCode} had no location.`);
+      }
+      const resolved = new URL(next, currentUrl);
+      if (resolved.protocol !== "https:") {
+        throw new StoreInstallError("downloading", "Refusing a non-https redirect.");
+      }
+      currentUrl = resolved.toString();
+      response = await fetchOnce(currentUrl);
+    }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       await response.body.dump();
