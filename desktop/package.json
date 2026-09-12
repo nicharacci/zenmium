@@ -27,7 +27,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
-    "electron": "^33.2.0",
+    "electron": "^35.0.0",
     "electron-builder": "^25.1.8",
     "electron-vite": "^2.3.0",
     "tailwindcss": "^4.0.0",
@@ -36,5 +36,8 @@
   },
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["electron", "esbuild"]
   }
 }
