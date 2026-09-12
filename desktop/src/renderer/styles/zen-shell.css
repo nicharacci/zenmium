@@ -1,0 +1,260 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+/* Derived from Zen 1.22b. See docs/zenmium/THIRD_PARTY_ZEN.md. */
+:root {
+  --zen-separation: 8px;
+  --zen-content-radius: 10.4px;
+  --zen-native-inner-radius: var(--zen-content-radius);
+  --zen-card-shadow: 0 3px 8px rgba(0, 0, 0, 0.24);
+  --zen-workspace-color: #6ee7a8;
+  --zen-shell-background: #111315;
+  --zen-surface-background: #202020;
+  --zen-card-background: #1a1c1e;
+  --zen-border-color: rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="light"] {
+  --background: #eeefed;
+  --foreground: #272927;
+  --card: #fafbf9;
+  --card-foreground: #272927;
+  --popover: #fafbf9;
+  --popover-foreground: #272927;
+  --muted-foreground: #6a706a;
+  --secondary: rgba(0, 0, 0, 0.06);
+  --muted: rgba(0, 0, 0, 0.05);
+  --accent: rgba(0, 0, 0, 0.08);
+  --accent-foreground: #171917;
+  --border: rgba(0, 0, 0, 0.13);
+  --input: rgba(0, 0, 0, 0.1);
+  --zen-shell-background: #d8dcd5;
+  --zen-surface-background: #fff;
+  --zen-card-background: #eff1eb;
+  --zen-border-color: rgba(0, 0, 0, 0.12);
+}
+body[data-surface="sidebar"],
+body[data-surface="overlay"],
+body[data-surface="sidebar"] #root,
+body[data-surface="overlay"] #root,
+html:has(body[data-surface="sidebar"]),
+html:has(body[data-surface="overlay"]) {
+  background: transparent;
+}
+* {
+  box-sizing: border-box;
+}
+button,
+input,
+select {
+  -webkit-app-region: no-drag;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+:focus-visible {
+  outline: 2px solid var(--zen-workspace-color);
+  outline-offset: 2px;
+}
+.zen-window-shell {
+  position: fixed;
+  inset: 0;
+  background: var(--zen-shell-background);
+}
+.zen-window-drag {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 8px;
+}
+.zen-browser-cards {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+}
+.zen-browser-cards > .zen-content-card {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--zen-content-radius);
+  background: var(--zen-surface-background);
+  box-shadow: var(--zen-card-shadow);
+}
+.zen-blank-search {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: min(400px, 80%);
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted-foreground);
+  text-align: left;
+  opacity: 0.65;
+}
+.zen-blank-search:hover {
+  background: var(--secondary);
+  opacity: 1;
+}
+.zen-blank-search kbd {
+  margin-left: auto;
+  font: inherit;
+  font-size: 11px;
+  opacity: 0.6;
+}
+.zen-page-error {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+}
+.zen-page-error h1 {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+}
+.zen-page-error p {
+  max-width: 520px;
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+.zen-page-error button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: var(--secondary);
+}
+.zen-page-progress {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 40%;
+  height: 2px;
+  background: var(--zen-workspace-color);
+  animation: zen-loading 1.2s ease-in-out infinite;
+}
+@keyframes zen-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+.zen-bookmarks-bar {
+  position: absolute;
+  top: 8px;
+  height: 28px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  overflow: hidden;
+}
+.zen-bookmarks-bar button {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+}
+.zen-bookmarks-bar button:hover {
+  background: var(--secondary);
+}
+.zen-bookmarks-bar span {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.zen-unsplit {
+  position: absolute;
+  width: 24px;
+  height: 26px;
+  border: 0;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--card);
+}
+.zen-glance-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  animation: zen-glance-in 0.35s ease-out;
+}
+.zen-glance-frame {
+  position: absolute;
+  background: var(--card);
+  border-radius: var(--zen-content-radius);
+  box-shadow: var(--zen-card-shadow);
+}
+.zen-glance-actions {
+  position: absolute;
+  top: 15px;
+  right: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 12px;
+}
+.zen-glance-actions[data-side="right"] {
+  right: auto;
+  left: 100%;
+}
+.zen-glance-actions button {
+  border: 0;
+  background: var(--card);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
+  transition:
+    background 50ms,
+    transform 50ms;
+}
+.zen-glance-actions button:hover {
+  background: var(--secondary);
+  transform: scale(1.02);
+}
+.zen-glance-actions button:active {
+  transform: scale(0.98);
+}
+@keyframes zen-glance-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

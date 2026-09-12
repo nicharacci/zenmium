@@ -8,6 +8,10 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/browser-*.test.ts tests/sidebar-drag.test.ts",
+    "test:native:build": "node scripts/build-native-tests.mjs",
+    "test:native": "electron out/verify/native-tests.js",
+    "test:ui": "node scripts/verify-browser.mjs",
     "package": "electron-builder --mac"
   },
   "dependencies": {

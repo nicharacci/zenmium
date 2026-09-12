@@ -9,46 +9,53 @@ export const ARC_STATE_EVENT = "arc:state" as const;
 
 /** Renderer-side mirrors of the main-process agent kernel channels. */
 export const AGENT_IPC = {
-  newSession: "agent:newSession",
-  prompt: "agent:prompt",
   abort: "agent:abort",
   event: "agent:event",
+  newSession: "agent:newSession",
+  prompt: "agent:prompt",
 } as const;
 
 export const ARC_IPC = {
-  snapshot: "arc:snapshot",
-  createSpace: "arc:createSpace",
   activateSpace: "arc:activateSpace",
-  updateSpace: "arc:updateSpace",
-  deleteSpace: "arc:deleteSpace",
-  newTab: "arc:newTab",
-  closeTab: "arc:closeTab",
   activateTab: "arc:activateTab",
-  updateTab: "arc:updateTab",
-  navigate: "arc:navigate",
-  back: "arc:back",
-  forward: "arc:forward",
-  reload: "arc:reload",
-  pinTab: "arc:pinTab",
-  unpinTab: "arc:unpinTab",
-  createFolder: "arc:createFolder",
-  renameFolder: "arc:renameFolder",
-  deleteFolder: "arc:deleteFolder",
-  moveToFolder: "arc:moveToFolder",
-  reorderTab: "arc:reorderTab",
   archiveTab: "arc:archiveTab",
-  restoreTab: "arc:restoreTab",
+  back: "arc:back",
   clearArchive: "arc:clearArchive",
-  toggleSplit: "arc:toggleSplit",
+  clearHistory: "arc:clearHistory",
+  closePeek: "arc:closePeek",
+  closeTab: "arc:closeTab",
+  createFolder: "arc:createFolder",
+  createSpace: "arc:createSpace",
+  deleteFolder: "arc:deleteFolder",
+  deleteSpace: "arc:deleteSpace",
+  forward: "arc:forward",
+  moveTabToSpace: "arc:moveTabToSpace",
+  moveToFolder: "arc:moveToFolder",
+  navigate: "arc:navigate",
+  newTab: "arc:newTab",
   openPeek: "arc:openPeek",
+  pinTab: "arc:pinTab",
+  promotePeek: "arc:promotePeek",
+  reload: "arc:reload",
+  renameFolder: "arc:renameFolder",
+  reorderTab: "arc:reorderTab",
+  resetTab: "arc:resetTab",
+  restoreTab: "arc:restoreTab",
   setContentBounds: "arc:setContentBounds",
+  snapshot: "arc:snapshot",
+  stop: "arc:stop",
+  toggleSplit: "arc:toggleSplit",
+  unpinTab: "arc:unpinTab",
+  updateFolder: "arc:updateFolder",
+  updateSpace: "arc:updateSpace",
+  updateTab: "arc:updateTab",
 } as const;
 
 export const rectSchema = z.object({
+  height: z.number().int().nonnegative(),
+  width: z.number().int().nonnegative(),
   x: z.number().int().nonnegative(),
   y: z.number().int().nonnegative(),
-  width: z.number().int().nonnegative(),
-  height: z.number().int().nonnegative(),
 });
 export type Rect = z.infer<typeof rectSchema>;
 
@@ -59,6 +66,7 @@ export interface Space {
   name: string;
   color: string;
   icon: string;
+  pinnedCollapsed?: boolean;
 }
 
 export interface Folder {
@@ -77,6 +85,12 @@ export interface Tab {
   loading: boolean;
   folderId: string | null;
   lastActiveAt: number;
+  customTitle?: string;
+  faviconUrl?: string;
+  pinnedUrl?: string;
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+  error?: string | null;
   /** Optional Zen presentation state, persisted by ArcCore when present. */
   iconUrl?: string;
   originalIconUrl?: string;
@@ -92,6 +106,8 @@ export interface Tab {
 
 export interface TabUpdate {
   title?: string;
+  customTitle?: string | null;
+  pinnedUrl?: string;
   url?: string;
   iconUrl?: string | null;
   originalIconUrl?: string | null;
@@ -117,10 +133,32 @@ export interface ArcState {
   spaces: Space[];
   activeSpaceId: string;
   activeTabId: string | null;
+  /** The other visible pane, regardless of which pane currently has focus. */
   splitTabId: string | null;
+  /** Stable left pane. Older snapshots default to activeTabId on the left. */
+  splitPrimaryTabId?: string | null;
   folders: Folder[];
   tabs: Tab[];
   archive: ArchiveEntry[];
+  history?: HistoryEntry[];
+  glance?: { url: string; title: string } | null;
+}
+
+export interface HistoryEntry {
+  id: string;
+  url: string;
+  title: string;
+  visitedAt: number;
+}
+
+/** Physical pane order is independent of the active navigation/keyboard target. */
+export function getPaneTabIds(state: ArcState): string[] {
+  const { activeTabId, splitTabId, splitPrimaryTabId } = state;
+  if (!activeTabId) return [];
+  if (!splitTabId || splitTabId === activeTabId) return [activeTabId];
+  return splitPrimaryTabId === splitTabId
+    ? [splitTabId, activeTabId]
+    : [activeTabId, splitTabId];
 }
 
 export const SPACE_COLORS = [
@@ -133,7 +171,9 @@ export const SPACE_COLORS = [
   "#f58f8f",
 ] as const;
 
-export type Result<T> = { ok: true; value: T } | { ok: false; seam: string; reason: string };
+export type Result<T> =
+  | { ok: true; value: T }
+  | { ok: false; seam: string; reason: string };
 
 export interface ZenmiumBridge {
   invoke<T = unknown>(channel: string, payload?: unknown): Promise<T>;
@@ -141,11 +181,14 @@ export interface ZenmiumBridge {
 }
 
 export const emptyState = (): ArcState => ({
-  spaces: [],
   activeSpaceId: "",
   activeTabId: null,
-  splitTabId: null,
-  folders: [],
-  tabs: [],
   archive: [],
+  folders: [],
+  glance: null,
+  history: [],
+  spaces: [],
+  splitPrimaryTabId: null,
+  splitTabId: null,
+  tabs: [],
 });
