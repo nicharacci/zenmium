@@ -19,7 +19,11 @@ export default defineConfig({
       rollupOptions: { input: resolve(__dirname, "src/renderer/index.html") },
     },
     resolve: {
-      alias: { "@renderer": resolve(__dirname, "src/renderer"), "@shared": resolve(__dirname, "src/shared") },
+      alias: {
+        "@renderer": resolve(__dirname, "src/renderer"),
+        "@shared": resolve(__dirname, "src/shared"),
+        "@": resolve(__dirname, "src/renderer"),
+      },
     },
     plugins: [react(), tailwindcss()],
   },

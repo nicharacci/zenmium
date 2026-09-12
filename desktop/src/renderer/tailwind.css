@@ -1,10 +1,50 @@
 @import "tailwindcss";
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 :root {
-  --gp-panel: #101214;
-  --gp-ink: #e7e9ec;
-  --gp-muted: #8b9198;
-  --gp-accent: #6ee7a8;
+  --radius: 0.75rem;
+  --background: #101214;
+  --foreground: #e7e9ec;
+  --card: #16191c;
+  --card-foreground: #e7e9ec;
+  --popover: #16191c;
+  --popover-foreground: #e7e9ec;
+  --primary: #6ee7a8;
+  --primary-foreground: #0b0d0f;
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: #e7e9ec;
+  --muted: rgba(255, 255, 255, 0.07);
+  --muted-foreground: #8b9198;
+  --accent: rgba(255, 255, 255, 0.12);
+  --accent-foreground: #ffffff;
+  --destructive: #f58f8f;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: rgba(110, 231, 168, 0.5);
   color-scheme: dark;
 }
 
@@ -13,12 +53,20 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  background: var(--gp-panel);
-  color: var(--gp-ink);
+  background: var(--background);
+  color: var(--foreground);
   font: 13px/1.45 ui-sans-serif, system-ui, -apple-system, "SF Pro Text", sans-serif;
 }
 
 button {
   font: inherit;
   color: inherit;
+}
+
+[data-drag-region] {
+  -webkit-app-region: drag;
+}
+
+[data-drag-region] button {
+  -webkit-app-region: no-drag;
 }

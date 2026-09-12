@@ -7,6 +7,14 @@ import { z } from "zod";
 
 export const ARC_STATE_EVENT = "arc:state" as const;
 
+/** Renderer-side mirrors of the main-process agent kernel channels. */
+export const AGENT_IPC = {
+  newSession: "agent:newSession",
+  prompt: "agent:prompt",
+  abort: "agent:abort",
+  event: "agent:event",
+} as const;
+
 export const ARC_IPC = {
   snapshot: "arc:snapshot",
   createSpace: "arc:createSpace",

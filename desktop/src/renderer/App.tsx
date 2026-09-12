@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AddressBar } from "./components/AddressBar";
-import { CommandBar } from "./components/CommandBar";
+import { Archive, Columns2, Home, Plus, Search, SquareArrowOutUpRight } from "lucide-react";
+import { CommandPalette, type CommandItem } from "@/components/motion/command-palette";
 import { Sidebar } from "./components/Sidebar";
 import { useShortcuts } from "./hooks/useShortcuts";
 import { ARC_IPC, ARC_STATE_EVENT, emptyState, type ArcState } from "@shared/ipc";
@@ -48,37 +48,58 @@ export default function App() {
   }, [invoke]);
 
   const active = state.tabs.find((t) => t.id === state.activeTabId) ?? null;
+  const spaceTabs = state.tabs.filter((t) => t.spaceId === state.activeSpaceId);
 
-  useShortcuts({
-    state,
-    invoke,
-    openCommand: () => setCommandOpen(true),
-  });
+  useShortcuts({ state, invoke, openCommand: () => setCommandOpen(true) });
+
+  const items: CommandItem[] = [
+    { id: "new-tab", label: "New Tab", group: "Actions", icon: Plus, onSelect: () => void invoke(ARC_IPC.newTab, {}) },
+    { id: "new-space", label: "New Workspace", group: "Actions", icon: Home, onSelect: () => void invoke(ARC_IPC.createSpace, { name: `Workspace ${state.spaces.length + 1}` }) },
+    ...(active
+      ? [
+          {
+            id: "pin",
+            label: active.kind === "pinned" ? "Remove Essential" : "Add Essential",
+            group: "Actions",
+            icon: Home,
+            onSelect: () => void invoke(active.kind === "pinned" ? ARC_IPC.unpinTab : ARC_IPC.pinTab, active.id),
+          },
+          { id: "split", label: "Toggle Split View", group: "Actions", icon: Columns2, onSelect: () => void invoke(ARC_IPC.toggleSplit, active.id) },
+          { id: "peek", label: "Open in Glance", group: "Actions", icon: SquareArrowOutUpRight, onSelect: () => void invoke(ARC_IPC.openPeek, active.url) },
+        ]
+      : []),
+    {
+      id: "clear-today",
+      label: "Archive All Today Tabs",
+      group: "Actions",
+      icon: Archive,
+      onSelect: () => {
+        for (const tab of state.tabs.filter((t) => t.kind === "today")) void invoke(ARC_IPC.archiveTab, tab.id);
+      },
+    },
+    ...spaceTabs.map((tab) => ({
+      id: `tab-${tab.id}`,
+      label: tab.title || tab.url,
+      group: "Tabs",
+      hint: tab.kind === "pinned" ? "Essential" : "Today",
+      icon: Search,
+      onSelect: () => void invoke(ARC_IPC.activateTab, tab.id),
+    })),
+  ];
 
   return (
-    <div className="relative flex h-full w-full overflow-hidden">
-      <Sidebar state={state} invoke={invoke} onCommand={() => setCommandOpen(true)} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <AddressBar
-          tab={active}
-          title={active?.title ?? ""}
-          url={active?.url ?? ""}
-          loading={active?.loading ?? false}
-          onNavigate={(url) => active && void invoke(ARC_IPC.navigate, { id: active.id, url })}
-          onBack={() => active && void invoke(ARC_IPC.back, active.id)}
-          onForward={() => active && void invoke(ARC_IPC.forward, active.id)}
-          onReload={() => active && void invoke(ARC_IPC.reload, active.id)}
-          onPin={() => active && void invoke(active.id ? (state.tabs.find((t) => t.id === active.id)?.kind === "pinned" ? ARC_IPC.unpinTab : ARC_IPC.pinTab) : "", active.id)}
-        />
-        <div ref={contentRef} className="min-h-0 flex-1 bg-[var(--gp-panel)]" />
-      </div>
-      {commandOpen ? (
-        <CommandBar
-          state={state}
-          invoke={invoke}
-          onClose={() => setCommandOpen(false)}
-        />
-      ) : null}
+    <div className="flex h-full w-full overflow-hidden bg-background">
+      <Sidebar state={state} invoke={invoke} active={active} onCommand={() => setCommandOpen(true)} />
+      <main className="flex min-w-0 flex-1 flex-col">
+        <div ref={contentRef} className="min-h-0 flex-1 bg-background" />
+      </main>
+      <CommandPalette
+        items={items}
+        shortcut="t"
+        placeholder="Search tabs or run a command…"
+        open={commandOpen}
+        onOpenChange={setCommandOpen}
+      />
     </div>
   );
 }
