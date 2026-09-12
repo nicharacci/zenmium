@@ -1,0 +1,248 @@
+/* Ported from Zen Browser (zen-browser/desktop) vertical-tabs.css / zen-workspaces.css.
+   Values kept verbatim; XUL selectors translated to classes. MPL-2.0 upstream. */
+
+.zen-sidebar {
+  --zen-toolbox-padding: 6px;
+  --zen-radius: 14px; /* --border-radius-medium */
+  --zen-tab-radius: 8px; /* --tab-border-radius */
+  --zen-tab-height: 36px; /* upstream --tab-min-height */
+  --zen-tab-inline: 8px; /* --tab-inline-padding */
+  --zen-active-tab-scale: 0.985;
+  --zen-elem-bg: color-mix(in oklch, var(--foreground) 15%, transparent);
+  --zen-elem-bg-hover: rgba(255, 255, 255, 0.1);
+  --zen-selected: color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--primary));
+  --zen-shadow: 0 0.8px 1.5px 0 rgba(0, 0, 0, 0.05);
+  --zen-urlbar-bg: color-mix(in srgb, var(--primary) 4%, rgb(24, 24, 24) 96%);
+  --zen-sep: 8px; /* --zen-element-separation */
+  --zen-ws-icon-fill: color-mix(in srgb, var(--primary) 15%, #ebebeb);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--zen-toolbox-padding);
+  background: var(--background);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+.zen-sidebar[data-open="false"] {
+  --zen-tab-min: 48px;
+}
+
+/* --- Top toolbar (single-toolbar: nav + URL bar live in the sidebar) --- */
+.zen-top {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: calc(var(--zen-toolbox-padding) / 2) 0;
+  padding-top: 2px;
+}
+
+.zen-top-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+}
+.zen-top-btn:hover {
+  background: var(--zen-elem-bg-hover);
+  color: var(--foreground);
+}
+
+.zen-urlbar {
+  width: 100%;
+  height: 36px;
+  margin-top: 3px;
+  border-radius: 12px;
+  background: var(--zen-urlbar-bg);
+  border: 1px solid transparent;
+  padding: 0 12px;
+  color: var(--foreground);
+  font-size: 12.5px;
+  text-align: center;
+  outline: none;
+}
+.zen-urlbar::placeholder {
+  color: var(--muted-foreground);
+}
+.zen-urlbar:focus {
+  text-align: left;
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+.zen-sidebar[data-open="false"] .zen-urlbar {
+  padding: 0 4px;
+}
+
+/* --- Essentials (pinned) grid --- */
+.zen-essentials {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
+  padding-bottom: 4px;
+}
+.zen-sidebar[data-open="false"] .zen-essentials {
+  grid-template-columns: 1fr;
+}
+.zen-essential {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px; /* --tab-min-height for essentials */
+  border-radius: var(--zen-radius);
+  background: var(--zen-elem-bg);
+}
+.zen-essential:hover {
+  background: var(--zen-elem-bg-hover);
+}
+.zen-essential[data-active="true"] {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- Vertical tabs --- */
+.zen-tabs {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: clip;
+}
+
+.zen-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--zen-tab-height);
+  margin: var(--zen-tab-block, 2px) 0;
+  padding: 0 var(--zen-tab-inline);
+  border-radius: var(--zen-radius);
+  transition: background 0.12s ease, scale 0.1s ease;
+}
+.zen-tab:hover {
+  background: var(--zen-elem-bg-hover);
+}
+.zen-tab[data-active="true"] {
+  background: var(--zen-selected);
+  box-shadow: var(--zen-shadow);
+  scale: var(--zen-active-tab-scale);
+}
+.zen-sidebar[data-open="false"] .zen-tab {
+  justify-content: center;
+  padding: 0;
+}
+.zen-tab-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.zen-tab-label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+.zen-sidebar[data-open="false"] .zen-tab-label {
+  display: none;
+}
+.zen-tab-close {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--zen-tab-radius);
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity 0.1s ease, background 0.1s ease;
+}
+.zen-tab:hover .zen-tab-close {
+  opacity: 1;
+}
+.zen-tab-close:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+.zen-sidebar[data-open="false"] .zen-tab-close {
+  display: none;
+}
+
+/* --- Workspaces + foot --- */
+.zen-foot {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.zen-ws {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 12px;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: filter 0.2s, opacity 0.2s, transform 0.2s;
+}
+.zen-ws:hover {
+  background: var(--zen-elem-bg);
+}
+.zen-ws[data-active="true"] {
+  filter: none;
+  opacity: 1;
+  background: var(--zen-elem-bg-hover);
+  color: var(--zen-ws-icon-fill);
+}
+.zen-sidebar[data-open="false"] .zen-foot {
+  flex-direction: column;
+}
+
+/* --- Agent dock --- */
+.zen-agent {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.zen-agent-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--zen-radius);
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.zen-agent-btn:hover {
+  background: var(--zen-elem-bg-hover);
+  color: var(--foreground);
+}
+.zen-agent-form {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+.zen-agent-input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  border-radius: var(--zen-radius);
+  background: var(--zen-elem-bg);
+  padding: 0 10px;
+  font-size: 12px;
+  outline: none;
+}
