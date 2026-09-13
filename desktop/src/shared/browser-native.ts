@@ -30,10 +30,40 @@ export interface SitePermission {
 export interface NativeBrowserState {
   bookmarks: Bookmark[];
   permissions: SitePermission[];
-  onboarding: { version: 1; completed: boolean; agentEnabled: boolean };
+  onboarding: {
+    version: 1;
+    completed: boolean;
+    agentEnabled: boolean;
+    serviceTokenConfigured: boolean;
+    secureTokenStorageAvailable: boolean;
+    chromeProfiles: ChromeProfileCandidate[];
+    chromeImports: ChromeImportRecord[];
+  };
   defaultBrowser: { http: boolean; https: boolean; packaged: boolean };
   zoomFactor: number;
   protection: ProtectionState;
+}
+export interface ChromeProfileCandidate {
+  id: string;
+  directoryName: string;
+  name: string;
+  emailDomain: string | null;
+  isLastUsed: boolean;
+  hasBookmarks: boolean;
+  extensionCount: number;
+  hasEncryptedCredentials: boolean;
+  passwordStatus: "protected-1password-handoff";
+}
+export interface ChromeImportRecord {
+  version: 1;
+  sourceId: string;
+  spaceId: string;
+  spaceName: string;
+  importedAt: number;
+  bookmarks: number;
+  extensions: { imported: number; skipped: number; onePasswordDetected: boolean };
+  passwordStatus: "protected-1password-handoff";
+  notes: string[];
 }
 export interface ProtectionState {
   enabled: boolean;
@@ -70,10 +100,14 @@ export const permissionCommandSchema = z.object({
   origin: z.string().max(2048),
   permission: z.string().max(100).optional(),
 });
-export const onboardingCommandSchema = z.object({
-  action: z.enum(["complete", "preferences"]),
-  agentEnabled: z.boolean(),
-});
+export const onboardingCommandSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("complete"), agentEnabled: z.boolean(), serviceToken: z.string().max(4096).optional() }),
+  z.object({ action: z.literal("preferences"), agentEnabled: z.boolean() }),
+  z.object({ action: z.literal("set-service-token"), token: z.string().max(4096) }),
+  z.object({ action: z.literal("scan-chrome") }),
+  z.object({ action: z.literal("import-chrome"), profileIds: z.array(z.string().min(1).max(200)).min(1).max(20) }),
+]);
+export type OnboardingCommand = z.infer<typeof onboardingCommandSchema>;
 export type BookmarkCommand = z.infer<typeof bookmarkCommandSchema>;
 export type UtilityCommand = z.infer<typeof utilityCommandSchema>;
 export const protectionCommandSchema = z.discriminatedUnion("action", [

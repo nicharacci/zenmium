@@ -42,7 +42,8 @@ Work on `2026-09-12`, update existing PR #8, honor protected main. Merge/tag/pub
 ## Current verification ledger (2026-09-13)
 
 - Direct TypeScript compilation passed.
-- The desktop unit suite passed **108/108** tests, including profiles, migration,
+- The desktop unit suite passed **112/112** tests, including Chrome discovery/import
+  boundaries, profiles, migration,
   control ownership, authentication fail-closed behavior, extension lifecycle,
   layout/reveal geometry, address safety, and sidebar drag capacity.
 - The production `electron-vite` build passed and emits the Zenmium favicon
@@ -65,3 +66,12 @@ Work on `2026-09-12`, update existing PR #8, honor protected main. Merge/tag/pub
 - The genuine 1Password provider is not connected in this environment; the
   authentication broker remains explicitly unavailable rather than claiming a
   fill or TOTP success. PR/merge/publish gates therefore remain closed.
+- Chrome onboarding now discovers stable macOS Chrome profiles, derives
+  domain-based Space names, imports sanitized bookmarks, copies supported
+  unpacked extension code into the destination profile, and records resumable
+  source imports. Its optional service token is safeStorage-backed. Chrome
+  cookies, history, encrypted Login Data, and extension storage are deliberately
+  not extracted; 1Password remains the protected credential/TOTP handoff.
+- The Chrome import contract and security boundary are documented in
+  [`CHROME-IMPORT.md`](CHROME-IMPORT.md), with focused discovery, bookmark,
+  naming, and token-storage tests.

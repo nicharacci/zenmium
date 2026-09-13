@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { Bookmark } from "../shared/browser-native";
 import { JsonStore } from "./state-store";
 import { webUrl } from "./browser-url";
-import { importBookmarks } from "./browser-bookmark-format";
+import { importBookmarks, type ImportedBookmark } from "./browser-bookmark-format";
 
 export class BrowserBookmarks {
   private store: JsonStore<Bookmark[]>;
@@ -56,9 +56,17 @@ export class BrowserBookmarks {
     this.store.write(this.records);
   }
   import(profileId: string, html: string): number {
-    const rows = importBookmarks(html);
+    return this.importRows(profileId, importBookmarks(html));
+  }
+  /** Import already-parsed browser data without rendering or executing it. */
+  importRows(profileId: string, rows: ImportedBookmark[]): number {
     const ids = new Map(rows.map((row) => [row.key, randomUUID()]));
-    const records: Bookmark[] = rows.map((row) => ({ id: ids.get(row.key)!, parentId: row.parentKey === null ? null : ids.get(row.parentKey) ?? null, profileId, title: row.title, url: row.url, kind: row.url ? "bookmark" : "folder", createdAt: Date.now() }));
+    const records: Bookmark[] = rows.flatMap((row) => {
+      const title = row.title.trim().slice(0, 500) || "Untitled bookmark";
+      const url = row.url === undefined ? undefined : webUrl(row.url);
+      if (url === null) return [];
+      return [{ id: ids.get(row.key)!, parentId: row.parentKey === null ? null : ids.get(row.parentKey) ?? null, profileId, title, url, kind: url ? "bookmark" : "folder", createdAt: Date.now() }];
+    });
     this.records.push(...records);
     this.store.write(this.records);
     return records.length;

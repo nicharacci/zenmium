@@ -26,6 +26,7 @@ import { AgentChatManager } from "./agent-chat-manager";
 import { AuthenticationBroker } from "./authentication-broker";
 import { webUrl } from "./browser-url";
 import { EXTENSION_IPC, ExtensionHost } from "./extension-host";
+import { copyChromeExtension, listChromeExtensionSources, type ChromeProfileDescriptor } from "./chrome-profile-import";
 import { BrowserPermissions, hardenWindow, installSecurityPolicy } from "./security";
 import { STORE_INSTALL_IPC, StoreInstaller } from "./store-install";
 import type { WorkspaceSession } from "./workspace-sessions";
@@ -67,6 +68,43 @@ function activeProfileServices(): { host: ExtensionHost; installer: StoreInstall
   // also what creates the profile-bound extension host and security hooks.
   try { arc.getSessionForSpace(state.activeSpaceId); } catch { return null; }
   return profileHosts.get(profileId) ?? null;
+}
+
+async function importChromeExtensionsForSpace(spaceId: string, profile: ChromeProfileDescriptor) {
+  if (!arc) throw new Error("Browser is not ready.");
+  // Creating the session synchronously also wires the profile-bound ExtensionHost before
+  // the first imported extension is loaded.
+  const profileId = arc.getProfileId(spaceId);
+  arc.getSessionForSpace(spaceId);
+  const services = profileHosts.get(profileId);
+  if (!services) return { imported: 0, skipped: profile.extensionCount, onePasswordDetected: false, notes: ["The Workspace profile could not be initialized for extension import."] };
+  const sources = await listChromeExtensionSources(profile);
+  const targetRoot = join(app.getPath("userData"), "zenmium", "profiles", profileId, "extensions", "chrome-imports");
+  let imported = 0;
+  let skipped = 0;
+  let onePasswordDetected = false;
+  const notes: string[] = [];
+  for (const source of sources) {
+    onePasswordDetected ||= /1password/i.test(source.name);
+    try {
+      const copied = await copyChromeExtension(source, targetRoot);
+      const result = await services.host.load({
+        id: source.id,
+        path: copied.copiedPath,
+        version: source.version,
+        name: source.name,
+        enabled: true,
+        source: "unpacked",
+      });
+      if (result.ok) imported += 1;
+      else skipped += 1;
+    } catch {
+      skipped += 1;
+    }
+  }
+  if (sources.length < profile.extensionCount) skipped += profile.extensionCount - sources.length;
+  if (skipped) notes.push(`${skipped} Chrome extension${skipped === 1 ? "" : "s"} could not be loaded by this Electron build.`);
+  return { imported, skipped, onePasswordDetected, notes };
 }
 
 async function attachWorkspaceSession(entry: WorkspaceSession): Promise<void> {
@@ -614,6 +652,12 @@ function initializeWindowServices(): void {
     },
     isProtectedTarget: (profileId, tabId) => authentication?.isProtectedTarget(profileId, tabId) ?? false,
   });
+  const storageCodec = safeStorage.isEncryptionAvailable()
+    ? {
+        encrypt: (value: string) => safeStorage.encryptString(value),
+        decrypt: (value: Uint8Array) => safeStorage.decryptString(Buffer.from(value)),
+      }
+    : undefined;
   native = new NativeBrowserServices(
     win,
     arc,
@@ -622,6 +666,10 @@ function initializeWindowServices(): void {
     blocking,
     (channel, payload) => chrome?.broadcast(channel, payload),
     (tabId) => humanTab(tabId),
+    {
+      storageCodec,
+      importChromeExtensions: importChromeExtensionsForSpace,
+    },
   );
   unsubscribeProfiles = arc.onSessionCreated((entry) => attachWorkspaceSession(entry));
   chrome.setHumanInputHandler((wc) => humanTab(arc?.getTabIdForWebContents(wc.id)));
@@ -634,12 +682,6 @@ function initializeWindowServices(): void {
     });
     return true;
   });
-  const storageCodec = safeStorage.isEncryptionAvailable()
-    ? {
-        encrypt: (value: string) => safeStorage.encryptString(value),
-        decrypt: (value: Uint8Array) => safeStorage.decryptString(Buffer.from(value)),
-      }
-    : undefined;
   chat = new AgentChatManager({
     directory: join(userDataDir, "zenmium"),
     kernel: agent,
