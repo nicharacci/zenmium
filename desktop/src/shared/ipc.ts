@@ -66,9 +66,16 @@ export interface Space {
   name: string;
   color: string;
   icon: string;
+  /** First account identity observed for this Workspace; only display-safe initials persist. */
+  avatar?: WorkspaceAvatar;
   pinnedCollapsed?: boolean;
   /** Stable browser identity; names and theme changes never change a partition. */
   profileId?: string;
+}
+
+export interface WorkspaceAvatar {
+  initials: string;
+  provider: "google" | "microsoft" | "apple" | "github" | "other";
 }
 
 export interface BrowserProfile {

@@ -1272,6 +1272,31 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   flex-shrink: 0;
   margin-top: 1px;
 }
+.zen-extension-store-install {
+  display: grid;
+  gap: 10px;
+  margin: 0 16px 15px;
+  padding: 12px;
+  color: var(--zo-text);
+  background: color-mix(in srgb, var(--zo-primary) 7%, var(--zo-fill));
+  border: 1px solid color-mix(in srgb, var(--zo-primary) 24%, var(--zo-border));
+  border-radius: 12px;
+}
+.zen-extension-store-form {
+  max-width: none !important;
+  --zenmium-accent: var(--zo-primary);
+  --zenmium-surface: var(--zo-surface, var(--zo-fill));
+  --zenmium-text: var(--zo-text);
+}
+.zen-extension-store-form input {
+  border-color: var(--zo-border) !important;
+  background: var(--zo-surface, var(--zo-fill)) !important;
+  color: var(--zo-text) !important;
+}
+.zen-extension-store-form button {
+  border-color: color-mix(in srgb, var(--zo-primary) 38%, var(--zo-border)) !important;
+  background: var(--zo-primary) !important;
+}
 .zen-overlay-extension {
   display: flex;
   align-items: center;
@@ -1280,6 +1305,26 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
 }
 .zen-overlay-extension + .zen-overlay-extension {
   border-top: 1px solid var(--zo-border);
+}
+.zen-extension-pin-toggle {
+  display: inline-grid;
+  flex: 0 0 28px;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--zo-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+.zen-extension-pin-toggle:hover,
+.zen-extension-pin-toggle[aria-pressed="true"] {
+  color: var(--zo-primary);
+  background: color-mix(in srgb, var(--zo-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--zo-primary) 26%, transparent);
+}
+.zen-extension-pin-toggle[aria-pressed="true"] svg {
+  fill: color-mix(in srgb, var(--zo-primary) 35%, transparent);
 }
 .zen-overlay-switch {
   position: relative;

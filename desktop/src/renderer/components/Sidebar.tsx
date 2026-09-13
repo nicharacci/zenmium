@@ -1,7 +1,12 @@
 // biome-ignore-all lint/performance/noJsxPropsBind: These small native controls use current render state; callback identity is not a memoization boundary.
-import { type BrowserSurfaceProps, sidebarRevealed } from "@shared/browser-ui";
+import {
+  CHROME_IPC,
+  type BrowserExtension,
+  type BrowserSurfaceProps,
+  sidebarRevealed,
+} from "@shared/browser-ui";
 import { ARC_IPC } from "@shared/ipc";
-import { ChevronDown, Folder as FolderIcon, Pin } from "lucide-react";
+import { ChevronDown, Folder as FolderIcon, Pin, Puzzle } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useSidebarInteraction } from "@/hooks/useSidebarInteraction";
@@ -18,7 +23,6 @@ import {
 } from "./browser/SidebarDrag";
 import { SidebarTab } from "./browser/SidebarTab";
 import {
-  SidebarPinnedToggle,
   SidebarWorkspaceSwitcher,
 } from "./browser/SidebarWorkspaces";
 import { SidebarChatHistory } from "./browser/SidebarChatHistory";
@@ -31,14 +35,12 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
   const compactHidden = p.sidebarMode !== "expanded" && !expanded;
   const interaction = useSidebarInteraction(invoke, ui.sidebar);
   const drag = useSidebarDrag(state, invoke, interaction.setDragging);
+  const [extensions, setExtensions] = useState<BrowserExtension[]>([]);
   const [tabsOverflow, setTabsOverflow] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const newTabRef = useRef<HTMLDivElement>(null);
   const active = state.tabs.find((tab) => tab.id === state.activeTabId);
-  const currentSpace = state.spaces.find(
-    (space) => space.id === state.activeSpaceId
-  );
   const tabs = state.tabs.filter((tab) => tab.spaceId === state.activeSpaceId);
   const folders = state.folders.filter(
     (folder) => folder.spaceId === state.activeSpaceId
@@ -54,8 +56,36 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
     .slice(0, MAX_ESSENTIALS);
   const normalTabs = rootTabs.filter((tab) => tab.kind === "today");
   const essentialCount = tabs.filter(isEssentialTab).length;
-  const pinnedOpen = !currentSpace?.pinnedCollapsed;
   const destination = { folderId: null, spaceId: state.activeSpaceId };
+  const pinnedExtensions = extensions
+    .filter((extension) => extension.enabled && extension.pinned)
+    .slice(0, 4);
+
+  useEffect(() => {
+    let mounted = true;
+    const refreshExtensions = async () => {
+      try {
+        const result = await invoke<BrowserExtension[]>(CHROME_IPC.extensions);
+        if (mounted && Array.isArray(result)) setExtensions(result);
+      } catch {
+        if (mounted) setExtensions([]);
+      }
+    };
+    void refreshExtensions();
+    const offRegistry = window.zenmium?.on(
+      CHROME_IPC.extensionRegistryChanged,
+      () => void refreshExtensions(),
+    );
+    const offChrome = window.zenmium?.on(
+      CHROME_IPC.event,
+      () => void refreshExtensions(),
+    );
+    return () => {
+      mounted = false;
+      offRegistry?.();
+      offChrome?.();
+    };
+  }, [invoke]);
 
   useEffect(() => {
     const viewport = scrollRef.current;
@@ -127,6 +157,30 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
           ref={scrollRef}
         >
           <div className="zen-sidebar-list" ref={listRef}>
+            {pinnedExtensions.length ? (
+              <div
+                aria-label="Pinned extensions"
+                className="zen-extension-pin-pill"
+                data-count={pinnedExtensions.length}
+                role="toolbar"
+              >
+                {pinnedExtensions.map((extension) => (
+                  <button
+                    aria-label={`Open ${extension.name} extension controls`}
+                    className="zen-extension-pin"
+                    key={extension.id}
+                    onClick={() =>
+                      void invoke(CHROME_IPC.open, { kind: "extensions" })
+                    }
+                    title={`${extension.name} · Extensions`}
+                    type="button"
+                  >
+                    <Puzzle aria-hidden="true" size={13} />
+                    <span>{extension.name}</span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <section
               aria-label="Essential tabs"
               className="zen-essentials"
@@ -158,19 +212,9 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                 </div>
               ) : null}
             </section>
-            <SidebarPinnedToggle
-              onTogglePinned={() =>
-                invoke(ARC_IPC.updateSpace, {
-                  id: state.activeSpaceId,
-                  patch: { pinnedCollapsed: pinnedOpen },
-                })
-              }
-              pinnedOpen={pinnedOpen}
-            />
             <section
               aria-label="Pinned tabs"
               className="zen-pinned-section"
-              hidden={!pinnedOpen}
               id="zen-sidebar-pinned"
               {...drag.zone("pinned", {
                 ...destination,

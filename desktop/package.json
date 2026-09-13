@@ -22,6 +22,15 @@
       {
         "from": "../docs/zenmium/licenses",
         "to": "licenses"
+      },
+      {
+        "from": "resources/chromium-web-store",
+        "to": "chromium-web-store",
+        "filter": [
+          "Chromium Web Store.crx",
+          "LICENSE",
+          "README.md"
+        ]
       }
     ],
     "protocols": [

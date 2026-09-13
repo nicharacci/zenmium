@@ -21,6 +21,7 @@ import type {
   Tab,
   TabMoveResult,
   TabUpdate,
+  WorkspaceAvatar,
 } from "../shared/ipc";
 import {
   emptyState,
@@ -34,8 +35,66 @@ import { WorkspaceSessions, type WorkspaceSession } from "./workspace-sessions";
 
 const id = (prefix: string) => `${prefix}_${randomUUID().slice(0, 8)}`;
 const ARCHIVE_AFTER_MS = 12 * 60 * 60 * 1000;
+const ACCOUNT_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ACCOUNT_IDENTITY_SCRIPT = [
+  "(() => {",
+  "const selectors = [",
+  "'[data-email]', '[data-identifier]', '[data-email-address]',",
+  "'[aria-label*=" + JSON.stringify("Google Account") + "]',",
+  "'[aria-label*=" + JSON.stringify("Microsoft account") + "]',",
+  "'[aria-label*=" + JSON.stringify("@") + "]'",
+  "];",
+  "for (const selector of selectors) {",
+  "  for (const node of document.querySelectorAll(selector)) {",
+  "    const value = node.getAttribute('data-email') || node.getAttribute('data-identifier') || node.getAttribute('data-email-address') || node.getAttribute('aria-label') || node.textContent || '';",
+  "    const match = value.match(/[A-Z0-9._%+\\-]+@[A-Z0-9.\\-]+\\.[A-Z]{2,}/i);",
+  "    if (match) return match[0];",
+  "  }",
+  "}",
+  "return null;",
+  "})()",
+].join("\n");
 const sameBounds = (a: Rect, b: Rect): boolean =>
   a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+
+function normalizeWorkspaceAvatar(value: unknown): WorkspaceAvatar | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const candidate = value as { initials?: unknown; provider?: unknown };
+  const initials = typeof candidate.initials === "string"
+    ? candidate.initials.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 2)
+    : "";
+  const providers = new Set<WorkspaceAvatar["provider"]>([
+    "google", "microsoft", "apple", "github", "other",
+  ]);
+  const provider = typeof candidate.provider === "string" && providers.has(candidate.provider as WorkspaceAvatar["provider"])
+    ? candidate.provider as WorkspaceAvatar["provider"]
+    : undefined;
+  return initials && provider ? { initials, provider } : undefined;
+}
+
+function accountProvider(url: string): WorkspaceAvatar["provider"] | undefined {
+  try {
+    const host = new URL(url).hostname.toLocaleLowerCase();
+    if (host === "accounts.google.com" || host.endsWith(".google.com") || host === "google.com") return "google";
+    if (host === "login.microsoftonline.com" || host.endsWith(".microsoft.com") || host.endsWith(".live.com") || host.endsWith(".outlook.com")) return "microsoft";
+    if (host === "appleid.apple.com" || host.endsWith(".icloud.com") || host === "icloud.com") return "apple";
+    if (host === "github.com" || host.endsWith(".github.com")) return "github";
+  } catch {
+    // Navigation URLs are already validated by the browser; an invalid URL simply has no identity provider.
+  }
+  return undefined;
+}
+
+function identityInitials(email: string): string | undefined {
+  if (!ACCOUNT_EMAIL_PATTERN.test(email)) return undefined;
+  const local = email.slice(0, email.indexOf("@")).replace(/[^a-z0-9]+/gi, " ").trim();
+  if (!local) return undefined;
+  const parts = local.split(/\s+/).filter(Boolean);
+  const initials = (parts.length > 1
+    ? `${parts[0]![0]}${parts.at(-1)![0]}`
+    : local.slice(0, 2)).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 2);
+  return initials || undefined;
+}
 
 /** Arc owns browser state and Chromium. Renderers send commands and mirror snapshots. */
 export class ArcCore {
@@ -113,6 +172,7 @@ export class ArcCore {
             ? space.icon.trim()
             : "◎",
         name: name && name !== "Space" ? name : `Workspace ${index + 1}`,
+        avatar: normalizeWorkspaceAvatar(space.avatar),
       };
     });
     if (!state.spaces.some((s) => s.id === state.activeSpaceId))
@@ -214,6 +274,23 @@ export class ArcCore {
   getHistoryForSpace(spaceId: string): HistoryEntry[] {
     this.getProfileId(spaceId);
     return structuredClone((this.state.history ?? []).filter((entry) => entry.spaceId === spaceId));
+  }
+  private async detectWorkspaceAvatar(tab: Tab, wc: Electron.WebContents): Promise<void> {
+    const space = this.state.spaces.find((entry) => entry.id === tab.spaceId);
+    const provider = accountProvider(tab.url);
+    if (!space || space.avatar || !provider || wc.isDestroyed()) return;
+    try {
+      // The allow-listed identity page returns an address only to this process. Reduce it to
+      // initials immediately; the raw address is never persisted, emitted, logged, or exposed.
+      const identity = await wc.executeJavaScript(ACCOUNT_IDENTITY_SCRIPT, true);
+      if (typeof identity !== "string") return;
+      const initials = identityInitials(identity);
+      if (!initials || space.avatar) return;
+      space.avatar = { initials, provider };
+      this.emit();
+    } catch {
+      // Provider login DOMs vary and may reject script evaluation; avatar enrichment is best effort.
+    }
   }
   private emit(): void {
     if (this.disposed) return;
@@ -427,6 +504,7 @@ export class ArcCore {
       t.loading = false;
       t.title = t.customTitle || wc.getTitle() || t.url;
       refreshNavigation();
+      void this.detectWorkspaceAvatar(t, wc);
       if (/^https?:/.test(t.url) && !t.error)
         this.state.history = [
           {
@@ -736,7 +814,7 @@ export class ArcCore {
     this.attachActive();
     this.emit();
   }
-  createSpace(name: string, color?: string): Space {
+  createSpace(name: string, color?: string, avatar?: WorkspaceAvatar): Space {
     const profile = newBrowserProfile();
     const space: Space = {
       color:
@@ -745,6 +823,7 @@ export class ArcCore {
       id: id("sp"),
       name: name.trim() || `Workspace ${this.state.spaces.length + 1}`,
       profileId: profile.id,
+      avatar: normalizeWorkspaceAvatar(avatar),
     };
     this.state.profiles ??= [];
     this.state.profiles.push(profile);
@@ -769,7 +848,7 @@ export class ArcCore {
   }
   updateSpace(
     spaceId: string,
-    patch: Partial<Pick<Space, "name" | "color" | "icon" | "pinnedCollapsed">>
+    patch: Partial<Pick<Space, "name" | "color" | "icon" | "pinnedCollapsed" | "avatar">>
   ): void {
     const space = this.state.spaces.find((s) => s.id === spaceId);
     if (!space) return;
@@ -779,6 +858,8 @@ export class ArcCore {
     if (patch.icon?.trim()) space.icon = patch.icon.trim().slice(0, 16);
     if (typeof patch.pinnedCollapsed === "boolean")
       space.pinnedCollapsed = patch.pinnedCollapsed;
+    if (patch.avatar !== undefined)
+      space.avatar = normalizeWorkspaceAvatar(patch.avatar);
     this.emit();
   }
   deleteSpace(spaceId: string): void {

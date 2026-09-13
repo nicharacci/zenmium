@@ -48,6 +48,7 @@ export interface ChromeProfileCandidate {
   directoryName: string;
   name: string;
   emailDomain: string | null;
+  avatarInitials: string | null;
   isLastUsed: boolean;
   hasBookmarks: boolean;
   extensionCount: number;

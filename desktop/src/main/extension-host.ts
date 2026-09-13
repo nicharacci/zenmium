@@ -11,13 +11,14 @@ export const EXTENSION_PROGRESS_EVENT = "zenmium:extension:progress" as const;
 export const EXTENSION_REGISTRY_CHANGED_EVENT = "zenmium:extension:registry-changed" as const;
 export const EXTENSION_IPC = {
   list: "extensions:list", load: "extensions:load", remove: "extensions:remove",
-  setEnabled: "extensions:setEnabled", progress: EXTENSION_PROGRESS_EVENT,
+  setEnabled: "extensions:setEnabled", setPinned: "extensions:setPinned", progress: EXTENSION_PROGRESS_EVENT,
   registryChanged: EXTENSION_REGISTRY_CHANGED_EVENT,
 } as const;
 export type ExtensionResult<T> = { ok: true; value: T } |
   { ok: false; seam: ExtensionSeam; reason: string };
 export interface ExtensionRecord {
   id: string; path: string; version: string; enabled: boolean; name: string;
+  pinned?: boolean;
   allowFileAccess?: boolean; source?: "unpacked" | "store";
 }
 export type ExtensionProgressStatus = "loading" | "loaded" | "disabled" | "removed" | "error";
@@ -65,6 +66,7 @@ function coerceRecord(value: unknown): ExtensionRecord | null {
     id: value.id, path: value.path, enabled: value.enabled !== false,
     name: typeof value.name === "string" ? value.name : value.id,
     version: typeof value.version === "string" ? value.version : "0.0.0",
+    pinned: value.pinned === true,
     allowFileAccess: value.allowFileAccess === true,
     source: value.source === "store" ? "store" : "unpacked",
   };
@@ -182,7 +184,10 @@ export class ExtensionHost {
       const resolved: ExtensionRecord = {
         id: loaded.id, path: directory, name: loaded.name || input.name,
         version: loaded.version ?? loaded.manifest?.version ?? input.version,
-        enabled: true, allowFileAccess: input.allowFileAccess === true, source: input.source ?? "unpacked",
+        enabled: true,
+        pinned: input.pinned ?? previous.find((record) => record.id === input.id || record.path === directory)?.pinned === true,
+        allowFileAccess: input.allowFileAccess === true,
+        source: input.source ?? "unpacked",
       };
       this.loaded.set(loaded.id, loaded);
       this.records.set(loaded.id, resolved);
@@ -229,6 +234,20 @@ export class ExtensionHost {
       try { this.unload(id); this.records.set(id, next); await this.persist(); }
       catch { this.records.set(id, record); await this.restoreRuntime(record); return fail("Could not persist the extension state."); }
       this.emitProgress({ status: "disabled", id, name: next.name, reason: null });
+      this.emitRegistryChanged();
+      return { ok: true, value: { ...next } };
+    });
+  }
+  setPinned(id: string, pinned: boolean): Promise<ExtensionResult<ExtensionRecord>> {
+    return this.serial(async () => {
+      const init = await this.readRegistry(); if (!init.ok) return init;
+      const record = this.records.get(id); if (!record) return fail("Unknown extension id.");
+      if (pinned && !record.pinned && [...this.records.values()].filter((entry) => entry.pinned).length >= 4)
+        return fail("Only four extensions can be pinned in the sidebar.");
+      if (record.pinned === pinned) return { ok: true, value: { ...record, pinned } };
+      const next = { ...record, pinned };
+      try { this.records.set(id, next); await this.persist(); }
+      catch { this.records.set(id, record); return fail("Could not persist the extension pin state."); }
       this.emitRegistryChanged();
       return { ok: true, value: { ...next } };
     });

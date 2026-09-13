@@ -35,6 +35,8 @@ for (const nested of [false, true]) test("canonical identity and disable/restore
   assert.equal(f.host.get(f.input.id), undefined);
   const popup = f.host.actionPopup(runtimeId); assert.equal(popup.ok, true);
   if (popup.ok) assert.equal(popup.value.url, "chrome-extension://" + runtimeId + "/popup.html");
+  assert.equal((await f.host.setPinned(runtimeId, true)).ok, true);
+  assert.equal(f.host.get(runtimeId)?.pinned, true);
   assert.equal((await f.host.setEnabled(runtimeId, false)).ok, true);
   assert.deepEqual(f.removed, [runtimeId]); assert.deepEqual(f.host.loadedIds(), []);
   const restored = new ExtensionHost({ session: f.session, profileId: "profile-a", events: new EventEmitter(), registryPath: f.host.registryPath });

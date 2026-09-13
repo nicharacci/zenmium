@@ -4,6 +4,7 @@ import {
   CHROME_IPC,
   type DownloadRecord,
   type PanelKind,
+  STORE_INSTALL_IPC,
 } from "@shared/browser-ui";
 import {
   ARC_IPC,
@@ -58,6 +59,8 @@ import {
 import { BeuiChatDrawer } from "./BeuiChatDrawer";
 import { GoalpostOnboarding } from "./GoalpostOnboarding";
 import { NativePageActions, NativeSettings } from "./BrowserNativePanels";
+import { StoreInstall } from "../StoreInstall";
+import type { StoreInstallProgress, StoreInstallResult } from "../../../main/store-install";
 import { ThemeColorPicker } from "./ThemeColorPicker";
 import {
   ActionStatus,
@@ -1440,9 +1443,27 @@ function DownloadsPanel({ invoke, close }: UtilityProps) {
   );
 }
 
-function ExtensionsPanel({ invoke, close }: UtilityProps) {
+function ExtensionsPanel({ state, invoke, close }: UtilityProps) {
   const list = useRemoteList<BrowserExtension>(invoke, CHROME_IPC.extensions);
   const action = useSurfaceAction();
+  const activeUrl = state.tabs.find((tab) => tab.id === state.activeTabId)?.url ?? "";
+  const storeUrl = /^https:\/\/(?:chromewebstore\.google\.com|chrome\.google\.com)\//i.test(activeUrl)
+    ? activeUrl
+    : "";
+  const subscribeToStoreInstall = useCallback(
+    (listener: (progress: StoreInstallProgress) => void) => {
+      const bridge = window.zenmium;
+      return bridge
+        ? bridge.on(STORE_INSTALL_IPC.progress, (value) => listener(value as StoreInstallProgress))
+        : () => {};
+    },
+    [],
+  );
+  const installFromStore = useCallback(
+    (target: string): Promise<StoreInstallResult> =>
+      checkedInvoke<StoreInstallResult>(invoke, STORE_INSTALL_IPC.start, target),
+    [invoke],
+  );
   return (
     <>
       <PanelHeader close={close} title="Extensions" />
@@ -1469,10 +1490,32 @@ function ExtensionsPanel({ invoke, close }: UtilityProps) {
       <p className="zen-overlay-note">
         <Info aria-hidden="true" size={16} />
         <span>
-          Load an unpacked extension folder. Extensions that require native
-          messaging are not supported.
+          Install a Chrome Web Store package into this Workspace, or load an
+          unpacked folder. Native messaging still depends on the extension and
+          provider supporting Electron.
         </span>
       </p>
+      <div className="zen-extension-store-install">
+        <StoreInstall
+          buttonLabel="Install"
+          className="zen-extension-store-form"
+          defaultValue={storeUrl}
+          heading="Install from Chrome Web Store"
+          install={installFromStore}
+          subscribe={subscribeToStoreInstall}
+        />
+        <SurfaceButton
+          icon={ArrowUpRight}
+          onClick={() =>
+            void checkedInvoke(invoke, ARC_IPC.newTab, {
+              spaceId: state.activeSpaceId,
+              url: "https://chromewebstore.google.com/",
+            })
+          }
+        >
+          Open Web Store
+        </SurfaceButton>
+      </div>
       <ActionStatus
         busy={action.busy ?? (list.loading ? "Loading extensions" : null)}
         error={action.error ?? list.error}
@@ -1485,6 +1528,28 @@ function ExtensionsPanel({ invoke, close }: UtilityProps) {
               <h2>{extension.name}</h2>
               <small>Version {extension.version}</small>
             </div>
+            <button
+              aria-label={`${extension.pinned ? "Unpin" : "Pin"} ${extension.name} in the sidebar`}
+              aria-pressed={extension.pinned}
+              className="zen-extension-pin-toggle"
+              disabled={Boolean(action.busy)}
+              onClick={() =>
+                void action.run(
+                  `${extension.pinned ? "Unpinning" : "Pinning"} ${extension.name}`,
+                  async () => {
+                    await checkedInvoke(invoke, CHROME_IPC.extensionPinned, {
+                      id: extension.id,
+                      pinned: !extension.pinned,
+                    });
+                    await list.refresh();
+                  },
+                )
+              }
+              title={extension.pinned ? "Remove from sidebar" : "Pin to sidebar"}
+              type="button"
+            >
+              <Pin aria-hidden="true" size={14} />
+            </button>
             <label className="zen-overlay-switch">
               <input
                 aria-checked={extension.enabled}

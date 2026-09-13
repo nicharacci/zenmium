@@ -13,6 +13,7 @@ export interface ChromeProfileCandidate {
   directoryName: string;
   name: string;
   emailDomain: string | null;
+  avatarInitials: string | null;
   isLastUsed: boolean;
   hasBookmarks: boolean;
   extensionCount: number;
@@ -78,11 +79,21 @@ function emailDomain(value: string | null): string | null {
   return match?.[1]?.toLocaleLowerCase() ?? null;
 }
 
-function profileLabel(info: JsonRecord | null, directoryName: string): { name: string; domain: string | null } {
+function emailInitials(value: string | null): string | null {
+  if (!value || !value.includes("@")) return null;
+  const local = value.slice(0, value.indexOf("@")).replace(/[^a-z0-9]+/gi, " ").trim();
+  if (!local) return null;
+  const parts = local.split(/\s+/).filter(Boolean);
+  const initials = (parts.length > 1 ? `${parts[0]![0]}${parts.at(-1)![0]}` : local.slice(0, 2))
+    .toUpperCase();
+  return initials || null;
+}
+
+function profileLabel(info: JsonRecord | null, directoryName: string): { name: string; domain: string | null; initials: string | null } {
   const email = [info?.user_name, info?.email, info?.gaia_name].map(stringValue).find((value) => value?.includes("@")) ?? null;
   const domain = emailDomain(email);
   const supplied = stringValue(info?.name) ?? stringValue(info?.gaia_name);
-  return { name: supplied ?? (domain ?? directoryName), domain };
+  return { name: supplied ?? (domain ?? directoryName), domain, initials: emailInitials(email) };
 }
 
 function countExtensions(path: string): number {
@@ -123,6 +134,7 @@ export function discoverChromeProfiles(root = DEFAULT_CHROME_ROOT): ChromeProfil
       directoryName,
       name: label.name,
       emailDomain: label.domain,
+      avatarInitials: label.initials,
       isLastUsed: lastUsedProfiles.includes(directoryName),
       hasBookmarks: isFile(join(profileDirectory, "Bookmarks")),
       extensionCount: countExtensions(extensionsPath),

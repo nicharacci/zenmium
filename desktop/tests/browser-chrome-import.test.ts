@@ -16,6 +16,7 @@ test("Chrome discovery exposes account domains and never reads password contents
   assert.ok(profile);
   assert.equal(profile.id, "chrome:Default");
   assert.equal(profile.emailDomain, "example.com");
+  assert.equal(profile.avatarInitials, "PE");
   assert.equal(profile.isLastUsed, true);
   assert.equal(profile.extensionCount, 1);
   assert.equal(profile.hasEncryptedCredentials, true);

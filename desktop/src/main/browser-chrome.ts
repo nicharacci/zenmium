@@ -299,12 +299,10 @@ export class BrowserChrome {
     this.core.setContentBounds(layout.content);
     this.core.setPeekBounds(glanceLayout(width, height).page);
     this.raise();
-    this.win.setWindowButtonVisibility(
-      !this.win.isFullScreen() &&
-        this.ui.preferences.side === "left" &&
-        sidebarRevealed(this.ui) &&
-        (!this.ui.overlay || ["agent", "bookmarks", "find"].includes(this.ui.overlay.kind))
-    );
+    // The renderer owns a persistent, accessible traffic-light strip inside the sidebar.
+    // Keep native buttons hidden so they cannot disappear on fullscreen/reveal transitions
+    // or render as a duplicate set beside the custom controls.
+    if (process.platform === "darwin") this.win.setWindowButtonVisibility(false);
     this.broadcast(CHROME_IPC.event, this.snapshot());
   }
   raise(): void {

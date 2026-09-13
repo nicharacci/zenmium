@@ -111,7 +111,13 @@ export class NativeBrowserServices {
     for (const profile of selected) {
       const previous = this.chromeImports.find((entry) => entry.sourceId === profile.id && state.spaces.some((space) => space.id === entry.spaceId));
       if (previous) continue;
-      const space = this.core.createSpace(chromeSpaceName(profile, existingSpaces), SPACE_COLORS[this.chromeImports.length % SPACE_COLORS.length]);
+      const space = this.core.createSpace(
+        chromeSpaceName(profile, existingSpaces),
+        SPACE_COLORS[this.chromeImports.length % SPACE_COLORS.length],
+        profile.avatarInitials
+          ? { initials: profile.avatarInitials, provider: "google" }
+          : undefined,
+      );
       existingSpaces.add(space.name.toLocaleLowerCase());
       const notes = [
         "Chrome cookies, history, and raw passwords were not copied. The imported Workspace remains isolated.",

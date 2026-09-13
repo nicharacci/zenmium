@@ -43,6 +43,7 @@ import path from "node:path";
 import AdmZip from "adm-zip";
 import { request } from "undici";
 import { z } from "zod";
+import { STORE_INSTALL_IPC } from "../shared/browser-ui";
 
 import type { ExtensionHost, ExtensionRecord } from "./extension-host";
 
@@ -54,11 +55,7 @@ export type StoreInstallSeam = typeof STORE_INSTALL_SEAM;
 export const STORE_INSTALL_PROGRESS_EVENT = "zenmium:store-install:progress" as const;
 
 /** IPC channel names the base lane should re-export from `src/shared/ipc.ts`. */
-export const STORE_INSTALL_IPC = {
-  start: "extensions:store-install:start",
-  cancel: "extensions:store-install:cancel",
-  progress: STORE_INSTALL_PROGRESS_EVENT,
-} as const;
+export { STORE_INSTALL_IPC };
 
 export const STORE_INSTALL_STAGES = [
   "idle",
@@ -480,93 +477,7 @@ export class StoreInstaller {
 
       const updateUrl = buildCrxUpdateUrl(id, this.chromeVersion);
       const downloaded = await this.download(updateUrl, id, controller.signal);
-
-      this.emit({
-        stage: "verifying",
-        id,
-        name: null,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      const parsed = parseCrx(downloaded.bytes);
-
-      // The requested id must match what the package declares. Fail closed on any mismatch
-      // or when the header did not carry enough to verify (ZEN-004).
-      const declared = parsed.declaredId;
-      const derived = parsed.derivedId;
-      if (declared === "" && derived === "") {
-        return this.emitFailure(
-          "verifying",
-          "The package header did not declare an extension id, so it could not be verified.",
-          id,
-        );
-      }
-      if (declared !== "" && declared !== id) {
-        return this.emitFailure(
-          "verifying",
-          `The package declares extension id ${declared}, which does not match ${id}.`,
-          id,
-        );
-      }
-      if (derived !== "" && derived !== id) {
-        return this.emitFailure(
-          "verifying",
-          `The public key in the package resolves to ${derived}, which does not match ${id}.`,
-          id,
-        );
-      }
-      if (declared !== "" && derived !== "" && declared !== derived) {
-        return this.emitFailure(
-          "verifying",
-          "The package declares one id and its public key resolves to another.",
-          id,
-        );
-      }
-
-      const target = path.join(this.extensionsRoot, id);
-      await this.extract(parsed.payload, target, controller.signal, parsed.publicKey);
-
-      this.emit({
-        stage: "installing",
-        id,
-        name: null,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      const manifest = await readManifestSummary(target, id);
-      const record: ExtensionRecord = {
-        id,
-        path: target,
-        version: manifest.version,
-        enabled: true,
-        name: manifest.name,
-        source: "store",
-      };
-      const loaded = await this.host.load(record);
-      if (!loaded.ok) {
-        return this.emitFailure("installing", loaded.reason, id);
-      }
-
-      this.emit({
-        stage: "done",
-        id,
-        name: loaded.value.name,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      return {
-        ok: true,
-        id,
-        path: target,
-        version: loaded.value.version,
-        name: loaded.value.name,
-      };
+      return await this.installBytes(id, downloaded.bytes, controller.signal);
     } catch (error) {
       if (isAbortError(error)) {
         return this.emitFailure("error", "The install was cancelled.", id);
@@ -580,6 +491,101 @@ export class StoreInstaller {
         this.active = null;
       }
     }
+  }
+
+  /** Install a pinned local CRX, used for bundled compatibility helpers. */
+  async installLocal(crxPath: string, expectedId: string): Promise<StoreInstallResult> {
+    this.cancel();
+    const controller = new AbortController();
+    this.active = controller;
+    const id = parseExtensionId(expectedId);
+    if (id === null) return this.emitFailure("resolving", "The bundled extension id is invalid.", null);
+    try {
+      this.emit({
+        stage: "resolving",
+        id,
+        name: null,
+        receivedBytes: 0,
+        totalBytes: null,
+        percent: null,
+        reason: null,
+      });
+      const bytes = await fs.readFile(crxPath);
+      if (bytes.byteLength > MAX_CRX_BYTES)
+        throw new StoreInstallError("verifying", "The bundled extension package is too large.");
+      return await this.installBytes(id, bytes, controller.signal);
+    } catch (error) {
+      if (isAbortError(error)) return this.emitFailure("error", "The install was cancelled.", id);
+      if (error instanceof StoreInstallError) return this.emitFailure(error.stage, error.message, id);
+      return this.emitFailure("error", errorMessage(error), id);
+    } finally {
+      if (this.active === controller) this.active = null;
+    }
+  }
+
+  private async installBytes(id: string, bytes: Buffer, signal: AbortSignal): Promise<StoreInstallResult> {
+    this.emit({
+      stage: "verifying",
+      id,
+      name: null,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    const parsed = parseCrx(bytes);
+
+    // The requested id must match what the package declares. Fail closed on any mismatch
+    // or when the header did not carry enough to verify (ZEN-004).
+    const declared = parsed.declaredId;
+    const derived = parsed.derivedId;
+    if (declared === "" && derived === "")
+      return this.emitFailure("verifying", "The package header did not declare an extension id, so it could not be verified.", id);
+    if (declared !== "" && declared !== id)
+      return this.emitFailure("verifying", `The package declares extension id ${declared}, which does not match ${id}.`, id);
+    if (derived !== "" && derived !== id)
+      return this.emitFailure("verifying", `The public key in the package resolves to ${derived}, which does not match ${id}.`, id);
+    if (declared !== "" && derived !== "" && declared !== derived)
+      return this.emitFailure("verifying", "The package declares one id and its public key resolves to another.", id);
+
+    const target = path.join(this.extensionsRoot, id);
+    await this.extract(parsed.payload, target, signal, parsed.publicKey);
+    this.emit({
+      stage: "installing",
+      id,
+      name: null,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    const manifest = await readManifestSummary(target, id);
+    const record: ExtensionRecord = {
+      id,
+      path: target,
+      version: manifest.version,
+      enabled: true,
+      name: manifest.name,
+      source: "store",
+    };
+    const loaded = await this.host.load(record);
+    if (!loaded.ok) return this.emitFailure("installing", loaded.reason, id);
+    this.emit({
+      stage: "done",
+      id,
+      name: loaded.value.name,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    return {
+      ok: true,
+      id,
+      path: target,
+      version: loaded.value.version,
+      name: loaded.value.name,
+    };
   }
 
   private async download(

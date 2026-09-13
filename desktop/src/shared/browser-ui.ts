@@ -11,6 +11,8 @@ export const CHROME_IPC = {
   event: "chrome:state",
   extensionEnabled: "extensions:setEnabled",
   extensionLoad: "extensions:choose-directory",
+  extensionPinned: "extensions:setPinned",
+  extensionRegistryChanged: "zenmium:extension:registry-changed",
   extensions: "extensions:list",
   migratePreferences: "chrome:migrate-preferences",
   open: "chrome:open",
@@ -18,6 +20,12 @@ export const CHROME_IPC = {
   sidebar: "chrome:sidebar",
   snapshot: "chrome:snapshot",
   windowAction: "chrome:window-action",
+} as const;
+
+export const STORE_INSTALL_IPC = {
+  start: "extensions:store-install:start",
+  cancel: "extensions:store-install:cancel",
+  progress: "zenmium:store-install:progress",
 } as const;
 
 export const preferencesSchema = z.object({
@@ -129,6 +137,7 @@ export interface BrowserExtension {
   name: string;
   version: string;
   enabled: boolean;
+  pinned: boolean;
 }
 export type Invoke = <T = unknown>(
   channel: string,

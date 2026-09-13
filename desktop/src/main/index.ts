@@ -1,4 +1,5 @@
 import { EventEmitter } from "node:events";
+import { existsSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import { basename, extname, join } from "node:path";
@@ -50,6 +51,7 @@ let chat: AgentChatManager | null = null;
 let controlBridge: Awaited<ReturnType<typeof startBrowserControlBridge>> | null = null;
 let bridgeStarting: Promise<Awaited<ReturnType<typeof startBrowserControlBridge>>> | null = null;
 const profileHosts = new Map<string, { host: ExtensionHost; installer: StoreInstaller }>();
+const CHROMIUM_WEB_STORE_ID = "ocaahdebbfolfmndjeplogmgcagdmblk";
 const chatGrants = new Map<string, { grantId: string; token: string; sessionId: string }>();
 const pendingOpen: Array<{ url?: string; path?: string }> = [];
 let readyForLinks = false;
@@ -57,6 +59,14 @@ let popup: WebContentsView | null = null;
 let unsubscribeProfiles: (() => void) | undefined;
 let ipcWired = false;
 let activateWired = false;
+
+function bundledChromiumWebStorePath(): string | null {
+  const root = app.isPackaged
+    ? process.resourcesPath
+    : app.getAppPath();
+  const candidate = join(root, app.isPackaged ? "chromium-web-store" : "resources/chromium-web-store", "Chromium Web Store.crx");
+  return existsSync(candidate) ? candidate : null;
+}
 
 function activeProfileServices(): { host: ExtensionHost; installer: StoreInstaller } | null {
   if (!arc) return null;
@@ -141,6 +151,20 @@ async function attachWorkspaceSession(entry: WorkspaceSession): Promise<void> {
       profileId: entry.profileId,
       reason: result.reason,
     });
+  }
+  const services = profileHosts.get(entry.profileId);
+  const helperPath = bundledChromiumWebStorePath();
+  if (result.ok && services && helperPath && !services.host.get(CHROMIUM_WEB_STORE_ID)) {
+    const helper = await services.installer.installLocal(helperPath, CHROMIUM_WEB_STORE_ID);
+    if (!helper.ok) {
+      events.emit(EXTENSION_IPC.progress, {
+        status: "error",
+        id: CHROMIUM_WEB_STORE_ID,
+        name: "Chromium Web Store",
+        profileId: entry.profileId,
+        reason: helper.reason,
+      });
+    }
   }
 }
 
@@ -245,6 +269,9 @@ function createWindow(): void {
     },
     width: 1440,
   });
+  // The sidebar renders its own traffic-light strip so the controls remain available
+  // in fullscreen and when the full sidebar is temporarily revealed over the page.
+  if (process.platform === "darwin") win.setWindowButtonVisibility(false);
 
   arc = new ArcCore(win, app.getPath("userData"));
   chrome = new BrowserChrome(win, arc, app.getPath("userData"));
@@ -593,10 +620,17 @@ function wireIpc(): void {
     const { id: extId, enabled } = p as { id: string; enabled: boolean };
     return activeProfileServices()?.host.setEnabled(extId, enabled);
   });
+  handle(EXTENSION_IPC.setPinned, (_e, p) => {
+    const { id: extId, pinned } = p as { id: string; pinned: boolean };
+    return activeProfileServices()?.host.setPinned(extId, pinned);
+  });
   handle(EXTENSION_IPC.remove, (_e, p) =>
     activeProfileServices()?.host.remove((p as { id: string }).id)
   );
   handle(STORE_INSTALL_IPC.start, (_e, p) => activeProfileServices()?.installer.start(String(p)));
+  handle(STORE_INSTALL_IPC.cancel, () => {
+    activeProfileServices()?.installer.cancel();
+  });
 
   handle(AGENT_IPC.newSession, () => agent?.newSession());
   handle(AGENT_IPC.prompt, (_e, p) => {
@@ -853,6 +887,9 @@ function initializeWindowServices(): void {
 
     events.on(EXTENSION_IPC.progress, (payload) =>
       chrome?.broadcast(EXTENSION_IPC.progress, payload)
+    );
+    events.on(EXTENSION_IPC.registryChanged, (payload) =>
+      chrome?.broadcast(CHROME_IPC.extensionRegistryChanged, payload)
     );
     events.on(STORE_INSTALL_IPC.progress, (payload) =>
       chrome?.broadcast(STORE_INSTALL_IPC.progress, payload)

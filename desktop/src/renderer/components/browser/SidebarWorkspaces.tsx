@@ -6,31 +6,6 @@ import type { CSSProperties } from "react";
 import { SidebarButton } from "./SidebarChrome";
 import type { SidebarDrag } from "./SidebarDrag";
 
-export function SidebarPinnedToggle({
-  pinnedOpen,
-  onTogglePinned,
-}: {
-  pinnedOpen: boolean;
-  onTogglePinned: () => void;
-}) {
-  return (
-    <div className="zen-pinned-toolbar">
-      <SidebarButton
-        aria-controls="zen-sidebar-pinned"
-        aria-expanded={pinnedOpen}
-        className="zen-pinned-toggle"
-        label={pinnedOpen ? "Collapse pinned tabs" : "Expand pinned tabs"}
-        onClick={onTogglePinned}
-      >
-        <ChevronDown
-          className={pinnedOpen ? "" : "zen-chevron-closed"}
-          size={14}
-        />
-      </SidebarButton>
-    </div>
-  );
-}
-
 export function SidebarWorkspaceSwitcher({
   spaces,
   activeSpaceId,
@@ -80,6 +55,15 @@ export function SidebarWorkspaceSwitcher({
           });
         }}
       >
+        {space?.avatar ? (
+          <span
+            aria-hidden="true"
+            className="zen-workspace-avatar"
+            title={`${space.avatar.provider} account`}
+          >
+            {space.avatar.initials}
+          </span>
+        ) : null}
         <span className="zen-workspace-name">
           {space?.name ?? "Workspace 1"}
         </span>

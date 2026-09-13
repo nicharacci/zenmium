@@ -14,12 +14,14 @@ import {
   Download,
   Menu,
   MessageCircle,
+  Minus,
   PanelLeft,
   PanelRight,
   Plus,
   Puzzle,
   RotateCw,
   Search,
+  Square,
   X,
 } from "lucide-react";
 import type { ButtonHTMLAttributes, PointerEvent, ReactNode } from "react";
@@ -49,6 +51,34 @@ export function SidebarButton({
 }
 
 const WWW_PREFIX = /^www\./;
+
+function SidebarWindowControls({ invoke }: { invoke: BrowserSurfaceProps["invoke"] }) {
+  return (
+    <div aria-label="Window controls" className="zen-window-controls" role="toolbar">
+      <SidebarButton
+        className="zen-window-control zen-window-control--close"
+        label="Close window"
+        onClick={() => void invoke(CHROME_IPC.windowAction, "close")}
+      >
+        <X aria-hidden="true" size={11} strokeWidth={2.4} />
+      </SidebarButton>
+      <SidebarButton
+        className="zen-window-control zen-window-control--minimize"
+        label="Minimize window"
+        onClick={() => void invoke(CHROME_IPC.windowAction, "minimize")}
+      >
+        <Minus aria-hidden="true" size={12} strokeWidth={2.4} />
+      </SidebarButton>
+      <SidebarButton
+        className="zen-window-control zen-window-control--maximize"
+        label="Maximize or restore window"
+        onClick={() => void invoke(CHROME_IPC.windowAction, "maximize")}
+      >
+        <Square aria-hidden="true" size={10} strokeWidth={2.2} />
+      </SidebarButton>
+    </div>
+  );
+}
 
 function addressLabel(url?: string) {
   if (!url || url === "about:blank") {
@@ -84,10 +114,11 @@ export function SidebarToolbar({
   return (
     <header className="zen-sidebar-header">
       <div
-        aria-hidden="true"
         className="zen-window-drag-space"
         data-drag-region=""
-      />
+      >
+        <SidebarWindowControls invoke={invoke} />
+      </div>
       <div aria-label="Browser navigation" className="zen-top" role="toolbar">
         <SidebarButton
           aria-pressed={expanded}
