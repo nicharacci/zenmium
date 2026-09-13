@@ -31,6 +31,8 @@ function updateBounds(view: WebContentsView, next: Electron.Rectangle): void {
   }
 }
 
+const SIDEBAR_HOVER_EXIT_DELAY = 180;
+
 /** Separate native chrome surfaces make menus overlay live Chromium without intercepting page input at rest. */
 export class BrowserChrome {
   readonly sidebarView: WebContentsView;
@@ -45,6 +47,7 @@ export class BrowserChrome {
   private themeListener: () => void;
   private overlaySession = 0;
   private disposed = false;
+  private sidebarHoverExitTimer: ReturnType<typeof setTimeout> | null = null;
   private nativeCommand?: (command: string) => boolean;
   private humanInput?: (wc: Electron.WebContents) => void;
   setNativeCommandHandler(handler: (command: string) => boolean): void { this.nativeCommand = handler; }
@@ -179,7 +182,23 @@ export class BrowserChrome {
     if (!this.preferencesInitialized) this.updatePreferences(patch);
   }
   updateSidebar(patch: Partial<SidebarInteraction>): void {
-    for (const key of ["hovered", "focused", "dragging"] as const)
+    if (patch.hovered === true) {
+      if (this.sidebarHoverExitTimer !== null) {
+        clearTimeout(this.sidebarHoverExitTimer);
+        this.sidebarHoverExitTimer = null;
+      }
+      this.ui.sidebar.hovered = true;
+    } else if (patch.hovered === false) {
+      if (this.sidebarHoverExitTimer !== null)
+        clearTimeout(this.sidebarHoverExitTimer);
+      this.sidebarHoverExitTimer = setTimeout(() => {
+        this.sidebarHoverExitTimer = null;
+        if (this.disposed || this.win.isDestroyed()) return;
+        this.ui.sidebar.hovered = false;
+        this.sync();
+      }, SIDEBAR_HOVER_EXIT_DELAY);
+    }
+    for (const key of ["focused", "dragging"] as const)
       if (typeof patch[key] === "boolean") this.ui.sidebar[key] = patch[key]!;
     this.sync();
   }
@@ -235,6 +254,10 @@ export class BrowserChrome {
   close(sessionId?: number): void {
     if (sessionId !== undefined && sessionId !== this.ui.overlay?.sessionId)
       return;
+    if (this.sidebarHoverExitTimer !== null) {
+      clearTimeout(this.sidebarHoverExitTimer);
+      this.sidebarHoverExitTimer = null;
+    }
     this.ui.overlay = null;
     this.nativeCommand?.("stop-find");
     this.ui.sidebar.focused = false;
@@ -474,6 +497,10 @@ export class BrowserChrome {
   }
   dispose(): void {
     this.disposed = true;
+    if (this.sidebarHoverExitTimer !== null) {
+      clearTimeout(this.sidebarHoverExitTimer);
+      this.sidebarHoverExitTimer = null;
+    }
     this.unsubscribe();
     nativeTheme.off("updated", this.themeListener);
     for (const view of [this.sidebarView, this.overlayView, this.gutterView])

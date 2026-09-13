@@ -6,6 +6,7 @@ import { basename, extname, join } from "node:path";
 import { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, WebContentsView } from "electron";
 import { z } from "zod";
 import {
+  type BrowserNotification,
   type BrowserOverlayState,
   CHROME_IPC,
   preferencesSchema,
@@ -59,6 +60,10 @@ let popup: WebContentsView | null = null;
 let unsubscribeProfiles: (() => void) | undefined;
 let ipcWired = false;
 let activateWired = false;
+
+function browserNotification(notification: BrowserNotification): void {
+  chrome?.broadcast(CHROME_IPC.notification, notification);
+}
 
 function bundledChromiumWebStorePath(): string | null {
   const root = app.isPackaged
@@ -653,8 +658,23 @@ function initializeWindowServices(): void {
     changed: () => native?.changed(),
   });
   blocking = new BrowserBlocking(userDataDir, () => native?.changed());
-  downloads = new BrowserDownloads(app.getPath("userData"), () => {
+  downloads = new BrowserDownloads(app.getPath("userData"), (completed) => {
     if (chrome) chrome.broadcast(CHROME_IPC.event, chrome.snapshot());
+    if (completed?.state === "completed") {
+      browserNotification({
+        kind: "success",
+        title: "Download complete",
+        description: basename(completed.filename),
+        id: `download:${completed.id}`,
+      });
+    } else if (completed?.state === "interrupted") {
+      browserNotification({
+        kind: "warning",
+        title: "Download interrupted",
+        description: basename(completed.filename),
+        id: `download:${completed.id}`,
+      });
+    }
   });
   authentication = new AuthenticationBroker({
     isCurrentTarget: async (scope) => {
@@ -886,13 +906,42 @@ function initializeWindowServices(): void {
     );
 
     events.on(EXTENSION_IPC.progress, (payload) =>
-      chrome?.broadcast(EXTENSION_IPC.progress, payload)
+      {
+        chrome?.broadcast(EXTENSION_IPC.progress, payload);
+        const progress = payload as { name?: unknown; reason?: unknown; status?: unknown };
+        if (progress.status === "error") {
+          browserNotification({
+            kind: "error",
+            title: `${typeof progress.name === "string" ? progress.name : "Extension"} unavailable`,
+            description: typeof progress.reason === "string" ? progress.reason : "Open Extensions to review this item.",
+            id: `extension:error:${String((payload as { id?: unknown }).id ?? "unknown")}`,
+          });
+        }
+      }
     );
     events.on(EXTENSION_IPC.registryChanged, (payload) =>
       chrome?.broadcast(CHROME_IPC.extensionRegistryChanged, payload)
     );
     events.on(STORE_INSTALL_IPC.progress, (payload) =>
-      chrome?.broadcast(STORE_INSTALL_IPC.progress, payload)
+      {
+        chrome?.broadcast(STORE_INSTALL_IPC.progress, payload);
+        const progress = payload as { id?: unknown; name?: unknown; reason?: unknown; stage?: unknown };
+        if (progress.stage === "done") {
+          browserNotification({
+            kind: "success",
+            title: `${typeof progress.name === "string" ? progress.name : "Extension"} installed`,
+            description: "The extension is ready in this Workspace.",
+            id: `store-install:${String(progress.id ?? "unknown")}`,
+          });
+        } else if (progress.stage === "error") {
+          browserNotification({
+            kind: "error",
+            title: "Extension install failed",
+            description: typeof progress.reason === "string" ? progress.reason : "Open Extensions to retry.",
+            id: `store-install:error:${String(progress.id ?? "unknown")}`,
+          });
+        }
+      }
     );
     ipcWired = true;
   }

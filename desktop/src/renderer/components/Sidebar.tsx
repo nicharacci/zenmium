@@ -230,6 +230,7 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                   <div
                     className="zen-folder"
                     data-collapsed={folder.collapsed}
+                    data-open={!folder.collapsed}
                     key={folder.id}
                     {...drag.zone(`folder:${folder.id}`, {
                       beforeId: null,
@@ -242,7 +243,7 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                       aria-controls={`zen-folder-${folder.id}`}
                       aria-expanded={!folder.collapsed}
                       aria-label={folder.name}
-                      className="zen-folder-heading"
+                      className="zen-folder-heading t-acc-head"
                       onClick={() =>
                         invoke("arc:updateFolder", {
                           id: folder.id,
@@ -256,26 +257,24 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                       <span>{folder.name}</span>
                       <ChevronDown
                         aria-hidden="true"
-                        className={folder.collapsed ? "zen-chevron-closed" : ""}
+                        className="zen-chevron-closed t-acc-chevron"
                         size={12}
                       />
                     </button>
-                    <div
-                      className="zen-folder-tabs"
-                      hidden={folder.collapsed}
-                      id={`zen-folder-${folder.id}`}
-                    >
-                      {children.map((tab) => (
-                        <SidebarTab
-                          active={tab.id === state.activeTabId}
-                          drag={drag}
-                          invoke={invoke}
-                          key={tab.id}
-                          nested
-                          siblings={children}
-                          tab={tab}
-                        />
-                      ))}
+                    <div className="zen-folder-tabs t-acc-panel">
+                      <div className="t-acc-panel-inner" id={`zen-folder-${folder.id}`}>
+                        {children.map((tab) => (
+                          <SidebarTab
+                            active={tab.id === state.activeTabId}
+                            drag={drag}
+                            invoke={invoke}
+                            key={tab.id}
+                            nested
+                            siblings={children}
+                            tab={tab}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );

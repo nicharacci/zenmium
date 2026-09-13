@@ -217,9 +217,9 @@ body[data-surface="sidebar"] #root {
   background: var(--zen-card);
   border-radius: var(--zen-native-inner-radius, 7.8px);
   box-shadow: 0 2px 5px #0002;
-  transition:
-    transform 0.15s ease,
-    opacity 0.15s ease;
+  transform-origin: center left;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .zen-sidebar-surface[data-mode="compact"][data-hidden="true"] .zen-sidebar,
@@ -227,21 +227,28 @@ body[data-surface="sidebar"] #root {
   width: var(--zen-sidebar-width);
   pointer-events: none;
   opacity: 0;
+  filter: blur(var(--panel-blur));
   transform: translateX(calc(-100% - 16px));
+  transition:
+    transform var(--panel-close-dur) var(--panel-ease),
+    opacity var(--panel-close-dur) var(--panel-ease),
+    filter var(--panel-close-dur) var(--panel-ease);
 }
 .zen-sidebar-surface[data-side="right"][data-hidden="true"] .zen-sidebar {
   left: auto;
   transform: translateX(calc(100% + 16px));
+  transform-origin: center right;
 }
 .zen-sidebar-surface[data-mode="compact"][data-hidden="false"] .zen-sidebar,
 .zen-sidebar-surface[data-mode="collapsed"][data-hidden="false"] .zen-sidebar {
   pointer-events: auto;
   opacity: 1 !important;
+  filter: blur(0);
   transform: translateX(0) !important;
-  /* The native gutter re-stacks this view below the page while hidden. Keep
-     the reveal commit synchronous so a background-throttled transition cannot
-     freeze the full pane at its old offscreen transform. */
-  transition: none !important;
+  transition:
+    transform var(--panel-open-dur) var(--panel-ease),
+    opacity var(--panel-open-dur) var(--panel-ease),
+    filter var(--panel-open-dur) var(--panel-ease);
 }
 
 /* Native traffic lights are at y16. The view starts at y0; never draw dots. */
@@ -306,9 +313,9 @@ body[data-surface="sidebar"] #root {
   background: transparent;
   border-radius: 8px;
   transition:
-    background 0.12s,
-    color 0.12s,
-    transform 0.1s;
+    background var(--duration-quick) var(--ease-out),
+    color var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-chrome-button:hover:not(:disabled) {
   color: var(--zen-text);
@@ -519,8 +526,9 @@ body[data-surface="sidebar"] #root {
   border-radius: var(--zen-radius);
   isolation: isolate;
   transition:
-    background 0.1s,
-    transform 0.1s;
+    background var(--duration-quick) var(--ease-out),
+    box-shadow var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-tab:hover {
   background: var(--zen-hover);
@@ -841,9 +849,38 @@ body[data-surface="sidebar"] #root {
   background: var(--zen-hover);
 }
 .zen-folder-tabs {
-  padding-left: 9px;
+  display: grid;
+  grid-template-rows: 0fr;
   margin-left: 15px;
   border-left: 1px solid color-mix(in srgb, var(--zen-text) 12%, transparent);
+  transition: grid-template-rows var(--acc-collapse) var(--acc-ease);
+}
+.zen-folder[data-open="true"] .zen-folder-tabs {
+  grid-template-rows: 1fr;
+  transition-duration: var(--acc-expand);
+}
+.zen-folder-tabs .t-acc-panel-inner {
+  min-height: 0;
+  padding-left: 9px;
+  overflow: hidden;
+  opacity: 0;
+  filter: blur(var(--blur-small));
+  transition:
+    opacity var(--acc-collapse) var(--acc-ease),
+    filter var(--acc-collapse) var(--acc-ease);
+}
+.zen-folder[data-open="true"] .t-acc-panel-inner {
+  opacity: 1;
+  filter: blur(0);
+  transition-duration: var(--acc-expand);
+}
+.zen-folder .t-acc-chevron {
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: transform var(--acc-chevron) var(--acc-ease);
+}
+.zen-folder[data-open="true"] .t-acc-chevron {
+  transform: rotate(0deg);
 }
 .zen-normal-tabs {
   position: relative;
@@ -885,8 +922,8 @@ body[data-surface="sidebar"] #root {
   background: transparent;
   border-radius: var(--zen-radius);
   transition:
-    transform 0.1s,
-    background 0.1s;
+    transform var(--duration-micro) var(--ease-out),
+    background var(--duration-quick) var(--ease-out);
 }
 .zen-new-tab:hover {
   color: var(--zen-text);
@@ -943,10 +980,39 @@ body[data-surface="sidebar"] #root {
   white-space: nowrap;
 }
 .zen-chat-history-popover {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--acc-collapse) var(--acc-ease);
+}
+.zen-chat-history[data-open="true"] .zen-chat-history-popover {
+  grid-template-rows: 1fr;
+  transition-duration: var(--acc-expand);
+}
+.zen-chat-history-popover > .t-acc-panel-inner {
   max-height: min(260px, 34vh);
+  min-height: 0;
   padding: 2px 0 4px;
   overflow-y: auto;
   scrollbar-width: thin;
+  opacity: 0;
+  filter: blur(var(--blur-small));
+  transition:
+    opacity var(--acc-collapse) var(--acc-ease),
+    filter var(--acc-collapse) var(--acc-ease);
+}
+.zen-chat-history[data-open="true"] .zen-chat-history-popover > .t-acc-panel-inner {
+  opacity: 1;
+  filter: blur(0);
+  transition-duration: var(--acc-expand);
+}
+.zen-chat-history .t-acc-chevron {
+  transform: rotate(0deg);
+  transform-origin: center;
+  transition: transform var(--acc-chevron) var(--acc-ease);
+}
+.zen-chat-history[data-open="true"] .t-acc-chevron {
+  transform: rotate(180deg);
 }
 .zen-chat-history-filter {
   display: flex;
@@ -1139,7 +1205,7 @@ body[data-surface="sidebar"] #root {
   content: "";
   background: transparent;
   border-radius: 5px;
-  transition: background 0.15s;
+  transition: background var(--duration-quick) var(--ease-out);
 }
 .zen-sidebar-splitter:hover::after,
 .zen-sidebar-splitter[data-resizing="true"]::after,

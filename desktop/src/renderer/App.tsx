@@ -20,9 +20,11 @@ import {
 } from "@shared/ipc";
 import { CONTROL_IPC } from "@shared/browser-control";
 import { ArrowUpRight, PanelLeftClose, RefreshCw, X } from "lucide-react";
+import { MotionConfig } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 import { BrowserOverlay } from "./components/browser/BrowserOverlay";
 import { BeuiChatDrawer } from "./components/browser/BeuiChatDrawer";
+import { ZenNotifications } from "./components/browser/ZenNotifications";
 import { Sidebar } from "./components/Sidebar";
 import { updateControlActivity } from "./components/browser/ShellModel";
 import { OverflowEssentials } from "./components/browser/OverflowEssentials";
@@ -79,6 +81,7 @@ function MainSurface({
     : [undefined];
   return (
     <main aria-label="Browser content" className="zen-window-shell">
+      <ZenNotifications dark={ui.dark} state={state} />
       <div className="zen-window-drag" data-drag-region="" />
       {startupWave ? (
         <div
@@ -328,25 +331,41 @@ export default function App() {
   }, [state.activeSpaceId, state.spaces, ui.dark, ui.preferences.glassTint]);
   if (error)
     return (
-      <div className="zen-page-error" role="alert">
-        <h1>Browser unavailable</h1>
-        <p>{error}</p>
-      </div>
+      <MotionConfig reducedMotion="user">
+        <div className="zen-page-error" role="alert">
+          <h1>Browser unavailable</h1>
+          <p>{error}</p>
+        </div>
+      </MotionConfig>
     );
   const props = { invoke, state, ui };
-  if (surface === "sidebar") return <Sidebar {...props} />;
-  if (surface === "gutter") return <SidebarGutter invoke={invoke} />;
-  if (surface === "overlay")
-    return ui.overlay ? (
-      <BrowserOverlay {...props} />
-    ) : state.glance ? (
-      <GlanceSurface {...props} />
-    ) : null;
+  const content =
+    surface === "sidebar" ? (
+      <Sidebar {...props} />
+    ) : surface === "gutter" ? (
+      <SidebarGutter invoke={invoke} />
+    ) : surface === "overlay" ? (
+      ui.overlay ? (
+        <BrowserOverlay {...props} />
+      ) : state.glance ? (
+        <GlanceSurface {...props} />
+      ) : null
+    ) : (
+      <MainSurface
+        {...props}
+        agentActivity={agentActivity}
+        startupWave={startupWave}
+      />
+    );
   return (
-    <MainSurface
-      {...props}
-      agentActivity={agentActivity}
-      startupWave={startupWave}
-    />
+    <MotionConfig
+      reducedMotion="user"
+      transition={{
+        duration: 0.25,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      {content}
+    </MotionConfig>
   );
 }

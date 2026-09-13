@@ -12,7 +12,7 @@ export class BrowserDownloads {
   private sessions = new Map<Session, (event: Electron.Event, item: DownloadItem) => void>();
   constructor(
     userDataDir: string,
-    private changed: () => void
+    private changed: (completed?: DownloadRecord) => void
   ) {
     this.store = new JsonStore(userDataDir, "downloads.json");
     this.records = this.store.read([]).map((item) => ({
@@ -74,6 +74,7 @@ export class BrowserDownloads {
       update();
       this.items.delete(id);
       this.store.write(this.records);
+      this.changed(structuredClone(record));
     });
     update();
     this.store.write(this.records);

@@ -17,7 +17,7 @@
 .zen-chat-v1 .zen-chat-inline-action { display: inline-flex; align-items: center; align-self: flex-start; gap: 6px; border: 0; background: transparent; color: var(--zo-text); font-size: 11px; padding: 3px; }
 .zen-chat-v1 .zen-chat-inline-action:disabled { opacity: .5; }
 .zen-chat-v1 .zen-beui-chat-composer-wrap { border: 0; background: transparent; }
-.zen-chat-v1 .zen-beui-chat-composer { position: relative; border: 1px solid color-mix(in srgb, var(--zen-workspace-color) 25%, transparent) !important; border-radius: 16px !important; outline: 0 !important; animation: none !important; transition: border-color 400ms ease, box-shadow 400ms ease; }
+.zen-chat-v1 .zen-beui-chat-composer { position: relative; border: 1px solid color-mix(in srgb, var(--zen-workspace-color) 25%, transparent) !important; border-radius: 16px !important; outline: 0 !important; animation: none !important; transition: border-color var(--duration-slow) var(--ease-smooth-out), box-shadow var(--duration-slow) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-smooth-out); }
 .zen-chat-v1 .zen-beui-chat-composer:focus-within { border-color: color-mix(in srgb, var(--zen-workspace-color) 74%, transparent) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 0 18px -8px color-mix(in srgb, var(--zen-workspace-color) 75%, transparent); }
 .zen-chat-v1 .zen-beui-chat-composer textarea,
 .zen-chat-v1 .zen-beui-chat-composer textarea:focus,

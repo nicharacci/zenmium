@@ -86,7 +86,11 @@ export function SidebarChatHistory({
   }, [spaces, visibleEntries]);
 
   return (
-    <section aria-label="Chat history" className="zen-chat-history">
+    <section
+      aria-label="Chat history"
+      className="zen-chat-history t-acc"
+      data-open={expanded}
+    >
       <button
         aria-expanded={expanded}
         className="zen-chat-history-toggle"
@@ -95,33 +99,41 @@ export function SidebarChatHistory({
       >
         <MessageCircle aria-hidden="true" size={14} />
         <span>Chat history</span>
-        <ChevronDown
-          aria-hidden="true"
-          className={expanded ? "zen-chevron-open" : ""}
-          size={13}
-        />
+        <ChevronDown aria-hidden="true" className="t-acc-chevron" size={13} />
       </button>
-      {expanded ? (
-        <div className="zen-chat-history-popover">
+      <div className="zen-chat-history-popover t-acc-panel">
+        <div className="t-acc-panel-inner">
           <div className="zen-chat-history-tools">
-          <button
-            aria-pressed={allWorkspaces}
-            className="zen-chat-history-filter"
-            onClick={() => setAllWorkspaces((value) => !value)}
-            title="Toggle between all workspaces and the current workspace"
-            type="button"
-          >
-            <span>{allWorkspaces ? "All workspaces" : currentSpace?.name}</span>
-            <ChevronDown aria-hidden="true" size={12} />
-          </button>
-          <button type="button" title="New conversation" aria-label="New conversation" onClick={async () => {
-            setError(null);
-            try {
-              const result = await invoke<ChatResult<{ id: string }>>(CHAT_IPC.create, { spaceId: activeSpaceId });
-              if (!result?.ok) { setError(result?.ok === false ? result.reason : "Chat is unavailable."); return; }
-              void invoke(CHROME_IPC.open, { kind: "agent", chatId: result.value.id, spaceId: activeSpaceId });
-            } catch { setError("The conversation could not be created."); }
-          }}><Plus size={13} /></button>
+            <button
+              aria-pressed={allWorkspaces}
+              className="zen-chat-history-filter"
+              onClick={() => setAllWorkspaces((value) => !value)}
+              title="Toggle between all workspaces and the current workspace"
+              type="button"
+            >
+              <span>{allWorkspaces ? "All workspaces" : currentSpace?.name}</span>
+              <ChevronDown aria-hidden="true" size={12} />
+            </button>
+            <button
+              aria-label="New conversation"
+              onClick={async () => {
+                setError(null);
+                try {
+                  const result = await invoke<ChatResult<{ id: string }>>(CHAT_IPC.create, { spaceId: activeSpaceId });
+                  if (!result?.ok) {
+                    setError(result?.ok === false ? result.reason : "Chat is unavailable.");
+                    return;
+                  }
+                  void invoke(CHROME_IPC.open, { kind: "agent", chatId: result.value.id, spaceId: activeSpaceId });
+                } catch {
+                  setError("The conversation could not be created.");
+                }
+              }}
+              title="New conversation"
+              type="button"
+            >
+              <Plus size={13} />
+            </button>
           </div>
           {error ? <p className="zen-chat-history-error" role="status">{error}</p> : null}
           {groups.length ? (
@@ -142,14 +154,14 @@ export function SidebarChatHistory({
                       setError(null);
                       if (!space) { setError("This conversation's Workspace no longer exists."); return; }
                       try {
-                      if (entry.spaceId !== activeSpaceId) {
-                        await invoke(ARC_IPC.activateSpace, entry.spaceId);
-                      }
-                      await invoke(CHROME_IPC.open, {
-                        chatId: entry.id,
-                        kind: "agent",
-                        spaceId: entry.spaceId,
-                      });
+                        if (entry.spaceId !== activeSpaceId) {
+                          await invoke(ARC_IPC.activateSpace, entry.spaceId);
+                        }
+                        await invoke(CHROME_IPC.open, {
+                          chatId: entry.id,
+                          kind: "agent",
+                          spaceId: entry.spaceId,
+                        });
                       } catch { setError("The conversation could not be opened."); }
                     }}
                     title={entry.title}
@@ -167,7 +179,7 @@ export function SidebarChatHistory({
             <p className="zen-chat-history-empty">No conversations yet</p>
           )}
         </div>
-      ) : null}
+      </div>
     </section>
   );
 }

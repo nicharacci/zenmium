@@ -23,6 +23,51 @@
   --zen-surface-background: #202020;
   --zen-card-background: #1a1c1e;
   --zen-border-color: rgba(255, 255, 255, 0.1);
+
+  /* transitions.dev motion tokens: one shared rhythm for browser chrome,
+     panels, tabs, folders, and notifications. */
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --scale-large: 0.96;
+  --scale-medium: 0.97;
+  --scale-small: 0.98;
+  --blur-small: 2px;
+  --blur-medium: 3px;
+  --panel-open-dur: 400ms;
+  --panel-close-dur: 350ms;
+  --panel-blur: 2px;
+  --panel-ease: var(--ease-smooth-out);
+  --dropdown-open-dur: 250ms;
+  --dropdown-close-dur: 150ms;
+  --dropdown-pre-scale: 0.97;
+  --dropdown-closing-scale: 0.99;
+  --dropdown-ease: var(--ease-smooth-out);
+  --modal-open-dur: 250ms;
+  --modal-close-dur: 150ms;
+  --modal-scale: 0.96;
+  --modal-scale-close: 0.96;
+  --modal-ease: var(--ease-smooth-out);
+  --acc-expand: 250ms;
+  --acc-collapse: 250ms;
+  --acc-chevron: 250ms;
+  --acc-ease: var(--ease-smooth-out);
+  --toast-open: 350ms;
+  --toast-close: 250ms;
+  --toast-distance: 16px;
+  --toast-blur: 2px;
+  --toast-scale: 0.97;
+  --toast-ease: var(--ease-smooth-out);
 }
 @property --zen-workspace-color {
   syntax: "<color>";
@@ -119,8 +164,8 @@ button:disabled {
   backdrop-filter: blur(28px) saturate(1.15);
   box-shadow: inset 0 0 0 1px var(--zen-glass-edge);
   transition:
-    background 360ms ease,
-    box-shadow 360ms ease;
+    background var(--duration-slow) var(--ease-smooth-out),
+    box-shadow var(--duration-slow) var(--ease-smooth-out);
 }
 .zen-dither-wave {
   position: absolute;
@@ -235,8 +280,11 @@ button:disabled {
   box-shadow:
     0 3px 12px -4px rgba(0, 0, 0, 0.2);
   transition:
-    background 360ms ease,
-    box-shadow 220ms ease;
+    transform var(--panel-open-dur) var(--panel-ease),
+    opacity var(--panel-open-dur) var(--panel-ease),
+    filter var(--panel-open-dur) var(--panel-ease),
+    background var(--duration-slow) var(--ease-smooth-out),
+    box-shadow var(--duration-fast) var(--ease-smooth-out);
 }
 .zen-sidebar-surface[data-mode="expanded"] .zen-sidebar {
   /* The main window already paints the glass. A second tinted layer would
@@ -254,6 +302,36 @@ button:disabled {
   box-shadow:
     inset 0 0 0 1px var(--zen-glass-edge),
     0 3px 12px -4px rgba(0, 0, 0, 0.24);
+}
+.zen-sonner-toast[data-sonner-toast] {
+  --normal-bg: color-mix(in srgb, var(--zen-workspace-color) 9%, var(--card, #202326) 91%);
+  --normal-border: color-mix(in srgb, var(--zen-workspace-color) 32%, var(--zen-glass-edge) 68%);
+  --normal-text: var(--foreground, var(--zen-text, #e7e9ec));
+  background:
+    linear-gradient(145deg, var(--zen-glass-highlight), transparent 58%),
+    linear-gradient(115deg, var(--zen-glass-tint), transparent 88%),
+    var(--normal-bg) !important;
+  border-color: var(--normal-border) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--zen-card-shadow), 0 0 22px -14px var(--zen-workspace-color) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  filter: blur(var(--toast-blur));
+  transition:
+    transform var(--toast-open) var(--toast-ease),
+    opacity var(--toast-open) var(--toast-ease),
+    filter var(--toast-open) var(--toast-ease),
+    box-shadow var(--duration-fast) var(--ease-smooth-out);
+}
+.zen-sonner-toast[data-sonner-toast][data-mounted="true"] {
+  filter: blur(0);
+}
+.zen-sonner-toast[data-sonner-toast][data-removed="true"] {
+  filter: blur(var(--toast-blur));
+  transition-duration: var(--toast-close);
+}
+.zen-sonner-toast[data-sonner-toast] [data-description] {
+  color: color-mix(in srgb, var(--normal-text) 68%, transparent) !important;
 }
 .zen-window-drag {
   position: absolute;
@@ -274,6 +352,9 @@ button:disabled {
   border-radius: var(--zen-content-radius);
   background: var(--zen-surface-background);
   box-shadow: var(--zen-card-shadow);
+  transition:
+    box-shadow var(--duration-fast) var(--ease-smooth-out),
+    background var(--duration-slow) var(--ease-smooth-out);
 }
 .zen-blank-search {
   position: absolute;
@@ -383,6 +464,11 @@ button:disabled {
   background: transparent;
   border: 0;
   border-radius: 5px;
+  transition:
+    background var(--duration-quick) var(--ease-out),
+    color var(--duration-quick) var(--ease-out),
+    box-shadow var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-bookmarks-bar button[aria-current="page"] {
   box-shadow: inset 0 1px 1px rgb(255 255 255 / 20%), inset 0 -1px 2px rgb(0 0 0 / 24%);
@@ -418,7 +504,7 @@ button:disabled {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
-  animation: zen-glance-in 0.35s ease-out;
+  animation: zen-glance-in var(--duration-medium) var(--ease-out);
 }
 .zen-glance-frame {
   position: absolute;
@@ -450,8 +536,8 @@ button:disabled {
   border-radius: 50%;
   box-shadow: 0 0 12px 1px rgba(0, 0, 0, 0.07);
   transition:
-    background 50ms,
-    transform 50ms;
+    background var(--duration-micro) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-glance-actions button:hover {
   background: var(--secondary);

@@ -6,6 +6,7 @@ export const CHROME_IPC = {
   command: "chrome:command",
   commandEvent: "chrome:command-event",
   chatHistory: "chrome:chat-history",
+  notification: "chrome:notification",
   downloadAction: "browser:download-action",
   downloads: "browser:downloads",
   event: "chrome:state",
@@ -104,6 +105,15 @@ export interface BrowserUiState {
   sidebar: SidebarInteraction;
   overlay: BrowserOverlayState | null;
   dark: boolean;
+}
+
+export type BrowserNotificationKind = "info" | "success" | "warning" | "error";
+export interface BrowserNotification {
+  kind: BrowserNotificationKind;
+  title: string;
+  description?: string;
+  id?: string;
+  duration?: number;
 }
 
 export interface ChatHistoryEntry {

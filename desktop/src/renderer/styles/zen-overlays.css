@@ -143,7 +143,7 @@ html[data-zen-overlay-theme="light"] {
 .zen-onboarding-chrome-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 8px; color: var(--zo-muted); font-size: 11px; }
 .zen-onboarding-chrome-toolbar .zen-overlay-button { flex: 0 0 auto; padding: 7px 10px; }
 .zen-onboarding-chrome-list { display: grid; gap: 7px; max-height: 245px; overflow: auto; padding: 2px; overscroll-behavior: contain; }
-.zen-onboarding-chrome-row { display: flex; align-items: flex-start; gap: 11px; padding: 11px 12px; border: 1px solid color-mix(in srgb, var(--zo-text) 9%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--zo-text) 4%, transparent); cursor: pointer; transition: border-color 160ms ease, background 160ms ease, opacity 160ms ease; }
+.zen-onboarding-chrome-row { display: flex; align-items: flex-start; gap: 11px; padding: 11px 12px; border: 1px solid color-mix(in srgb, var(--zo-text) 9%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--zo-text) 4%, transparent); cursor: pointer; transition: border-color var(--duration-quick) var(--ease-out), background var(--duration-quick) var(--ease-out), opacity var(--duration-quick) var(--ease-out); }
 .zen-onboarding-chrome-row:hover { border-color: color-mix(in srgb, var(--zo-primary) 42%, transparent); background: color-mix(in srgb, var(--zo-primary) 8%, transparent); }
 .zen-onboarding-chrome-row[data-imported="true"] { cursor: default; opacity: .72; }
 .zen-onboarding-chrome-row > input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--zo-primary); }
@@ -190,7 +190,7 @@ html[data-zen-overlay-theme="light"] {
   background: rgb(8 10 12 / 19%);
   backdrop-filter: blur(3px) saturate(105%);
   -webkit-backdrop-filter: blur(3px) saturate(105%);
-  animation: zen-overlay-backdrop-in 150ms ease-out both;
+  animation: zen-overlay-backdrop-in var(--duration-quick) var(--ease-out) both;
 }
 html[data-zen-overlay-kind="address"] .zen-overlay-backdrop,
 html[data-zen-overlay-kind="new-tab"] .zen-overlay-backdrop {
@@ -215,7 +215,7 @@ html[data-zen-overlay-kind="new-tab"] .zen-overlay-backdrop {
   box-shadow: var(--zo-shadow), -8px 0 24px -16px var(--zo-edge-color);
   backdrop-filter: blur(24px) saturate(1.25);
   -webkit-backdrop-filter: blur(24px) saturate(1.25);
-  animation: zen-overlay-panel-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: zen-overlay-panel-in var(--modal-open-dur) var(--modal-ease) both;
   scrollbar-width: thin;
   scrollbar-color: var(--zo-border) transparent;
 }
@@ -306,6 +306,8 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   border-radius: 18px 0 0 18px;
   border: 1px solid transparent;
   animation-name: zen-overlay-drawer-in;
+  animation-duration: var(--panel-open-dur);
+  animation-timing-function: var(--panel-ease);
 }
 .zen-overlay-root.is-drawer:not(.is-chat-themed) .zen-overlay-panel--drawer {
   background: transparent;
@@ -685,13 +687,13 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
     inset 0 1px 0 rgb(255 255 255 / 5%),
     0 5px 18px -16px color-mix(in srgb, var(--zen-workspace-color) 72%, transparent);
   transition:
-    border-color 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
+    border-color var(--duration-quick) var(--ease-out),
+    background var(--duration-quick) var(--ease-out),
+    box-shadow var(--duration-quick) var(--ease-out);
 }
 .zen-beui-chat-composer:focus-within {
   border-color: color-mix(in srgb, var(--zen-workspace-color) 72%, white 8%) !important;
-  animation: zen-chat-composer-glow 900ms ease-out both;
+  animation: zen-chat-composer-glow var(--duration-very-slow) var(--ease-out) both;
 }
 .zen-beui-chat-composer textarea:focus-visible {
   outline: none !important;
@@ -734,13 +736,15 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   pointer-events: none;
 }
 .is-closing .zen-overlay-backdrop {
-  animation: zen-overlay-backdrop-out 150ms ease-in both;
+  animation: zen-overlay-backdrop-out var(--modal-close-dur) var(--ease-smooth-out) both;
 }
 .is-closing .zen-overlay-panel {
-  animation: zen-overlay-panel-out 150ms ease-in both;
+  animation: zen-overlay-panel-out var(--modal-close-dur) var(--modal-ease) both;
 }
 .is-closing .zen-overlay-panel--drawer {
   animation-name: zen-overlay-drawer-out;
+  animation-duration: var(--panel-close-dur);
+  animation-timing-function: var(--panel-ease);
 }
 .zen-overlay-root button,
 .zen-overlay-root input,
@@ -808,8 +812,8 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   background: var(--zo-fill);
   white-space: nowrap;
   transition:
-    background 120ms,
-    transform 100ms;
+    background var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-overlay-button:hover:not(:disabled) {
   background: var(--zo-hover);
@@ -856,8 +860,8 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   border-radius: 5px;
   background: transparent;
   transition:
-    background 100ms,
-    transform 100ms;
+    background var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
 }
 .zen-overlay-menu-item > span {
   flex: 1;
@@ -1350,7 +1354,7 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   background: var(--zo-hover);
   border: 1px solid var(--zo-border);
   border-radius: 20px;
-  transition: background 150ms;
+  transition: background var(--duration-quick) var(--ease-out);
 }
 .zen-overlay-switch > span::after {
   content: "";
@@ -1360,7 +1364,9 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   border-radius: 50%;
   background: var(--zo-muted);
   margin: 2px;
-  transition: transform 150ms;
+  transition:
+    transform var(--duration-quick) var(--ease-out),
+    background var(--duration-quick) var(--ease-out);
 }
 .zen-overlay-switch input:checked + span {
   background: var(--zo-primary);
@@ -1683,7 +1689,7 @@ html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
   margin: 2px 0;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 90ms;
+  transition: background var(--duration-micro) var(--ease-out);
 }
 .zen-address-suggestion .zen-overlay-text strong {
   font-size: 14px;
