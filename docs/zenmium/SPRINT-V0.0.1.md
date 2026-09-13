@@ -53,14 +53,21 @@ Work on `2026-09-12`, update existing PR #8, honor protected main. Merge/tag/pub
   provide (Alt-click Glance and an unfocused split pane).
 - Live browser UI verifier: **14 flows passed**; CDP-only native focus
   limitations are recorded separately in its proof output.
-- Secret scans passed with **0 findings** in 330 source text files and 15 build
+- Secret scans passed with **0 findings** in 334 source text files and 15 build
   text files.
 - A local macOS `Zenmium.app` bundle was produced, distribution-signed, and
   verified on disk. Its bundle name, `com.zenmium.desktop` identifier, HTTP/
   HTTPS URL registrations, app icon, ASAR integrity, and required Electron
   fuses were verified. Notarization was skipped because credentials/options are
   not configured.
-- PR #8 remains open. GitHub Actions run `34777755375` failed before starting
+- The packaged build was written to `/tmp/zenmium-package-20260913-onboarding-273a51f/`
+  and launched from `mac-arm64/Zenmium.app`. The distributable copies are
+  `~/Downloads/Zenmium-0.0.1-arm64.dmg` (SHA-256
+  `37a5ca9408c4fdcb7076f06ded8d08ac62bd944cf435a56dfef6285384db88fe`)
+  and `~/Downloads/Zenmium-0.0.1-arm64.zip` (SHA-256
+  `3e164d9f61018f9ad496b99799a68762f45fd6e4c1848d742bbce3a312c4a3cd`).
+- PR #8 remains open. GitHub Actions run `34779444455` (job
+  `103783636225`) failed before starting
   any workflow step and exposed no job log; this is the existing account/billing
   infrastructure blocker, not a failed local TypeScript, build, or test step.
 - The genuine 1Password provider is not connected in this environment; the
