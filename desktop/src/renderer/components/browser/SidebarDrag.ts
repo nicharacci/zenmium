@@ -1,9 +1,15 @@
 import type { Invoke } from "@shared/browser-ui";
-import { ARC_IPC, type ArcState, type Tab } from "@shared/ipc";
+import {
+  ARC_IPC,
+  MAX_ESSENTIALS,
+  type ArcState,
+  type Tab,
+  type TabMoveResult,
+} from "@shared/ipc";
 import type { DragEvent } from "react";
 import { useRef, useState } from "react";
 
-export const MAX_ESSENTIALS = 12;
+export { MAX_ESSENTIALS };
 const TAB_MIME = "application/x-zenmium-tab";
 export interface TabDestination {
   beforeId?: string | null;
@@ -15,54 +21,37 @@ export interface TabDestination {
 export const isEssentialTab = (tab: Tab) =>
   tab.kind === "pinned" && !tab.folderId;
 
-/** Folder pins are ordinary rows; only the icon-only essential tiles use slots. */
+/** Eight is a presentation capacity; additional saved pins must remain droppable. */
 export function canDropTab(
-  state: ArcState,
-  tab: Tab,
-  destination: TabDestination
+  _state: ArcState,
+  _tab: Tab,
+  _destination: TabDestination
 ) {
-  const kind = destination.kind ?? tab.kind;
-  let { folderId } = destination;
-  if (folderId === undefined) {
-    folderId = destination.spaceId === tab.spaceId ? tab.folderId : null;
-  }
-  if (
-    kind !== "pinned" ||
-    folderId ||
-    (isEssentialTab(tab) && tab.spaceId === destination.spaceId)
-  ) {
-    return true;
-  }
-  return (
-    state.tabs.filter(
-      (candidate) =>
-        candidate.spaceId === destination.spaceId && isEssentialTab(candidate)
-    ).length < MAX_ESSENTIALS
-  );
+  return true;
 }
 
 /** Movement changes membership before ordering; folder moves implicitly pin in ArcCore. */
 export async function moveSidebarTab(
   invoke: Invoke,
   tab: Tab,
-  destination: TabDestination
+  destination: TabDestination,
+  options: { confirmReload?: boolean } = {}
 ) {
   const changingSpace = tab.spaceId !== destination.spaceId;
   let { kind } = tab;
-  // Unpin before crossing workspaces when the destination is a folder or a
-  // regular row. The intermediate root must not consume an essential slot.
-  if (
-    kind === "pinned" &&
-    (destination.kind === "today" || (changingSpace && destination.folderId))
-  ) {
-    await invoke(ARC_IPC.unpinTab, tab.id);
-    kind = "today";
-  }
   if (changingSpace) {
-    await invoke("arc:moveTabToSpace", {
+    // Do not unpin or reorder before the native profile boundary accepts the
+    // move. Declining its reload warning must leave the original tab intact.
+    const result = await invoke<TabMoveResult>("arc:moveTabToSpace", {
       id: tab.id,
       spaceId: destination.spaceId,
+      ...(options.confirmReload ? { confirmReload: true } : {}),
     });
+    if (result?.status === "confirmation-required") return result;
+  }
+  if (kind === "pinned" && destination.kind === "today") {
+    await invoke(ARC_IPC.unpinTab, tab.id);
+    kind = "today";
   }
   if (destination.folderId) {
     // moveToFolder pins directly, so it also works when essentials are full.
@@ -70,16 +59,6 @@ export async function moveSidebarTab(
       folderId: destination.folderId,
       id: tab.id,
     });
-    if (changingSpace && tab.kind === "pinned" && tab.pinnedUrl) {
-      // The temporary unpin above must not replace the original reset target.
-      await invoke(ARC_IPC.updateTab, {
-        id: tab.id,
-        patch: {
-          pinnedChanged: tab.pinnedUrl !== tab.url,
-          pinnedUrl: tab.pinnedUrl,
-        },
-      });
-    }
   } else if (
     destination.kind === "pinned" &&
     (kind === "today" || (tab.folderId && !changingSpace))
@@ -108,6 +87,8 @@ export function useSidebarDrag(
     position: "before" | "after" | "inside";
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingMove, setPendingMove] = useState<{ tabId: string; destination: TabDestination; reason: string } | null>(null);
+  const [moving, setMoving] = useState(false);
 
   const clear = () => {
     sourceId.current = null;
@@ -159,9 +140,13 @@ export function useSidebarDrag(
       return;
     }
     try {
-      await moveSidebarTab(invoke, tab, destination);
-    } catch {
-      setError("This tab could not be moved. Try again.");
+      const result = await moveSidebarTab(invoke, tab, destination);
+      if (result?.status === "confirmation-required") {
+        setPendingMove({ tabId: tab.id, destination, reason: result.reason });
+        setDragging(true);
+      }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "This tab could not be moved. Try again.");
     }
   };
 
@@ -253,7 +238,20 @@ export function useSidebarDrag(
     };
   };
 
-  return { clear, draggingId, error, row, zone };
+  const cancelMove = () => { setPendingMove(null); setDragging(false); };
+  const confirmMove = async () => {
+    if (!pendingMove || moving) return;
+    const tab = state.tabs.find((item) => item.id === pendingMove.tabId);
+    if (!tab) { cancelMove(); return; }
+    setMoving(true);
+    try {
+      await moveSidebarTab(invoke, tab, pendingMove.destination, { confirmReload: true });
+      cancelMove();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "The tab could not be moved.");
+    } finally { setMoving(false); }
+  };
+  return { clear, draggingId, error, row, zone, pendingMove, moving, confirmMove, cancelMove };
 }
 
 export type SidebarDrag = ReturnType<typeof useSidebarDrag>;

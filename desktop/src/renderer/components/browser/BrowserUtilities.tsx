@@ -5,13 +5,20 @@ import {
   type DownloadRecord,
   type PanelKind,
 } from "@shared/browser-ui";
-import { ARC_IPC, SPACE_COLORS, type Space, type TabUpdate } from "@shared/ipc";
+import {
+  ARC_IPC,
+  SPACE_COLORS,
+  type Space,
+  type TabUpdate,
+} from "@shared/ipc";
 import { resolveAddress } from "@shared/navigation";
 import {
   Archive,
+  Bookmark,
   ArrowLeft,
   ArrowUpRight,
   Check,
+  ChevronDown,
   Columns2,
   Download,
   File,
@@ -40,6 +47,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  type CSSProperties,
   type FormEvent,
   useCallback,
   useEffect,
@@ -47,7 +55,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { AgentRail } from "../AgentRail";
+import { BeuiChatDrawer } from "./BeuiChatDrawer";
+import { GoalpostOnboarding } from "./GoalpostOnboarding";
+import { NativePageActions, NativeSettings } from "./BrowserNativePanels";
+import { ThemeColorPicker } from "./ThemeColorPicker";
 import {
   ActionStatus,
   checkedInvoke,
@@ -86,31 +97,15 @@ export function BrowserUtilities(props: UtilityProps) {
       return <AgentPanel {...props} />;
     case "site-info":
       return <SiteInfoPanel {...props} />;
+    case "onboarding":
+      return <GoalpostOnboarding {...props} />;
     default:
       return null;
   }
 }
 
-function AgentPanel({ invoke, close }: UtilityProps) {
-  const rail = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const frame = requestAnimationFrame(() =>
-      rail.current?.querySelector<HTMLTextAreaElement>("textarea")?.focus()
-    );
-    return () => cancelAnimationFrame(frame);
-  }, []);
-  return (
-    <>
-      <PanelHeader
-        close={close}
-        subtitle="Work with the current page"
-        title="Agent"
-      />
-      <div className="zen-overlay-agent" ref={rail}>
-        <AgentRail defaultOpen invoke={invoke} />
-      </div>
-    </>
-  );
+function AgentPanel({ state, ui, invoke }: UtilityProps) {
+  return <BeuiChatDrawer invoke={invoke} state={state} ui={ui} />;
 }
 
 function BrowserMenu({ state, invoke, close }: UtilityProps) {
@@ -182,6 +177,7 @@ function BrowserMenu({ state, invoke, close }: UtilityProps) {
             Commands
           </MenuItem>
           <hr />
+          <MenuItem disabled={Boolean(action.busy)} icon={Bookmark} onClick={() => open("bookmarks")}>Bookmarks</MenuItem>
           <MenuItem
             disabled={Boolean(action.busy)}
             icon={History}
@@ -271,6 +267,7 @@ function BrowserMenu({ state, invoke, close }: UtilityProps) {
         </RovingMenu>
       )}
       <ActionStatus {...action} />
+      {!split && <NativePageActions state={state} invoke={invoke} openFind={() => open("find")}/>}
     </>
   );
 }
@@ -292,10 +289,6 @@ function TabMenu({ state, ui, invoke, close }: UtilityProps) {
       </>
     );
   const isEssential = tab.kind === "pinned" && !tab.folderId;
-  const essentialCount = state.tabs.filter(
-    (item) =>
-      item.spaceId === tab.spaceId && item.kind === "pinned" && !item.folderId
-  ).length;
   const call = (
     label: string,
     channel: string,
@@ -439,8 +432,7 @@ function TabMenu({ state, ui, invoke, close }: UtilityProps) {
           <MenuItem
             disabled={
               Boolean(action.busy) ||
-              !tab.folderId ||
-              (!isEssential && essentialCount >= 12)
+              !tab.folderId
             }
             icon={FolderOpen}
             onClick={() =>
@@ -493,10 +485,7 @@ function TabMenu({ state, ui, invoke, close }: UtilityProps) {
             </>
           )}
           <MenuItem
-            disabled={
-              Boolean(action.busy) || (!isEssential && essentialCount >= 12)
-            }
-            hint={`${essentialCount}/12`}
+            disabled={Boolean(action.busy)}
             icon={isEssential ? PinOff : Pin}
             onClick={() =>
               call(
@@ -622,8 +611,60 @@ function WorkspacePanel(props: UtilityProps) {
   const [editing, setEditing] = useState<string | "new" | null>(
     ui.overlay?.kind === "workspace-edit" ? (ui.overlay.spaceId ?? "new") : null
   );
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const renameInput = useRef<HTMLInputElement>(null);
+  const activateTimer = useRef<number | undefined>(undefined);
   const action = useSurfaceAction();
   const space = state.spaces.find((item) => item.id === editing);
+  useEffect(
+    () => () => window.clearTimeout(activateTimer.current),
+    []
+  );
+  useEffect(() => {
+    if (!renaming) return;
+    const frame = requestAnimationFrame(() => {
+      renameInput.current?.focus();
+      renameInput.current?.select();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [renaming]);
+  const beginRename = (item: Space) => {
+    window.clearTimeout(activateTimer.current);
+    setRenameValue(item.name);
+    setRenaming(item.id);
+  };
+  const commitRename = (item: Space) => {
+    if (renaming !== item.id) return;
+    const name = renameValue.trim();
+    if (!name) {
+      setRenaming(null);
+      return;
+    }
+    setRenaming(null);
+    void action.run(
+      "Renaming workspace",
+      () =>
+        checkedInvoke(invoke, ARC_IPC.updateSpace, {
+          id: item.id,
+          patch: { name },
+        }),
+      () => {
+        setRenameValue("");
+      }
+    );
+  };
+  const activate = (item: Space) => {
+    window.clearTimeout(activateTimer.current);
+    activateTimer.current = window.setTimeout(() => {
+      activateTimer.current = undefined;
+      void action.run(
+        "Switching workspace",
+        () => checkedInvoke(invoke, ARC_IPC.activateSpace, item.id),
+        close
+      );
+    }, 220);
+  };
   return (
     <>
       <PanelHeader
@@ -655,50 +696,82 @@ function WorkspacePanel(props: UtilityProps) {
         <>
           <div className="zen-overlay-list">
             {state.spaces.map((item) => (
-              <div className="zen-overlay-list-row" key={item.id}>
-                <button
-                  aria-current={
-                    item.id === state.activeSpaceId ? "true" : undefined
-                  }
-                  className="zen-overlay-row-main"
-                  disabled={Boolean(action.busy)}
-                  onClick={() =>
-                    void action.run(
-                      "Switching workspace",
-                      () =>
-                        checkedInvoke(invoke, ARC_IPC.activateSpace, item.id),
-                      close
-                    )
-                  }
-                  type="button"
-                >
-                  <span
-                    className="zen-overlay-space-icon"
-                    style={{ color: item.color }}
+              <div
+                className="zen-overlay-list-row zen-overlay-workspace-row"
+                key={item.id}
+                style={{ "--zen-space-color": item.color } as CSSProperties}
+              >
+                {renaming === item.id ? (
+                  <form
+                    className="zen-overlay-workspace-rename"
+                    data-escape-boundary="true"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      commitRename(item);
+                    }}
                   >
-                    {item.icon || "◉"}
-                  </span>
-                  <span className="zen-overlay-text">
-                    <strong>{item.name}</strong>
-                    <small>
-                      {
-                        state.tabs.filter((tab) => tab.spaceId === item.id)
-                          .length
-                      }{" "}
-                      tabs
-                    </small>
-                  </span>
-                  {item.id === state.activeSpaceId && (
-                    <Check aria-label="Current workspace" size={16} />
-                  )}
-                </button>
-                <SurfaceButton
-                  aria-label={`Edit ${item.name}`}
-                  className="zen-overlay-icon-button"
-                  disabled={Boolean(action.busy)}
-                  icon={Pencil}
-                  onClick={() => setEditing(item.id)}
-                />
+                    <input
+                      aria-label={`Rename ${item.name}`}
+                      maxLength={80}
+                      onBlur={() => commitRename(item)}
+                      onChange={(event) => setRenameValue(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Escape") {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setRenaming(null);
+                        }
+                      }}
+                      ref={renameInput}
+                      value={renameValue}
+                    />
+                    <SurfaceButton
+                      aria-label={`Save ${item.name}`}
+                      className="zen-overlay-icon-button"
+                      icon={Check}
+                      type="submit"
+                    />
+                  </form>
+                ) : (
+                  <button
+                    aria-current={
+                      item.id === state.activeSpaceId ? "true" : undefined
+                    }
+                    className="zen-overlay-row-main"
+                    disabled={Boolean(action.busy)}
+                    onClick={() => activate(item)}
+                    onDoubleClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      beginRename(item);
+                    }}
+                    title="Double-click to rename"
+                    type="button"
+                  >
+                    <span className="zen-overlay-text">
+                      <strong>{item.name}</strong>
+                      <small>
+                        {
+                          state.tabs.filter((tab) => tab.spaceId === item.id)
+                            .length
+                        }{" "}
+                        tabs
+                      </small>
+                    </span>
+                    {item.id === state.activeSpaceId && (
+                      <Check aria-label="Current workspace" size={16} />
+                    )}
+                  </button>
+                )}
+                {renaming !== item.id ? (
+                  <SurfaceButton
+                    aria-label={`Edit ${item.name}`}
+                    className="zen-overlay-icon-button"
+                    disabled={Boolean(action.busy)}
+                    icon={Pencil}
+                    onClick={() => setEditing(item.id)}
+                  />
+                ) : null}
               </div>
             ))}
           </div>
@@ -724,11 +797,21 @@ function WorkspaceForm({
   space,
   done,
 }: UtilityProps & { space?: Space; done: () => void }) {
-  const [name, setName] = useState(space?.name ?? "");
+  const [name, setName] = useState(
+    space?.name ?? `Workspace ${state.spaces.length + 1}`
+  );
   const [color, setColor] = useState(space?.color ?? SPACE_COLORS[0]);
-  const [icon, setIcon] = useState(space?.icon ?? "◉");
   const [confirm, setConfirm] = useState(false);
   const [created, setCreated] = useState<string | null>(null);
+  useEffect(() => {
+    const root = document.documentElement;
+    const previous = root.style.getPropertyValue("--zen-workspace-preview");
+    root.style.setProperty("--zen-workspace-preview", color);
+    return () => {
+      if (previous) root.style.setProperty("--zen-workspace-preview", previous);
+      else root.style.removeProperty("--zen-workspace-preview");
+    };
+  }, [color]);
   const action = useSurfaceAction();
   const save = (event: FormEvent) => {
     event.preventDefault();
@@ -741,7 +824,7 @@ function WorkspaceForm({
           const result = await checkedInvoke<Space>(
             invoke,
             ARC_IPC.createSpace,
-            { color, icon, name: name.trim() }
+            { color, name: name.trim() }
           );
           if (!result?.id)
             throw new Error(
@@ -752,14 +835,18 @@ function WorkspaceForm({
         }
         await checkedInvoke(invoke, ARC_IPC.updateSpace, {
           id,
-          patch: { color, icon: icon.trim() || "◉", name: name.trim() },
+          patch: { color, name: name.trim() },
         });
       },
       done
     );
   };
   return (
-    <div className="zen-overlay-form">
+    <div
+      className="zen-overlay-form"
+      data-workspace-preview={color}
+      style={{ "--zen-space-color": color } as CSSProperties}
+    >
       <form className="zen-overlay-form-fields" onSubmit={save}>
         <label>
           Workspace name
@@ -773,27 +860,6 @@ function WorkspaceForm({
             value={name}
           />
         </label>
-        <div className="zen-overlay-form-columns">
-          <label>
-            Icon
-            <input
-              aria-label="Workspace icon or emoji"
-              disabled={Boolean(action.busy)}
-              maxLength={12}
-              onChange={(event) => setIcon(event.target.value)}
-              value={icon}
-            />
-          </label>
-          <label>
-            Color
-            <input
-              disabled={Boolean(action.busy)}
-              onChange={(event) => setColor(event.target.value)}
-              type="color"
-              value={/^#[0-9a-f]{6}$/i.test(color) ? color : SPACE_COLORS[0]}
-            />
-          </label>
-        </div>
         <fieldset
           aria-label="Suggested workspace colors"
           className="zen-overlay-swatches"
@@ -1455,11 +1521,24 @@ function ExtensionsPanel({ invoke, close }: UtilityProps) {
   );
 }
 
-function SettingsPanel({ ui, invoke, close }: UtilityProps) {
+function SettingsPanel({ state, ui, invoke, close }: UtilityProps) {
   const p = ui.preferences;
   const [width, setWidth] = useState(p.width);
+  const [tint, setTint] = useState(p.glassTint);
   const action = useSurfaceAction();
+  const activeSpace = state.spaces.find(
+    (space) => space.id === state.activeSpaceId
+  );
+  const themeOptions = Array.from(
+    new Map([
+      ...state.spaces.map((space) => [space.color, space.name] as const),
+      ...SPACE_COLORS.map(
+        (color, index) => [color, `Workspace color ${index + 1}`] as const
+      ),
+    ])
+  ).map(([color, label]) => ({ color, label }));
   useEffect(() => setWidth(p.width), [p.width]);
+  useEffect(() => setTint(p.glassTint), [p.glassTint]);
   const patch = (change: Partial<BrowserPreferences>) =>
     void action.run("Saving preferences", () =>
       checkedInvoke(invoke, CHROME_IPC.preferences, change)
@@ -1489,6 +1568,46 @@ function SettingsPanel({ ui, invoke, close }: UtilityProps) {
             <option value="light">Light</option>
           </select>
         </label>
+        <div className="zen-overlay-setting zen-overlay-theme-setting">
+          <span>
+            Theme color
+            <small>Sets the active workspace accent</small>
+          </span>
+          <ThemeColorPicker value={activeSpace?.color ?? SPACE_COLORS[0]} options={themeOptions} disabled={Boolean(action.busy) || !activeSpace}
+            onChange={(color) => activeSpace && void action.run("Changing theme color", () => checkedInvoke(invoke, ARC_IPC.updateSpace, {id: activeSpace.id, patch: {color}}))}/>
+        </div>
+        <label className="zen-overlay-setting zen-overlay-range-setting">
+          <span>
+            Glass tint
+            <small>Blend more workspace color into the liquid glass</small>
+          </span>
+          <span className="zen-overlay-range-control">
+            <input
+              aria-label="Glass tint percentage"
+              disabled={Boolean(action.busy)}
+              max={100}
+              min={0}
+              onChange={(event) => {
+                const value = event.target.valueAsNumber;
+                setTint(value);
+                document.documentElement.style.setProperty("--zen-glass-tint-amount", `${value}%`);
+              }}
+              onPointerUp={(event) => patch({glassTint: event.currentTarget.valueAsNumber})}
+              onKeyUp={(event) => patch({glassTint: event.currentTarget.valueAsNumber})}
+              onBlur={() => { if (tint !== p.glassTint) patch({glassTint: tint}); }}
+              step={1}
+              type="range"
+              value={tint}
+            />
+            <output>{tint}%</output>
+          </span>
+        </label>
+        <PreferenceSwitch
+          change={(themedChatWindow) => patch({ themedChatWindow })}
+          checked={p.themedChatWindow}
+          disabled={Boolean(action.busy)}
+          label="Themed chat window"
+        />
         <label className="zen-overlay-setting">
           <span>Sidebar side</span>
           <select
@@ -1512,11 +1631,10 @@ function SettingsPanel({ ui, invoke, close }: UtilityProps) {
                   .value as BrowserPreferences["sidebarMode"],
               })
             }
-            value={p.sidebarMode}
+            value={p.sidebarMode === "expanded" ? "expanded" : "collapsed"}
           >
             <option value="expanded">Expanded</option>
-            <option value="collapsed">Collapsed rail</option>
-            <option value="compact">Compact, reveal on hover</option>
+            <option value="collapsed">Hover reveal</option>
           </select>
         </label>
         <form
@@ -1583,8 +1701,9 @@ function SettingsPanel({ ui, invoke, close }: UtilityProps) {
           change={(bookmarksBar) => patch({ bookmarksBar })}
           checked={p.bookmarksBar}
           disabled={Boolean(action.busy)}
-          label="Show bookmarks bar"
+          label="Show overflow essentials as bookmarks"
         />
+        <NativeSettings state={state} ui={ui} invoke={invoke}/>
       </div>
       <ActionStatus {...action} />
     </>

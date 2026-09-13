@@ -5,6 +5,7 @@ export const CHROME_IPC = {
   close: "chrome:close",
   command: "chrome:command",
   commandEvent: "chrome:command-event",
+  chatHistory: "chrome:chat-history",
   downloadAction: "browser:download-action",
   downloads: "browser:downloads",
   event: "chrome:state",
@@ -20,12 +21,14 @@ export const CHROME_IPC = {
 } as const;
 
 export const preferencesSchema = z.object({
-  bookmarksBar: z.boolean().default(false),
+  bookmarksBar: z.boolean().default(true),
+  glassTint: z.number().int().min(0).max(100).default(12),
   newTabAtTop: z.boolean().default(true),
   searchEngine: z.enum(["duckduckgo", "google"]).default("duckduckgo"),
   side: z.enum(["left", "right"]).default("left"),
   sidebarMode: z.enum(["expanded", "collapsed", "compact"]).default("expanded"),
   theme: z.enum(["dark", "light", "system"]).default("dark"),
+  themedChatWindow: z.boolean().default(false),
   width: z.number().int().min(200).max(420).default(230),
 });
 export type BrowserPreferences = z.infer<typeof preferencesSchema>;
@@ -65,6 +68,9 @@ export type PanelKind =
   | "workspace-edit"
   | "history"
   | "downloads"
+  | "bookmarks"
+  | "find"
+  | "onboarding"
   | "extensions"
   | "settings"
   | "agent"
@@ -72,6 +78,7 @@ export type PanelKind =
   | "site-info";
 export interface BrowserOverlayState {
   kind: PanelKind;
+  chatId?: string;
   tabId?: string;
   spaceId?: string;
   x?: number;
@@ -84,13 +91,30 @@ export interface SidebarInteraction {
   dragging: boolean;
 }
 export interface BrowserUiState {
+  chatHistory: ChatHistoryEntry[];
   preferences: BrowserPreferences;
   sidebar: SidebarInteraction;
   overlay: BrowserOverlayState | null;
   dark: boolean;
 }
+
+export interface ChatHistoryEntry {
+  id: string;
+  messages?: ChatHistoryMessage[];
+  spaceId: string;
+  title: string;
+  updatedAt: number;
+}
+
+export interface ChatHistoryMessage {
+  id: string;
+  from: "user" | "assistant";
+  text: string;
+}
 export interface DownloadRecord {
   id: string;
+  profileId?: string;
+  spaceId?: string;
   filename: string;
   url: string;
   path: string;
@@ -128,6 +152,22 @@ export function sidebarRevealed(ui: BrowserUiState): boolean {
   );
 }
 
+export const SIDEBAR_ESSENTIAL_LIMIT = 8;
+/** Only overflow beyond the two sidebar rows reserves a top strip. */
+export function hasOverflowEssentials(state: ArcState): boolean {
+  return (
+    state.tabs.filter(
+      (tab) =>
+        tab.spaceId === state.activeSpaceId &&
+        tab.kind === "pinned" &&
+        !tab.folderId
+    ).length > SIDEBAR_ESSENTIAL_LIMIT
+  );
+}
+
+/** Width reserved by the docked agent pane while browsing remains live. */
+export const AGENT_DOCK_WIDTH = 380;
+
 /** The same geometry is used for CSS cards and native Chromium view bounds. */
 export function browserLayout(
   width: number,
@@ -138,17 +178,17 @@ export function browserLayout(
   const gutter = 8;
   const docked = p.sidebarMode === "expanded";
   const expanded = sidebarRevealed(ui);
-  const railWidth = expanded ? p.width : p.sidebarMode === "collapsed" ? 60 : 0;
+  // Collapsed and compact are both a transparent reveal boundary. The full
+  // sidebar floats above the live page when it is revealed; neither mode
+  // reserves a narrow icon rail in the page layout.
+  const railWidth = expanded ? p.width : 0;
   const sidebarWidth = railWidth + gutter * 2;
-  const reserved = docked
-    ? p.width + gutter
-    : p.sidebarMode === "collapsed"
-      ? 68
-      : 0;
+  const reserved = docked ? p.width + gutter : 0;
+  const agentReserved = ui.overlay?.kind === "agent" || ui.overlay?.kind === "bookmarks" ? AGENT_DOCK_WIDTH + gutter : 0;
   return {
     content: {
       height: Math.max(0, height - gutter * 2 - (p.bookmarksBar ? 30 : 0)),
-      width: Math.max(0, width - reserved - gutter * 2),
+      width: Math.max(0, width - reserved - gutter * 2 - agentReserved),
       x: gutter + (p.side === "left" ? reserved : 0),
       y: gutter + (p.bookmarksBar ? 30 : 0),
     },

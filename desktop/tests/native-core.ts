@@ -6,7 +6,7 @@
  * Every run creates and retains its own printed mkdtemp userData directory.
  */
 import assert from "node:assert/strict";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -133,6 +133,7 @@ const server = createServer((request, response) => {
     <h1>${title}</h1><a id="next" href="/page/linked">Next fixture</a>
     <a id="new-tab" href="/page/popup" target="_blank">New tab fixture</a>
     <button id="input-probe">Trusted input probe</button>
+    <input id="unsaved-input" aria-label="Fixture unsaved input">
     ${path === "/page/audio" ? '<audio id="tone" loop preload="auto" src="/tone.wav"></audio>' : ""}`);
 });
 
@@ -210,7 +211,8 @@ interface Harness {
 }
 
 function makeHarness(
-  directory = mkdtempSync(join(userData, "case-"))
+  directory = mkdtempSync(join(userData, "case-")),
+  configure?: (core: ArcCore) => void
 ): Harness {
   const win = new BrowserWindow({
     height: 900,
@@ -229,6 +231,7 @@ function makeHarness(
       () => {},
       (wc) => seen.add(wc)
     );
+    configure?.(core);
     core.setContentBounds({ height: 700, width: 1000, x: 8, y: 8 });
     core.boot();
     assert.equal(
@@ -686,10 +689,11 @@ const cases: NativeCase[] = [
         item.once("done", () => liveItems.delete(item));
       };
       // Set the path before BrowserDownloads reads it; this suppresses the dialog.
-      session.defaultSession.prependListener("will-download", configure);
+      wc.session.prependListener("will-download", configure);
       const downloads = new BrowserDownloads(directory, () => {
         changes++;
       });
+      downloads.attach(core.getProfileId(core.snapshot().activeSpaceId), core.snapshot().activeSpaceId, wc.session);
       const record = (target: string): DownloadRecord => {
         const value = downloads.list().find((entry) => entry.url === target);
         assert.ok(value, `Missing DownloadRecord for ${target}`);
@@ -784,13 +788,13 @@ const cases: NativeCase[] = [
           await waitFor(() => liveItems.size === 0, "fixture download cleanup");
         } finally {
           downloads.dispose();
-          session.defaultSession.off("will-download", configure);
+          wc.session.off("will-download", configure);
         }
       }
     },
   },
   {
-    name: "folder and workspace commands preserve ownership and Essentials capacity",
+    name: "folder and workspace commands preserve ownership while essentials overflow eight slots",
     async run({ core }) {
       const firstSpace = core.snapshot().activeSpaceId;
       const secondSpace = core.createSpace("Second").id;
@@ -810,33 +814,20 @@ const cases: NativeCase[] = [
       core.moveTabToSpace(foreign.id, "missing");
       assert.deepEqual(core.snapshot(), beforeForeign);
       core.activateSpace(firstSpace);
-      for (let index = 0; index < 12; index++) core.newTab({ kind: "pinned" });
+      for (let index = 0; index < 8; index++) core.newTab({ kind: "pinned" });
       const extra = core.newTab();
-      const beforePin = core.snapshot();
-      assert.throws(() => core.pinTab(extra.id), /12 Essentials/);
-      assert.deepEqual(
-        core.snapshot(),
-        beforePin,
-        "rejected pin must not mutate state"
-      );
-      // Folder pins do not consume one of the 12 standalone Essential slots.
+      core.pinTab(extra.id);
+      assert.equal(tab(core, extra.id).kind, "pinned");
+      // Folder pins do not consume one of the 8 standalone Essential slots.
       core.moveToFolder(extra.id, folder.id);
       assert.equal(tab(core, extra.id).kind, "pinned");
       assert.equal(tab(core, extra.id).folderId, folder.id);
-      const beforeUnfolder = core.snapshot();
-      assert.throws(() => core.moveToFolder(extra.id, null), /12 Essentials/);
-      assert.deepEqual(core.snapshot(), beforeUnfolder);
+      core.moveToFolder(extra.id, null);
+      assert.equal(tab(core, extra.id).folderId, null);
       core.pinTab(foreign.id);
-      const beforeMove = core.snapshot();
-      assert.throws(
-        () => core.moveTabToSpace(foreign.id, firstSpace),
-        /12 Essentials/
-      );
-      assert.deepEqual(
-        core.snapshot(),
-        beforeMove,
-        "failed cross-workspace move must be atomic"
-      );
+      assert.equal(core.moveTabToSpace(foreign.id, firstSpace).status, "moved");
+      assert.equal(tab(core, foreign.id).spaceId, firstSpace);
+      core.moveToFolder(extra.id, folder.id);
       core.deleteFolder(folder.id);
       assert.equal(tab(core, extra.id).kind, "today");
       assert.equal(tab(core, extra.id).folderId, null);
@@ -847,16 +838,12 @@ const cases: NativeCase[] = [
     },
   },
   {
-    name: "creating a thirteenth Essential rejects without leaving a phantom tab",
+    name: "creating overflow Essentials preserves every saved destination",
     async run({ core }) {
-      for (let index = 0; index < 12; index++) core.newTab({ kind: "pinned" });
-      const before = core.snapshot();
-      assert.throws(() => core.newTab({ kind: "pinned" }), /12 Essentials/);
-      assert.deepEqual(
-        core.snapshot(),
-        before,
-        "a rejected create must not append an unannounced Today tab"
-      );
+      for (let index = 0; index < 8; index++) core.newTab({ kind: "pinned" });
+      const extra = core.newTab({ kind: "pinned" });
+      assert.equal(core.snapshot().tabs.filter((t) => t.kind === "pinned").length, 9);
+      assert.equal(tab(core, extra.id).pinnedUrl, "about:blank");
     },
   },
   {
@@ -1370,7 +1357,7 @@ const cases: NativeCase[] = [
         before,
         "same-workspace moves preserve the split"
       );
-      core.moveTabToSpace(b.id, secondSpace);
+      core.moveTabToSpace(b.id, secondSpace, { confirmReload: true });
       assert.equal(core.snapshot().activeTabId, a.id);
       assert.equal(core.snapshot().splitTabId, null);
       assert.equal(core.snapshot().splitPrimaryTabId, null);
@@ -1378,11 +1365,11 @@ const cases: NativeCase[] = [
         attached(win).map((view) => view.webContents),
         [a.wc]
       );
-      assert.equal(b.wc.isDestroyed(), false);
-      core.moveTabToSpace(b.id, firstSpace);
+      await waitFor(() => b.wc.isDestroyed(), "source profile view destroyed");
+      core.moveTabToSpace(b.id, firstSpace, { confirmReload: true });
       core.toggleSplit(b.id);
       core.activateTab(b.id);
-      core.moveTabToSpace(b.id, secondSpace);
+      core.moveTabToSpace(b.id, secondSpace, { confirmReload: true });
       assert.equal(core.snapshot().activeTabId, a.id);
       assert.deepEqual(
         attached(win).map((view) => view.webContents),
@@ -1392,7 +1379,7 @@ const cases: NativeCase[] = [
       assert.equal(core.snapshot().activeTabId, b.id);
       assert.deepEqual(
         attached(win).map((view) => view.webContents),
-        [b.wc]
+        [core.getWebContentsForTab(b.id)]
       );
       assert.deepEqual(attached(win)[0]!.getBounds(), {
         height: 700,
@@ -1453,6 +1440,234 @@ const cases: NativeCase[] = [
     },
   },
 ];
+
+cases.push(
+  {
+    name: "profiles isolate real Chromium cookies, local storage, history and Glance",
+    async run({ core }, url) {
+      const firstSpace = core.snapshot().activeSpaceId;
+      const destination = url("/page/profile-isolation");
+      const first = await open(core, destination);
+      const firstSession = core.getSessionForSpace(firstSpace);
+      assert.equal(first.wc.session, firstSession);
+      assert.notEqual(firstSession, session.defaultSession, "fresh profile is not the legacy shared session");
+      await first.wc.executeJavaScript("document.cookie = 'isolation_fixture=first; SameSite=Lax; path=/'; localStorage.setItem('isolation_fixture', 'first');");
+      const secondSpace = core.createSpace("Separate account").id;
+      const second = await open(core, destination);
+      const secondSession = core.getSessionForSpace(secondSpace);
+      assert.notEqual(secondSession, firstSession);
+      assert.equal(second.wc.session, secondSession);
+      assert.notEqual(core.getProfileId(firstSpace), core.getProfileId(secondSpace));
+      assert.equal(await second.wc.executeJavaScript("document.cookie.includes('isolation_fixture=')"), false);
+      assert.equal(await second.wc.executeJavaScript("localStorage.getItem('isolation_fixture')"), null);
+      assert.equal(core.getHistoryForSpace(firstSpace).filter((entry) => entry.url === destination).length, 1);
+      assert.equal(core.getHistoryForSpace(secondSpace).filter((entry) => entry.url === destination).length, 1);
+      assert.ok(core.snapshot().history?.every((entry) => entry.spaceId === secondSpace));
+      core.openPeek(url("/page/profile-glance"));
+      const peek = core.getPeekView()!;
+      await waitFor(() => peek.webContents.getURL() === url("/page/profile-glance") && !peek.webContents.isLoading(), "profile Glance loads");
+      assert.equal(peek.webContents.session, secondSession);
+      assert.equal(core.getSpaceIdForWebContents(peek.webContents.id), secondSpace);
+      assert.equal(await peek.webContents.executeJavaScript("localStorage.getItem('isolation_fixture')"), null);
+      core.clearHistory();
+      assert.equal(core.getHistoryForSpace(secondSpace).length, 0);
+      assert.ok(core.getHistoryForSpace(firstSpace).length > 0);
+      core.activateSpace(firstSpace);
+      assert.equal(core.getPeekView(), null, "Glance cannot follow the user across profiles");
+      assert.equal(await first.wc.executeJavaScript("localStorage.getItem('isolation_fixture')"), "first");
+      assert.throws(() => core.getSessionForSpace("unknown-profile"), /Workspace not found/);
+      assert.throws(() => core.newTab({ spaceId: "unknown-profile", background: true }), /Workspace not found/);
+    },
+  },
+  {
+    name: "profile migration backs up bytes and retains default authentication only for formerly active workspace",
+    async run(_harness, url) {
+      const directory = mkdtempSync(join(userData, "legacy-profile-"));
+      mkdirSync(join(directory, "zenmium"));
+      const legacy: ArcState = {
+        activeSpaceId: "legacy-active", activeTabId: "legacy-tab", splitTabId: null,
+        spaces: [
+          { id: "legacy-other", name: "Other", color: "#6ee7a8", icon: "" },
+          { id: "legacy-active", name: "Active", color: "#6ee7a8", icon: "" },
+        ],
+        tabs: [{ id: "legacy-tab", spaceId: "legacy-active", url: url("/page/legacy-profile"), title: "Legacy", kind: "today", folderId: null, loading: false, lastActiveAt: 1 }],
+        history: [{ id: "legacy-visit", url: url("/page/legacy-history"), title: "Legacy history", visitedAt: 1 }],
+        folders: [], archive: [],
+      };
+      const bytes = JSON.stringify(legacy);
+      writeFileSync(join(directory, "zenmium/state.json"), bytes);
+      let setupCalled = false;
+      const migrated = makeHarness(directory, (core) => {
+        core.onSessionCreated((entry) => {
+          if (entry.spaceId === "legacy-active") {
+            setupCalled = true;
+            assert.equal(entry.session, session.defaultSession);
+          }
+        });
+      });
+      try {
+        await settled(migrated.core, "legacy-tab", active(migrated.core), url("/page/legacy-profile"));
+        assert.equal(setupCalled, true);
+        assert.equal(active(migrated.core).session, session.defaultSession);
+        assert.notEqual(migrated.core.getSessionForSpace("legacy-other"), session.defaultSession);
+        assert.ok(migrated.core.getHistoryForSpace("legacy-active").some((entry) => entry.id === "legacy-visit"));
+        assert.equal(migrated.core.getHistoryForSpace("legacy-other").length, 0);
+        const backups = readdirSync(join(directory, "zenmium")).filter((file) => file.startsWith("state.pre-profiles-"));
+        assert.equal(backups.length, 1);
+        assert.equal(readFileSync(join(directory, "zenmium", backups[0]!), "utf8"), bytes);
+        const profileIds = migrated.core.snapshot().spaces.map((space) => space.profileId);
+        migrated.core.dispose();
+        const restarted = makeHarness(directory);
+        try {
+          assert.deepEqual(restarted.core.snapshot().spaces.map((space) => space.profileId), profileIds);
+          assert.equal(readdirSync(join(directory, "zenmium")).filter((file) => file.startsWith("state.pre-profiles-")).length, 1);
+        } finally {
+          restarted.core.dispose();
+          restarted.win.destroy();
+        }
+      } finally {
+        migrated.core.dispose();
+        migrated.win.destroy();
+      }
+    },
+  },
+  {
+    name: "async profile policy hooks gate every first request and initialization failure blocks loading",
+    async run({ core }, url) {
+      let release!: () => void;
+      const pending = new Promise<void>((resolve) => { release = resolve; });
+      const unsubscribe = core.onSessionCreated(() => pending);
+      const target = url("/page/profile-policy-gated");
+      const requestCount = requests.get("/page/profile-policy-gated") ?? 0;
+      const first = core.newTab({ url: target, background: true });
+      const wc = core.getWebContentsForTab(first.id)!;
+      await delay(100);
+      assert.equal(wc.getURL(), "", "no document is loaded while policy setup is pending");
+      assert.equal(requests.get("/page/profile-policy-gated") ?? 0, requestCount);
+      release();
+      await settled(core, first.id, wc, target);
+      unsubscribe();
+      const unsubscribeFailure = core.onSessionCreated(() => Promise.reject(new Error("Synthetic policy fixture failure")));
+      const blocked = core.newTab({ url: url("/page/profile-policy-blocked"), background: true });
+      await waitFor(() => Boolean(tab(core, blocked.id).error), "policy failure surfaces native tab error");
+      assert.equal(core.getWebContentsForTab(blocked.id)!.getURL(), "");
+      assert.equal(requests.get("/page/profile-policy-blocked") ?? 0, 0);
+      unsubscribeFailure();
+    },
+  },
+  {
+    name: "background agent tabs and popup navigation never activate, focus or create another tab",
+    async run({ core, win }, url) {
+      const human = await open(core, url("/page/human-working"));
+      const before = core.snapshot();
+      const windows = BrowserWindow.getAllWindows().length;
+      let nativeFocusCalls = 0;
+      const previousFocus = core.focusActive.bind(core);
+      core.focusActive = () => { nativeFocusCalls++; previousFocus(); };
+      const agent = core.newTab({ url: url("/page/agent-owned"), background: true, ownerSessionId: "fixture-agent-session" });
+      const agentPage = core.getWebContentsForTab(agent.id)!;
+      await settled(core, agent.id, agentPage, url("/page/agent-owned"));
+      assert.equal(core.snapshot().activeTabId, human.id);
+      assert.equal(core.snapshot().activeSpaceId, before.activeSpaceId);
+      assert.equal(nativeFocusCalls, 0);
+      assert.deepEqual(attached(win).map((view) => view.webContents), [human.wc]);
+      const count = core.snapshot().tabs.length;
+      await agentPage.executeJavaScript(`window.open(${JSON.stringify(url("/page/agent-popup-reused"))}, '_blank')`);
+      await settled(core, agent.id, agentPage, url("/page/agent-popup-reused"));
+      assert.equal(core.snapshot().tabs.length, count);
+      assert.equal(BrowserWindow.getAllWindows().length, windows);
+      assert.equal(core.snapshot().activeTabId, human.id);
+      assert.equal(core.getPeekView(), null);
+      assert.equal(nativeFocusCalls, 0);
+      assert.equal(human.wc.getURL(), url("/page/human-working"));
+      const implicit = core.newTab({ ownerSessionId: "fixture-second-session" });
+      assert.ok(core.getWebContentsForTab(implicit.id), "blank agent tabs materialize a controllable native target");
+      assert.equal(core.snapshot().activeTabId, human.id);
+      assert.equal(nativeFocusCalls, 0);
+    },
+  },
+  {
+    name: "live cross-profile moves require confirmation, replace the view and leave accounts and forms behind",
+    async run({ core }, url) {
+      const sourceSpace = core.snapshot().activeSpaceId;
+      const targetSpace = core.createSpace("Move target").id;
+      core.activateSpace(sourceSpace);
+      const source = await open(core, url("/page/profile-move"));
+      await source.wc.executeJavaScript("localStorage.setItem('move_fixture', 'source-only'); document.getElementById('unsaved-input').value = 'unsaved fixture';");
+      const before = core.snapshot();
+      const warning = core.moveTabToSpace(source.id, targetSpace);
+      assert.equal(warning.status, "confirmation-required");
+      assert.deepEqual(core.snapshot(), before);
+      assert.equal(core.getWebContentsForTab(source.id), source.wc);
+      assert.equal(await source.wc.executeJavaScript("document.getElementById('unsaved-input').value"), "unsaved fixture");
+      assert.equal(core.moveTabToSpace(source.id, targetSpace, { confirmReload: true }).status, "moved");
+      await waitFor(() => source.wc.isDestroyed(), "cross-profile source native view destroyed");
+      const replacement = core.getWebContentsForTab(source.id)!;
+      assert.notEqual(replacement, source.wc);
+      await settled(core, source.id, replacement, url("/page/profile-move"));
+      assert.equal(replacement.session, core.getSessionForSpace(targetSpace));
+      assert.equal(await replacement.executeJavaScript("localStorage.getItem('move_fixture')"), null);
+      assert.equal(await replacement.executeJavaScript("document.getElementById('unsaved-input').value"), "");
+      assert.equal(replacement.navigationHistory.canGoBack(), false);
+      assert.equal(core.getSpaceIdForWebContents(replacement.id), targetSpace);
+      assert.equal(core.snapshot().activeSpaceId, sourceSpace);
+    },
+  },
+  {
+    name: "agent session folders stay unpinned and closing an owned tab really destroys it",
+    async run({ core }, url) {
+      const human = await open(core, url("/page/group-human"));
+      const spaceId = core.snapshot().activeSpaceId;
+      const folder = core.createFolder(spaceId, "Fixture agent session");
+      const owned = core.newTab({ url: url("/page/group-agent"), ownerSessionId: "fixture-group-owner" });
+      const wc = core.getWebContentsForTab(owned.id)!;
+      await settled(core, owned.id, wc, url("/page/group-agent"));
+      core.moveToFolder(owned.id, folder.id);
+      assert.equal(tab(core, owned.id).kind, "today");
+      assert.equal(tab(core, owned.id).pinnedUrl, undefined);
+      assert.equal(tab(core, owned.id).folderId, folder.id);
+      assert.throws(() => core.pinTab(owned.id), /agent-session tab/);
+      core.closeTab(owned.id);
+      await waitFor(() => wc.isDestroyed(), "owned group tab really closes");
+      assert.equal(core.snapshot().tabs.some((entry) => entry.id === owned.id), false);
+      assert.equal(core.snapshot().activeTabId, human.id);
+      const adopted = await open(core, url("/page/group-adopted"));
+      core.setTabOwner(adopted.id, "fixture-adopter");
+      assert.equal(tab(core, adopted.id).ownerSessionId, "fixture-adopter");
+      assert.throws(() => core.setTabOwner(adopted.id, "fixture-other"), /Release existing/);
+      core.setTabOwner(adopted.id, undefined);
+      assert.equal(tab(core, adopted.id).ownerSessionId, undefined);
+    },
+  },
+  {
+    name: "local documents require the main-only file entry and support pin reset/archive reopen",
+    async run({ core, directory }, url) {
+      const file = join(directory, "selected-file.html");
+      writeFileSync(file, "<!doctype html><title>Selected local fixture</title><h1>Local fixture</h1>");
+      assert.throws(() => core.newTab({ url: `file://${file}` }), /cannot be opened/);
+      assert.throws(() => core.openLocalFile("selected-file.html"), /absolute local file/);
+      const invalid = join(directory, "not-a-document.txt");
+      writeFileSync(invalid, "Fixture");
+      assert.throws(() => core.openLocalFile(invalid), /HTML or PDF/);
+      const local = core.openLocalFile(file);
+      const wc = core.getWebContentsForTab(local.id)!;
+      await settled(core, local.id, wc, local.url);
+      assert.equal(wc.getTitle(), "Selected local fixture");
+      assert.equal(wc.session, core.getSessionForSpace(local.spaceId));
+      core.pinTab(local.id);
+      await finished(wc, () => core.navigate(local.id, url("/page/away-from-local")));
+      await finished(wc, () => core.resetTab(local.id));
+      await settled(core, local.id, wc, local.url);
+      core.unpinTab(local.id);
+      core.closeTab(local.id);
+      core.restoreTab(local.id);
+      const reopened = core.snapshot().activeTabId!;
+      await settled(core, reopened, active(core), local.url);
+      assert.equal(active(core).getTitle(), "Selected local fixture");
+      assert.notEqual(reopened, local.id);
+    },
+  }
+);
 
 // Hard ceiling also covers startup/shutdown hangs; individual waits have tighter limits.
 const watchdog = setTimeout(() => {

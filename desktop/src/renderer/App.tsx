@@ -2,26 +2,36 @@ import {
   type BrowserSurfaceProps,
   type BrowserUiState,
   browserLayout,
+  AGENT_DOCK_WIDTH,
   CHROME_IPC,
   DEFAULT_PREFERENCES,
   glanceLayout,
+  hasOverflowEssentials,
   type Invoke,
   legacyPreferences,
 } from "@shared/browser-ui";
 import {
   ARC_IPC,
   ARC_STATE_EVENT,
+  MAX_ESSENTIALS,
   type ArcState,
   emptyState,
   getPaneTabIds,
 } from "@shared/ipc";
+import { CONTROL_IPC } from "@shared/browser-control";
 import { ArrowUpRight, PanelLeftClose, RefreshCw, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { BrowserOverlay } from "./components/browser/BrowserOverlay";
+import { BeuiChatDrawer } from "./components/browser/BeuiChatDrawer";
 import { Sidebar } from "./components/Sidebar";
+import { updateControlActivity } from "./components/browser/ShellModel";
+import { OverflowEssentials } from "./components/browser/OverflowEssentials";
+import { BookmarksPanel } from "./components/browser/BrowserNativePanels";
 import "./styles/zen-shell.css";
+import "./styles/zen-overlays.css";
 
 const initialUi: BrowserUiState = {
+  chatHistory: [],
   dark: true,
   overlay: null,
   preferences: DEFAULT_PREFERENCES,
@@ -41,9 +51,27 @@ function useWindowSize() {
   return size;
 }
 
-function MainSurface({ state, ui, invoke }: BrowserSurfaceProps) {
+function MainSurface({
+  agentActivity,
+  startupWave,
+  state,
+  ui,
+  invoke,
+}: BrowserSurfaceProps & {
+  agentActivity: boolean;
+  startupWave: boolean;
+}) {
   const size = useWindowSize();
-  const { content } = browserLayout(size.width, size.height, ui);
+  const showBookmarks = ui.preferences.bookmarksBar && hasOverflowEssentials(state);
+  const layoutUi = showBookmarks
+    ? ui
+    : {
+        ...ui,
+        preferences: { ...ui.preferences, bookmarksBar: false },
+      };
+  const { content } = browserLayout(size.width, size.height, layoutUi);
+  const agentOpen = ui.overlay?.kind === "agent";
+  const bookmarksOpen = ui.overlay?.kind === "bookmarks";
   const paneIds = getPaneTabIds(state);
   const split = state.tabs.find((tab) => tab.id === state.splitTabId);
   const panes = paneIds.length
@@ -52,30 +80,30 @@ function MainSurface({ state, ui, invoke }: BrowserSurfaceProps) {
   return (
     <main aria-label="Browser content" className="zen-window-shell">
       <div className="zen-window-drag" data-drag-region="" />
-      {ui.preferences.bookmarksBar ? (
-        <nav
-          aria-label="Bookmarks"
-          className="zen-bookmarks-bar"
+      {startupWave ? (
+        <div
+          aria-hidden="true"
+          className="zen-dither-wave zen-dither-wave--startup"
+        />
+      ) : null}
+      {agentActivity ? (
+        <div
+          aria-hidden="true"
+          className="zen-dither-wave zen-dither-wave--agent"
+        />
+      ) : null}
+      {showBookmarks ? (
+        <OverflowEssentials
+          tabs={state.tabs.filter((tab) =>
+            tab.spaceId === state.activeSpaceId && tab.kind === "pinned" && !tab.folderId
+          ).slice(MAX_ESSENTIALS)}
+          activeTabId={state.activeTabId}
+          invoke={invoke}
           style={{
             left: content.x,
             right: size.width - content.x - content.width,
           }}
-        >
-          {state.tabs
-            .filter((tab) => tab.kind === "pinned" && !tab.folderId)
-            .slice(0, 10)
-            .map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => void invoke(ARC_IPC.activateTab, tab.id)}
-              >
-                {tab.customTitle || tab.title}
-              </button>
-            ))}
-          {!state.tabs.some((tab) => tab.kind === "pinned") ? (
-            <span>Your Essentials appear here</span>
-          ) : null}
-        </nav>
+        />
       ) : null}
       <div
         className="zen-browser-cards"
@@ -118,6 +146,29 @@ function MainSurface({ state, ui, invoke }: BrowserSurfaceProps) {
           </section>
         ))}
       </div>
+      {agentOpen ? (
+        <aside
+          aria-label="Agent"
+          className={`zen-agent-docked${ui.preferences.themedChatWindow ? " is-chat-themed" : ""}`}
+          style={{
+            height: content.height,
+            left: content.x + content.width + 8,
+            top: content.y,
+            width: AGENT_DOCK_WIDTH,
+          }}
+        >
+          <BeuiChatDrawer
+            invoke={invoke}
+            state={state}
+            ui={ui}
+          />
+        </aside>
+      ) : null}
+      {bookmarksOpen ? (
+        <aside aria-label="Bookmarks" className="zen-utility-docked" style={{height: content.height, left: content.x + content.width + 8, top: content.y, width: AGENT_DOCK_WIDTH}}>
+          <BookmarksPanel state={state} ui={ui} invoke={invoke} close={() => void invoke(CHROME_IPC.close, {sessionId: ui.overlay?.sessionId})}/>
+        </aside>
+      ) : null}
       {split ? (
         <button
           aria-label="Exit split view"
@@ -182,9 +233,24 @@ function GlanceSurface({ state, ui, invoke }: BrowserSurfaceProps) {
   );
 }
 
+function SidebarGutter({ invoke }: Pick<BrowserSurfaceProps, "invoke">) {
+  return (
+    <div
+      aria-hidden="true"
+      className="zen-sidebar-gutter"
+      onMouseEnter={() => void invoke(CHROME_IPC.sidebar, { hovered: true })}
+      onMouseLeave={() =>
+        void invoke(CHROME_IPC.sidebar, { hovered: false, focused: false })
+      }
+    />
+  );
+}
+
 export default function App() {
   const [state, setState] = useState<ArcState>(emptyState);
   const [ui, setUi] = useState<BrowserUiState>(initialUi);
+  const [agentActivity, setAgentActivity] = useState(false);
+  const [startupWave, setStartupWave] = useState(surface === "main");
   const [error, setError] = useState<string | null>(null);
   const invoke: Invoke = useCallback(
     (channel, payload) => window.zenmium.invoke(channel, payload),
@@ -234,15 +300,32 @@ export default function App() {
     };
   }, [invoke]);
   useEffect(() => {
+    if (surface !== "main") return;
+    const startupTimer = window.setTimeout(() => setStartupWave(false), 2800);
+    let activity = { epoch: "", cursor: -1, requests: new Map<string, string>() };
+    const offAgent = window.zenmium.on(CONTROL_IPC.event, (value) => {
+      activity = updateControlActivity(activity, value);
+      setAgentActivity(activity.requests.size > 0);
+    });
+    return () => {
+      window.clearTimeout(startupTimer);
+      offAgent();
+    };
+  }, []);
+  useEffect(() => {
     document.documentElement.dataset.theme = ui.dark ? "dark" : "light";
     document.documentElement.style.colorScheme = ui.dark ? "dark" : "light";
     const space = state.spaces.find((s) => s.id === state.activeSpaceId);
+    document.documentElement.style.setProperty(
+      "--zen-glass-tint-amount",
+      `${ui.preferences.glassTint}%`
+    );
     if (space)
       document.documentElement.style.setProperty(
         "--zen-workspace-color",
         space.color
       );
-  }, [state.activeSpaceId, state.spaces, ui.dark]);
+  }, [state.activeSpaceId, state.spaces, ui.dark, ui.preferences.glassTint]);
   if (error)
     return (
       <div className="zen-page-error" role="alert">
@@ -252,11 +335,18 @@ export default function App() {
     );
   const props = { invoke, state, ui };
   if (surface === "sidebar") return <Sidebar {...props} />;
+  if (surface === "gutter") return <SidebarGutter invoke={invoke} />;
   if (surface === "overlay")
     return ui.overlay ? (
       <BrowserOverlay {...props} />
     ) : state.glance ? (
       <GlanceSurface {...props} />
     ) : null;
-  return <MainSurface {...props} />;
+  return (
+    <MainSurface
+      {...props}
+      agentActivity={agentActivity}
+      startupWave={startupWave}
+    />
+  );
 }

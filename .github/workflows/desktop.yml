@@ -6,9 +6,12 @@ on:
     paths:
       - "desktop/**"
       - ".github/workflows/desktop.yml"
+      - "docs/zenmium/**"
   pull_request:
     paths:
       - "desktop/**"
+      - ".github/workflows/desktop.yml"
+      - "docs/zenmium/**"
   workflow_dispatch:
 
 concurrency:
@@ -28,10 +31,16 @@ jobs:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Scan repository for secrets
+        run: node scripts/scan-secrets.mjs
       - name: Typecheck
         run: pnpm typecheck
       - name: Build
         run: pnpm build
+      - name: Unit tests
+        run: pnpm test
+      - name: Scan built application text
+        run: node scripts/scan-secrets.mjs out

@@ -67,7 +67,32 @@ export interface Space {
   color: string;
   icon: string;
   pinnedCollapsed?: boolean;
+  /** Stable browser identity; names and theme changes never change a partition. */
+  profileId?: string;
 }
+
+export interface BrowserProfile {
+  id: string;
+  /** Empty only for the one migrated legacy Chromium default session. */
+  partition: string;
+}
+
+export interface NewTabOptions {
+  spaceId?: string;
+  url?: string;
+  kind?: TabKind;
+  background?: boolean;
+  ownerSessionId?: string;
+}
+
+export type TabMoveResult =
+  | { status: "moved" | "unchanged"; tabId: string; spaceId: string }
+  | {
+      status: "confirmation-required";
+      tabId: string;
+      spaceId: string;
+      reason: string;
+    };
 
 export interface Folder {
   id: string;
@@ -102,6 +127,10 @@ export interface Tab {
   glance?: boolean;
   containerColor?: string | null;
   sublabel?: string | null;
+  /** Agent-session ownership is main-process assigned, never a TabUpdate field. */
+  ownerSessionId?: string;
+  /** User/OS-selected local HTML/PDF document; never writable through TabUpdate. */
+  localFile?: boolean;
 }
 
 export interface TabUpdate {
@@ -127,9 +156,12 @@ export interface ArchiveEntry {
   url: string;
   title: string;
   archivedAt: number;
+  localFile?: boolean;
 }
 
 export interface ArcState {
+  schemaVersion?: number;
+  profiles?: BrowserProfile[];
   spaces: Space[];
   activeSpaceId: string;
   activeTabId: string | null;
@@ -141,7 +173,7 @@ export interface ArcState {
   tabs: Tab[];
   archive: ArchiveEntry[];
   history?: HistoryEntry[];
-  glance?: { url: string; title: string } | null;
+  glance?: { url: string; title: string; spaceId?: string } | null;
 }
 
 export interface HistoryEntry {
@@ -149,6 +181,8 @@ export interface HistoryEntry {
   url: string;
   title: string;
   visitedAt: number;
+  /** Optional only to read pre-profile snapshots; normalized before use. */
+  spaceId?: string;
 }
 
 /** Physical pane order is independent of the active navigation/keyboard target. */
@@ -170,6 +204,8 @@ export const SPACE_COLORS = [
   "#7fd6d6",
   "#f58f8f",
 ] as const;
+/** Sidebar presentation capacity, not a storage cap. Further pins use overflow. */
+export const MAX_ESSENTIALS = 8;
 
 export type Result<T> =
   | { ok: true; value: T }

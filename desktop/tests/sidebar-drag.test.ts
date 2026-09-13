@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { describe, it } from "node:test";
-import { emptyState, type Tab } from "../src/shared/ipc.ts";
+import { emptyState, MAX_ESSENTIALS, type Tab } from "../src/shared/ipc.ts";
 
 // Resolve the production TypeScript alias to the real module. React and all
 // other dependencies load normally; the pure helpers do not invoke hooks.
@@ -64,36 +64,36 @@ describe("sidebar drag capacity", () => {
     );
   });
 
-  it("permits the twelfth essential even with many folder pins", () => {
+  it("keeps saved essentials droppable beyond the eight visible slots", () => {
     assert.equal(
-      canDropTab(workspace(11, 20), tab("new"), essentialDestination),
+      canDropTab(workspace(MAX_ESSENTIALS - 1, 20), tab("new"), essentialDestination),
       true
     );
     assert.equal(
-      canDropTab(workspace(12, 20), tab("new"), essentialDestination),
-      false
+      canDropTab(workspace(MAX_ESSENTIALS, 20), tab("new"), essentialDestination),
+      true
     );
   });
 
   it("allows reordering an existing essential at capacity", () => {
     const source = tab("essential-0", { kind: "pinned" });
-    assert.equal(canDropTab(workspace(12), source, essentialDestination), true);
+    assert.equal(canDropTab(workspace(MAX_ESSENTIALS), source, essentialDestination), true);
   });
 
-  it("requires a free slot when promoting a folder pin to an essential", () => {
+  it("allows folder pins to be promoted while visible essentials are full", () => {
     const source = tab("folder-0", { folderId: "research", kind: "pinned" });
     assert.equal(
-      canDropTab(workspace(12, 1), source, essentialDestination),
-      false
+      canDropTab(workspace(MAX_ESSENTIALS, 1), source, essentialDestination),
+      true
     );
     assert.equal(
-      canDropTab(workspace(11, 1), source, essentialDestination),
+      canDropTab(workspace(MAX_ESSENTIALS - 1, 1), source, essentialDestination),
       true
     );
   });
 
   it("allows folder drops and unpinning when all essential slots are occupied", () => {
-    const state = workspace(12, 1);
+    const state = workspace(MAX_ESSENTIALS, 1);
     const source = tab("new");
     assert.equal(
       canDropTab(state, source, {
@@ -111,10 +111,10 @@ describe("sidebar drag capacity", () => {
     );
   });
 
-  it("counts only the destination workspace and still rejects a foreign essential at capacity", () => {
-    const state = workspace(12);
+  it("allows cross-workspace pins to move into the destination overflow", () => {
+    const state = workspace(MAX_ESSENTIALS);
     const source = tab("foreign", { kind: "pinned", spaceId: "work" });
-    assert.equal(canDropTab(state, source, essentialDestination), false);
+    assert.equal(canDropTab(state, source, essentialDestination), true);
     assert.equal(
       canDropTab(state, tab("new"), {
         ...essentialDestination,
@@ -124,22 +124,22 @@ describe("sidebar drag capacity", () => {
     );
   });
 
-  it("treats a folder pin dropped on another workspace as a new essential", () => {
+  it("treats a folder pin dropped on another workspace as a saved destination pin", () => {
     const source = tab("foreign-folder", {
       folderId: "work-folder",
       kind: "pinned",
       spaceId: "work",
     });
     assert.equal(
-      canDropTab(workspace(12), source, { spaceId: "personal" }),
-      false
-    );
-    assert.equal(
-      canDropTab(workspace(11), source, { spaceId: "personal" }),
+      canDropTab(workspace(MAX_ESSENTIALS), source, { spaceId: "personal" }),
       true
     );
     assert.equal(
-      canDropTab(workspace(12), source, {
+      canDropTab(workspace(MAX_ESSENTIALS - 1), source, { spaceId: "personal" }),
+      true
+    );
+    assert.equal(
+      canDropTab(workspace(MAX_ESSENTIALS), source, {
         ...essentialDestination,
         folderId: "research",
       }),
@@ -150,13 +150,13 @@ describe("sidebar drag capacity", () => {
   it("retains implicit folder membership within the same workspace", () => {
     const source = tab("folder-0", { folderId: "research", kind: "pinned" });
     assert.equal(
-      canDropTab(workspace(12, 1), source, { spaceId: "personal" }),
+      canDropTab(workspace(MAX_ESSENTIALS, 1), source, { spaceId: "personal" }),
       true
     );
   });
 
-  it("does not mutate the state, source tab, or destination", () => {
-    const state = workspace(12, 1);
+  it("does not mutate the state, source tab, or destination while checking overflow", () => {
+    const state = workspace(MAX_ESSENTIALS, 1);
     const source = Object.freeze(tab("new"));
     const destination = Object.freeze({ ...essentialDestination });
     const before = structuredClone(state);
@@ -165,7 +165,7 @@ describe("sidebar drag capacity", () => {
     }
     Object.freeze(state.tabs);
     Object.freeze(state);
-    assert.equal(canDropTab(state, source, destination), false);
+    assert.equal(canDropTab(state, source, destination), true);
     assert.deepEqual(state, before);
   });
 });
@@ -211,19 +211,8 @@ describe("sidebar drag command ordering", () => {
       }
     );
     assert.deepEqual(calls, [
-      ["arc:unpinTab", "source"],
       ["arc:moveTabToSpace", { id: "source", spaceId: "work" }],
       ["arc:moveToFolder", { folderId: "research", id: "source" }],
-      [
-        "arc:updateTab",
-        {
-          id: "source",
-          patch: {
-            pinnedChanged: true,
-            pinnedUrl: "https://example.com/original",
-          },
-        },
-      ],
       ["arc:reorderTab", { beforeId: null, id: "source" }],
     ]);
   });

@@ -17,6 +17,7 @@ function ui(
   state: Partial<Pick<BrowserUiState, "sidebar" | "overlay" | "dark">> = {}
 ): BrowserUiState {
   return {
+    chatHistory: [],
     dark: true,
     overlay: null,
     preferences: { ...DEFAULT_PREFERENCES, ...preferences },
@@ -85,6 +86,11 @@ describe("browser preferences", () => {
     assert.equal(parsed.sidebarMode, DEFAULT_PREFERENCES.sidebarMode);
     assert.equal(parsed.bookmarksBar, false);
     assert.equal(parsed.newTabAtTop, false);
+    assert.equal(parsed.themedChatWindow, DEFAULT_PREFERENCES.themedChatWindow);
+    assert.equal(
+      preferencesSchema.parse({ themedChatWindow: true }).themedChatWindow,
+      true
+    );
   });
 
   it("rejects unsupported persisted enum values", () => {
@@ -159,7 +165,7 @@ describe("browser content bounds", () => {
       const layout = browserLayout(
         1200,
         800,
-        ui({ side, sidebarMode: "expanded", width: 230 })
+        ui({ bookmarksBar: false, side, sidebarMode: "expanded", width: 230 })
       );
       assert.deepEqual(layout.content, {
         height: 784,
@@ -184,22 +190,22 @@ describe("browser content bounds", () => {
       );
     });
 
-    it(`reserves only a 60px collapsed rail and gutter on the ${side}`, () => {
+    it(`keeps the collapsed sidebar as a hover reveal boundary on the ${side}`, () => {
       const layout = browserLayout(
         1200,
         800,
-        ui({ side, sidebarMode: "collapsed" })
+        ui({ bookmarksBar: false, side, sidebarMode: "collapsed" })
       );
       assert.deepEqual(layout.content, {
         height: 784,
-        width: 1116,
-        x: side === "left" ? 76 : 8,
+        width: 1184,
+        x: 8,
         y: 8,
       });
       assert.deepEqual(layout.sidebar, {
         height: 800,
-        width: 76,
-        x: side === "left" ? 0 : 1124,
+        width: 8,
+        x: side === "left" ? 0 : 1192,
         y: 0,
       });
     });
@@ -208,7 +214,7 @@ describe("browser content bounds", () => {
       const layout = browserLayout(
         1200,
         800,
-        ui({ side, sidebarMode: "compact" })
+        ui({ bookmarksBar: false, side, sidebarMode: "compact" })
       );
       assert.deepEqual(layout.content, {
         height: 784,

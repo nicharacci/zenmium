@@ -216,15 +216,14 @@ body[data-surface="sidebar"] #root {
   overflow: hidden;
   background: var(--zen-card);
   border-radius: var(--zen-native-inner-radius, 7.8px);
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--zen-text) 5%, transparent),
-    0 2px 5px #0002;
+  box-shadow: 0 2px 5px #0002;
   transition:
     transform 0.15s ease,
     opacity 0.15s ease;
 }
 
-.zen-sidebar-surface[data-mode="compact"][data-hidden="true"] .zen-sidebar {
+.zen-sidebar-surface[data-mode="compact"][data-hidden="true"] .zen-sidebar,
+.zen-sidebar-surface[data-mode="collapsed"][data-hidden="true"] .zen-sidebar {
   width: var(--zen-sidebar-width);
   pointer-events: none;
   opacity: 0;
@@ -234,10 +233,15 @@ body[data-surface="sidebar"] #root {
   left: auto;
   transform: translateX(calc(100% + 16px));
 }
-.zen-sidebar-surface[data-mode="compact"][data-hidden="false"] .zen-sidebar {
-  transition:
-    transform 0.25s var(--zen-compact-spring),
-    opacity 0.15s;
+.zen-sidebar-surface[data-mode="compact"][data-hidden="false"] .zen-sidebar,
+.zen-sidebar-surface[data-mode="collapsed"][data-hidden="false"] .zen-sidebar {
+  pointer-events: auto;
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  /* The native gutter re-stacks this view below the page while hidden. Keep
+     the reveal commit synchronous so a background-throttled transition cannot
+     freeze the full pane at its old offscreen transform. */
+  transition: none !important;
 }
 
 /* Native traffic lights are at y16. The view starts at y0; never draw dots. */
@@ -292,13 +296,19 @@ body[data-surface="sidebar"] #root {
   height: 48px;
   padding: 4px 0;
 }
+.zen-urlbar-shell {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
 .zen-urlbar {
   display: flex;
   gap: 8px;
   align-items: center;
   width: 100%;
   height: 36px;
-  padding: 4px 10px;
+  padding: 4px 38px 4px 10px;
   color: var(--zen-muted);
   text-align: left;
   background: var(--zen-element-bg);
@@ -314,6 +324,38 @@ body[data-surface="sidebar"] #root {
   color: var(--zen-text);
   background: var(--zen-element-bg);
 }
+.zen-urlbar-copy {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--zen-muted);
+  pointer-events: none;
+  background: transparent;
+  border-radius: 7px;
+  opacity: 0;
+  transform: translateX(3px) scale(0.94);
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    background 120ms ease,
+    color 120ms ease;
+}
+.zen-urlbar-container:hover .zen-urlbar-copy,
+.zen-urlbar-container:focus-within .zen-urlbar-copy {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+.zen-urlbar-copy:hover:not(:disabled) {
+  color: var(--zen-text);
+  background: var(--zen-hover);
+}
 
 /* One scroll viewport contains essentials, pinned folders and ordinary tabs. */
 .zen-sidebar-scroll {
@@ -324,8 +366,7 @@ body[data-surface="sidebar"] #root {
   overscroll-behavior: contain;
   scrollbar-width: none;
 }
-.zen-sidebar-scroll::-webkit-scrollbar,
-.zen-workspace-switcher::-webkit-scrollbar {
+.zen-sidebar-scroll::-webkit-scrollbar {
   display: none;
 }
 .zen-sidebar-list {
@@ -333,23 +374,19 @@ body[data-surface="sidebar"] #root {
   padding-bottom: 2px;
 }
 .zen-essentials {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(max(23.7%, 50px), 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   padding: 6px 0 2px;
   border-radius: var(--zen-radius);
 }
-.zen-essentials[data-wrap="three"] {
-  grid-template-columns: repeat(auto-fit, minmax(max(30%, 50px), auto));
-}
-.zen-essentials[data-wrap="four"] {
-  grid-template-columns: repeat(
-      auto-fit,
-      minmax(max(23%, 50px), 1fr) minmax(max(23%, 50px), 1fr)
-    );
+.zen-essentials > .zen-essential {
+  flex: 1 1 calc((100% - 12px) / 4);
+  min-width: 0;
 }
 .zen-essentials-promo {
   display: none;
+  flex: 1 0 100%;
   grid-column: 1 / -1;
   gap: 8px;
   align-items: center;
@@ -385,8 +422,14 @@ body[data-surface="sidebar"] #root {
   background: var(--zen-hover);
 }
 .zen-tab[data-active="true"] {
-  background: var(--zen-selected);
-  box-shadow: var(--zen-selected-shadow);
+  /* Pearl glass: the selected tab is defined by its inner depth, not a solid
+     color block that competes with the live page beneath the sidebar. */
+  background: none;
+  background-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 18%),
+    inset 0 -1px 0 rgb(0 0 0 / 18%),
+    inset 0 0 14px color-mix(in srgb, var(--zen-text) 8%, transparent);
 }
 .zen-tab:active:not([data-renaming="true"]),
 .zen-chrome-button:active:not(:disabled),
@@ -571,7 +614,12 @@ body[data-surface="sidebar"] #root {
   opacity: 0.5;
 }
 .zen-essential[data-active="true"] {
-  background: var(--zen-essential-selected);
+  background: none;
+  background-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 18%),
+    inset 0 -1px 0 rgb(0 0 0 / 18%),
+    inset 0 0 14px color-mix(in srgb, var(--zen-text) 8%, transparent);
 }
 .zen-essential-backdrop {
   position: absolute;
@@ -619,16 +667,9 @@ body[data-surface="sidebar"] #root {
   display: none;
 }
 .zen-essential[data-renaming="true"] {
-  grid-column: 1 / -1;
+  flex-basis: 100%;
 }
 
-.zen-workspace-indicator {
-  display: flex;
-  gap: 1px;
-  align-items: center;
-  height: 44px;
-  border-radius: var(--zen-radius);
-}
 .zen-workspace-current {
   display: flex;
   flex: 1;
@@ -647,30 +688,11 @@ body[data-surface="sidebar"] #root {
   font-weight: 500;
   white-space: nowrap;
 }
-.zen-workspace-icon {
+.zen-pinned-toolbar {
   display: flex;
-  flex: 0 0 16px;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 16px;
-}
-.zen-workspace-indicator:hover,
-.zen-workspace-indicator:focus-within {
-  background: var(--zen-hover);
-}
-.zen-workspace-action {
-  opacity: 0;
-}
-.zen-workspace-indicator:hover .zen-workspace-action,
-.zen-workspace-indicator:focus-within .zen-workspace-action {
-  opacity: 1;
-}
-.zen-workspace-indicator .zen-chrome-button {
-  flex-basis: 26px;
-  width: 26px;
-  height: 26px;
+  justify-content: flex-end;
+  min-height: 28px;
+  padding: 1px 0;
 }
 .zen-pinned-toggle {
   color: var(--zen-muted);
@@ -780,40 +802,161 @@ body[data-surface="sidebar"] #root {
   padding-top: 6px;
   background: transparent;
 }
-.zen-workspace-switcher {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  justify-content: safe center;
+.zen-chat-history {
   padding: 2px 0 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.zen-workspace-button {
-  position: relative;
+.zen-chat-history-toggle {
   display: flex;
-  flex: 0 0 28px;
   align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
+  gap: 9px;
+  width: 100%;
+  min-height: 34px;
+  padding: 0 10px;
+  color: var(--zen-muted);
+  text-align: left;
   background: transparent;
+  border: 0;
+  border-radius: var(--zen-radius);
+}
+.zen-chat-history-toggle:hover,
+.zen-chat-history-toggle[aria-expanded="true"] {
+  color: var(--zen-text);
+  background: var(--zen-hover);
+}
+.zen-chat-history-toggle span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-chat-history-popover {
+  max-height: min(260px, 34vh);
+  padding: 2px 0 4px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.zen-chat-history-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: calc(100% - 12px);
+  min-height: 26px;
+  margin: 0 6px 3px;
+  padding: 0 7px;
+  color: var(--zen-muted);
+  font-size: 10px;
+  text-align: left;
+  background: transparent;
+  border: 0;
   border-radius: 6px;
-  opacity: 0.7;
-  filter: grayscale(1);
 }
-.zen-workspace-button .zen-workspace-icon {
-  font-size: 14px;
+.zen-chat-history-filter:hover {
+  color: var(--zen-text);
+  background: var(--zen-hover);
 }
-.zen-workspace-button:hover {
-  background: var(--zen-element-bg);
+.zen-chat-history-filter span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.zen-workspace-button[aria-current="true"] {
-  color: var(--zen-space-color);
-  background: color-mix(in srgb, var(--zen-space-color) 15%, transparent);
-  opacity: 1;
-  filter: grayscale(0);
+.zen-chat-history-group {
+  padding: 0 0 4px;
+}
+.zen-chat-history-workspace {
+  padding: 4px 10px 3px;
+  color: color-mix(in srgb, var(--zen-chat-space-color) 75%, var(--zen-text));
+  font-size: 10px;
+  font-weight: 600;
+}
+.zen-chat-history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 30px;
+  padding: 0 10px 0 18px;
+  color: var(--zen-text);
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 11px;
+}
+.zen-chat-history-row:hover,
+.zen-chat-history-row[aria-current="page"] {
+  background: var(--zen-hover);
+}
+.zen-chat-history-row > span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-chat-history-row time {
+  flex: 0 0 auto;
+  color: var(--zen-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.zen-chat-history-empty {
+  padding: 7px 10px 8px 18px;
+  color: var(--zen-muted);
+  font-size: 10px;
+}
+.zen-workspace-switcher {
+  display: block;
+  padding: 2px 0 6px;
+}
+.zen-workspace-current-footer {
+  gap: 9px;
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--zen-space-color) 20%, transparent);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--zen-space-color) 22%, transparent),
+      transparent 82%
+    ),
+    color-mix(in srgb, var(--zen-text) 5%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    transform 0.1s;
+}
+.zen-workspace-current-footer:hover:not(:disabled),
+.zen-workspace-current-footer[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--zen-space-color) 42%, transparent);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--zen-space-color) 32%, transparent),
+      transparent 90%
+    ),
+    var(--zen-hover);
+}
+.zen-workspace-current-footer:active:not(:disabled) {
+  transform: scale(0.985);
+}
+.zen-workspace-color-tag {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  background: var(--zen-space-color);
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--zen-space-color) 15%, transparent);
+}
+.zen-workspace-current-footer > svg {
+  margin-left: auto;
+  color: var(--zen-muted);
+}
+.zen-chevron-open {
+  transform: rotate(180deg);
 }
 .zen-foot-actions {
   display: flex;
@@ -891,130 +1034,23 @@ body[data-surface="sidebar"] #root {
   background: var(--zen-primary-color);
 }
 
-/* A 76px native viewport leaves an exact 60px card and 48px row content. */
-.zen-sidebar-surface[data-expanded="false"] .zen-top {
-  justify-content: center;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-essentials {
-  grid-template-columns: minmax(0, 1fr);
-}
-.zen-sidebar-surface[data-expanded="false"]
-  :is(
-    .zen-navigation-button,
-    .zen-top-separator,
-    .zen-top-spacer,
-    .zen-top-extensions,
-    .zen-top-menu,
-    .zen-tab-copy,
-    .zen-new-tab span,
-    .zen-workspace-name,
-    .zen-workspace-action,
-    .zen-pinned-toggle,
-    .zen-folder-heading span,
-    .zen-folder-heading > svg:last-child,
-    .zen-essentials-promo span,
-    .zen-unpin-hint
-  ) {
-  display: none;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-urlbar {
-  justify-content: center;
-  padding: 4px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-urlbar span {
-  display: none;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-main,
-.zen-sidebar-surface[data-expanded="false"] .zen-new-tab,
-.zen-sidebar-surface[data-expanded="false"] .zen-folder-heading {
-  justify-content: center;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-close {
-  display: none;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-audio {
-  position: absolute;
-  right: 2px;
-  bottom: 2px;
-  width: 14px;
-  height: 14px;
-  margin: 0;
-  background: var(--zen-card);
-  border-radius: 5px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-reset {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 14px;
-  height: 14px;
-  margin: 0;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-reset .zen-tab-icon {
-  flex-basis: 10px;
-  width: 10px;
-  height: 10px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-tab-reset::after {
-  display: none;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-workspace-indicator {
-  height: 38px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-workspace-current {
-  flex: 1;
-  justify-content: center;
-  padding: 0;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-folder-tabs {
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-workspace-switcher {
-  flex-direction: column;
-  max-height: 106px;
-  overflow-y: auto;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-workspace-button {
-  width: 36px;
-  min-width: 36px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-foot-actions {
-  flex-direction: column;
-  gap: 1px;
-}
-.zen-sidebar-surface[data-expanded="false"] .zen-foot-spacer {
-  display: none;
-}
-.zen-sidebar-surface[data-expanded="false"]
-  .zen-essential[data-renaming="true"] {
-  overflow: visible;
-}
-
 /* At 200px the menu remains available in the footer and through the overlay. */
 @media (max-width: 230px) {
-  .zen-top-extensions,
-  .zen-top-menu {
+  .zen-top-extensions {
     display: none;
   }
 }
-@media (max-height: 480px) {
-  .zen-sidebar-surface[data-expanded="false"] .zen-foot-actions {
-    display: grid;
-    grid-template-columns: repeat(2, 24px);
-    gap: 0;
-  }
-  .zen-sidebar-surface[data-expanded="false"]
-    .zen-foot-actions
-    .zen-chrome-button {
-    width: 24px;
-    height: 26px;
-  }
-  .zen-sidebar-surface[data-expanded="false"] .zen-workspace-switcher {
-    max-height: 38px;
-  }
+.zen-sidebar-move-confirm {
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: var(--zen-radius);
+  background: var(--zen-hover);
+  box-shadow: inset 0 0 0 1px var(--zen-primary-color);
+  font-size: 11px;
 }
+.zen-sidebar-move-confirm p { margin: 6px 0; color: var(--zen-muted); }
+.zen-sidebar-move-confirm > div { display: flex; gap: 6px; }
+.zen-sidebar-move-confirm button { padding: 6px; border-radius: 6px; background: var(--zen-hover); }
 @media (prefers-reduced-motion: reduce) {
   .zen-sidebar-surface *,
   .zen-sidebar-surface *::after {

@@ -1,7 +1,8 @@
 import { EventEmitter } from "node:events";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { app, BrowserWindow, dialog, ipcMain, Menu } from "electron";
+import { randomUUID } from "node:crypto";
+import { readFile, stat } from "node:fs/promises";
+import { basename, extname, join } from "node:path";
+import { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, WebContentsView } from "electron";
 import { z } from "zod";
 import {
   type BrowserOverlayState,
@@ -9,22 +10,185 @@ import {
   preferencesSchema,
 } from "../shared/browser-ui";
 import { ARC_IPC, ARC_STATE_EVENT, rectSchema } from "../shared/ipc";
+import { NATIVE_IPC, bookmarkCommandSchema, utilityCommandSchema } from "../shared/browser-native";
+import { CONTROL_IPC, controlGrantSchema, controlSessionInputSchema } from "../shared/browser-control";
+import { CHAT_IPC, CHAT_LIMITS } from "../shared/agent-chat";
 import { AGENT_IPC, AgentKernel } from "./agent-kernel";
 import { ArcCore } from "./arc-core";
 import { BrowserChrome } from "./browser-chrome";
 import { BrowserDownloads } from "./browser-downloads";
+import { BrowserBlocking } from "./browser-blocking";
+import { NativeBrowserServices } from "./browser-native";
+import { BrowserControlService } from "./browser-control";
+import { startBrowserControlBridge } from "./browser-control-bridge";
+import { NativeBrowserControlDriver } from "./browser-control-native";
+import { AgentChatManager } from "./agent-chat-manager";
+import { AuthenticationBroker } from "./authentication-broker";
+import { webUrl } from "./browser-url";
 import { EXTENSION_IPC, ExtensionHost } from "./extension-host";
-import { hardenWindow, installSecurityPolicy } from "./security";
+import { BrowserPermissions, hardenWindow, installSecurityPolicy } from "./security";
 import { STORE_INSTALL_IPC, StoreInstaller } from "./store-install";
+import type { WorkspaceSession } from "./workspace-sessions";
+
+app.setName("Zenmium");
+const primaryInstance = app.requestSingleInstanceLock();
+if (!primaryInstance) app.quit();
 
 const events = new EventEmitter();
 let win: BrowserWindow | null = null;
 let arc: ArcCore | null = null;
-let extensions: ExtensionHost | null = null;
-let installer: StoreInstaller | null = null;
 let agent: AgentKernel | null = null;
 let chrome: BrowserChrome | null = null;
 let downloads: BrowserDownloads | null = null;
+let permissions: BrowserPermissions | null = null;
+let blocking: BrowserBlocking | null = null;
+let native: NativeBrowserServices | null = null;
+let control: BrowserControlService | null = null;
+let authentication: AuthenticationBroker | null = null;
+let chat: AgentChatManager | null = null;
+let controlBridge: Awaited<ReturnType<typeof startBrowserControlBridge>> | null = null;
+let bridgeStarting: Promise<Awaited<ReturnType<typeof startBrowserControlBridge>>> | null = null;
+const profileHosts = new Map<string, { host: ExtensionHost; installer: StoreInstaller }>();
+const chatGrants = new Map<string, { grantId: string; token: string; sessionId: string }>();
+const pendingOpen: Array<{ url?: string; path?: string }> = [];
+let readyForLinks = false;
+let popup: WebContentsView | null = null;
+let unsubscribeProfiles: (() => void) | undefined;
+let ipcWired = false;
+let activateWired = false;
+
+function activeProfileServices(): { host: ExtensionHost; installer: StoreInstaller } | null {
+  if (!arc) return null;
+  const state = arc.snapshot();
+  const profileId = arc.getProfileId(state.activeSpaceId);
+  const current = profileHosts.get(profileId);
+  if (current) return current;
+  // The active tab may still be about:blank. Resolving its persistent Session is
+  // also what creates the profile-bound extension host and security hooks.
+  try { arc.getSessionForSpace(state.activeSpaceId); } catch { return null; }
+  return profileHosts.get(profileId) ?? null;
+}
+
+async function attachWorkspaceSession(entry: WorkspaceSession): Promise<void> {
+  if (!permissions || !blocking || !downloads) return;
+  const existing = profileHosts.get(entry.profileId);
+  if (!existing) {
+    const profileDirectory = join(app.getPath("userData"), "zenmium", "profiles", entry.profileId);
+    const host = new ExtensionHost({
+      events,
+      profileId: entry.profileId,
+      registryPath: join(profileDirectory, "extensions.json"),
+      session: entry.session,
+    });
+    profileHosts.set(entry.profileId, {
+      host,
+      installer: new StoreInstaller({
+        events,
+        extensionsRoot: join(profileDirectory, "extensions"),
+        host,
+      }),
+    });
+  }
+  // Permission checks must be installed synchronously before any page load.
+  permissions.attach(entry.profileId, entry.session);
+  downloads.attach(entry.profileId, entry.spaceId, entry.session);
+  // Filter-list hydration is deliberately not on the first-page critical path.
+  void blocking.attach(entry.profileId, entry.session).catch(() => undefined);
+  const result = await profileHosts.get(entry.profileId)!.host.boot();
+  if (!result.ok) {
+    events.emit(EXTENSION_IPC.progress, {
+      status: "error",
+      id: "profile",
+      name: "Workspace extensions",
+      profileId: entry.profileId,
+      reason: result.reason,
+    });
+  }
+}
+
+function attachmentMime(path: string): string {
+  const extension = extname(path).toLowerCase();
+  return ({
+    ".csv": "text/csv",
+    ".gif": "image/gif",
+    ".jpeg": "image/jpeg",
+    ".jpg": "image/jpeg",
+    ".json": "application/json",
+    ".md": "text/markdown",
+    ".pdf": "application/pdf",
+    ".png": "image/png",
+    ".txt": "text/plain",
+    ".webp": "image/webp",
+  } as Record<string, string>)[extension] ?? "application/octet-stream";
+}
+
+async function bridge(): Promise<NonNullable<typeof controlBridge>> {
+  if (!control || !native?.isAgentEnabled()) throw new Error("Enable the optional agent before connecting a browser client.");
+  if (controlBridge) return controlBridge;
+  bridgeStarting ??= startBrowserControlBridge(control);
+  controlBridge = await bridgeStarting;
+  return controlBridge;
+}
+function humanTab(tabId: string | null | undefined): void {
+  if (tabId) control?.takeoverTab(tabId);
+}
+function closeExtensionPopup(): void {
+  const view = popup;
+  popup = null;
+  if (view && !view.webContents.isDestroyed()) {
+    if (win && !win.isDestroyed()) win.contentView.removeChildView(view);
+    view.webContents.close();
+  }
+}
+function queueOpen(item: { url?: string; path?: string }): void {
+  if (pendingOpen.length < 64) pendingOpen.push(item);
+  if (app.isReady() && !win) ensureWindow();
+  drainOpen();
+}
+function drainOpen(): void {
+  if (!readyForLinks || !arc || !win) return;
+  while (pendingOpen.length) {
+    const item = pendingOpen.shift()!;
+    try {
+      if (item.url) arc.newTab({ url: item.url });
+      else if (item.path) arc.openLocalFile(item.path);
+    } catch { chrome?.broadcast(CHROME_IPC.commandEvent, { error: "The requested file or URL could not be opened." }); }
+  }
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
+}
+app.on("open-url", (event, input) => {
+  event.preventDefault();
+  const url = webUrl(input);
+  if (primaryInstance && url) queueOpen({ url });
+});
+app.on("open-file", (event, path) => {
+  event.preventDefault();
+  if (primaryInstance) queueOpen({ path });
+});
+app.on("second-instance", (_event, argv) => {
+  for (const argument of argv) { const url = webUrl(argument); if (url) queueOpen({ url }); }
+  if (!win) ensureWindow();
+  else { if (win.isMinimized()) win.restore(); win.show(); win.focus(); }
+});
+
+function disposeWindowServices(): void {
+  readyForLinks = false;
+  unsubscribeProfiles?.();
+  closeExtensionPopup();
+  chat?.dispose(); chat = null;
+  authentication?.dispose(); authentication = null;
+  control?.dispose(); control = null;
+  void controlBridge?.close(); controlBridge = null; bridgeStarting = null;
+  chatGrants.clear();
+  void agent?.stop(); agent = null;
+  permissions?.dispose(); permissions = null;
+  blocking?.dispose(); blocking = null;
+  downloads?.dispose(); downloads = null;
+  for (const { host } of profileHosts.values()) void host.dispose();
+  profileHosts.clear(); native = null;
+}
 
 function createWindow(): void {
   win = new BrowserWindow({
@@ -32,6 +196,7 @@ function createWindow(): void {
     height: 900,
     minHeight: 560,
     minWidth: 800,
+    title: "Zenmium",
     titleBarStyle: "hiddenInset",
     trafficLightPosition: { x: 12, y: 16 },
     webPreferences: {
@@ -53,14 +218,25 @@ function createWindow(): void {
   } else {
     void win.loadFile(join(import.meta.dirname, "../renderer/index.html"));
   }
-  win.webContents.once("did-finish-load", () => arc?.boot());
+  win.webContents.once("did-finish-load", () => {
+    arc?.boot();
+    readyForLinks = true;
+    drainOpen();
+  });
   win.on("closed", () => {
+    disposeWindowServices();
     chrome?.dispose();
     chrome = null;
     arc?.dispose();
     arc = null;
     win = null;
   });
+}
+
+function ensureWindow(): void {
+  if (win) return;
+  createWindow();
+  initializeWindowServices();
 }
 
 function wireIpc(): void {
@@ -155,14 +331,114 @@ function wireIpc(): void {
     core().updateFolder(id, patch);
   });
   handle(ARC_IPC.moveTabToSpace, (_e, p) => {
-    const { id, spaceId } = z
-      .object({ id: z.string(), spaceId: z.string() })
+    const { id, spaceId, confirmReload } = z
+      .object({
+        id: z.string(),
+        spaceId: z.string(),
+        confirmReload: z.boolean().optional(),
+      })
       .parse(p);
-    core().moveTabToSpace(id, spaceId);
+    return core().moveTabToSpace(id, spaceId, { confirmReload });
   });
   handle(ARC_IPC.clearHistory, () => core().clearHistory());
   handle(ARC_IPC.closePeek, () => core().closePeek());
   handle(ARC_IPC.promotePeek, () => core().promotePeek());
+  handle(NATIVE_IPC.snapshot, () => native?.snapshot());
+  handle(NATIVE_IPC.bookmark, (_e, p) => {
+    if (!native) throw new Error("Native browser services are not ready.");
+    return native.bookmark(bookmarkCommandSchema.parse(p));
+  });
+  handle(NATIVE_IPC.utility, (_e, p) => {
+    if (!native) throw new Error("Native browser services are not ready.");
+    return native.utility(utilityCommandSchema.parse(p));
+  });
+  handle(NATIVE_IPC.permission, (_e, p) => {
+    if (!native) throw new Error("Native browser services are not ready.");
+    return native.permission(p);
+  });
+  handle(NATIVE_IPC.onboarding, (_e, p) => {
+    if (!native) throw new Error("Native browser services are not ready.");
+    return native.updateOnboarding(p);
+  });
+  handle(NATIVE_IPC.protection, (_e, p) => {
+    if (!native) throw new Error("Native browser services are not ready.");
+    return native.protection(p);
+  });
+
+  handle(CONTROL_IPC.pair, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    return control.createGrant(controlGrantSchema.parse(p));
+  });
+  handle(CONTROL_IPC.revoke, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const { grantId } = z.object({ grantId: z.string().min(1).max(160) }).parse(p);
+    control.revokeGrant(grantId);
+  });
+  handle(CONTROL_IPC.grants, () => {
+    if (!control) throw new Error("Browser control is not ready.");
+    return control.listGrants();
+  });
+  handle(CONTROL_IPC.createSession, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const { token, input } = z.object({
+      token: z.string().min(1).max(256),
+      input: controlSessionInputSchema,
+    }).parse(p);
+    return control.createSession(token, input);
+  });
+  handle(CONTROL_IPC.execute, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const { token, command } = z.object({
+      token: z.string().min(1).max(256),
+      command: z.unknown(),
+    }).parse(p);
+    return control.execute(token, command);
+  });
+  handle(CONTROL_IPC.takeover, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const { sessionId } = z.object({ sessionId: z.string().min(1).max(160) }).parse(p);
+    control.takeover(sessionId);
+  });
+  handle(CONTROL_IPC.resume, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const { token, sessionId } = z.object({
+      token: z.string().min(1).max(256),
+      sessionId: z.string().min(1).max(160),
+    }).parse(p);
+    return control.resume(token, sessionId);
+  });
+  handle(CONTROL_IPC.events, (_e, p) => {
+    if (!control) throw new Error("Browser control is not ready.");
+    const input = z.object({
+      token: z.string().min(1).max(256),
+      epoch: z.string().optional(),
+      after: z.number().int().nonnegative().optional(),
+    }).parse(p);
+    return control.events(input.token, input);
+  });
+  handle(CONTROL_IPC.status, () => {
+    if (!control) throw new Error("Browser control is not ready.");
+    return control.capabilities();
+  });
+
+  const chatUnavailable = { ok: false as const, seam: "agent" as const, reason: "Agent chat is unavailable." };
+  for (const channel of [
+    CHAT_IPC.list,
+    CHAT_IPC.get,
+    CHAT_IPC.create,
+    CHAT_IPC.prompt,
+    CHAT_IPC.abort,
+    CHAT_IPC.retry,
+    CHAT_IPC.resume,
+    CHAT_IPC.rename,
+    CHAT_IPC.models,
+    CHAT_IPC.context,
+    CHAT_IPC.attach,
+    CHAT_IPC.removeAttachment,
+    CHAT_IPC.takeover,
+  ]) {
+    handle(channel, (_e, p) => chat?.handle(channel, p) ?? chatUnavailable);
+  }
   handle(CHROME_IPC.snapshot, () => chrome?.snapshot());
   handle(CHROME_IPC.preferences, (_e, p) =>
     chrome?.updatePreferences(preferencesSchema.partial().parse(p))
@@ -199,6 +475,7 @@ function wireIpc(): void {
           "commands",
           "site-info",
         ]),
+        chatId: z.string().optional(),
         spaceId: z.string().optional(),
         tabId: z.string().optional(),
         x: z.number().optional(),
@@ -206,6 +483,28 @@ function wireIpc(): void {
       })
       .parse(p);
     chrome?.open(overlay as BrowserOverlayState);
+  });
+  handle(CHROME_IPC.chatHistory, (_e, p) => {
+    chrome?.updateChatHistory(
+      z
+        .object({
+          action: z.enum(["upsert", "rename", "remove"]),
+          id: z.string(),
+          messages: z
+            .array(
+              z.object({
+                from: z.enum(["user", "assistant"]),
+                id: z.string(),
+                text: z.string(),
+              })
+            )
+            .optional(),
+          spaceId: z.string().optional(),
+          title: z.string().optional(),
+          updatedAt: z.number().optional(),
+        })
+        .parse(p)
+    );
   });
   handle(CHROME_IPC.close, (_e, p) =>
     chrome?.close(
@@ -231,7 +530,8 @@ function wireIpc(): void {
     else if (p === "close") win?.close();
   });
   handle(CHROME_IPC.extensionLoad, async () => {
-    if (!win || !extensions) return;
+    const services = activeProfileServices();
+    if (!win || !services) return;
     const chosen = await dialog.showOpenDialog(win, {
       properties: ["openDirectory"],
       title: "Load unpacked extension",
@@ -241,7 +541,7 @@ function wireIpc(): void {
     const manifest = JSON.parse(
       await readFile(join(path, "manifest.json"), "utf8")
     ) as { name?: string; version?: string };
-    return extensions.load({
+    return services.host.load({
       enabled: true,
       id: path,
       name: manifest.name ?? "Extension",
@@ -250,15 +550,15 @@ function wireIpc(): void {
     });
   });
 
-  handle(EXTENSION_IPC.list, () => extensions?.list());
+  handle(EXTENSION_IPC.list, () => activeProfileServices()?.host.list() ?? []);
   handle(EXTENSION_IPC.setEnabled, (_e, p) => {
     const { id: extId, enabled } = p as { id: string; enabled: boolean };
-    return extensions?.setEnabled(extId, enabled);
+    return activeProfileServices()?.host.setEnabled(extId, enabled);
   });
   handle(EXTENSION_IPC.remove, (_e, p) =>
-    extensions?.remove((p as { id: string }).id)
+    activeProfileServices()?.host.remove((p as { id: string }).id)
   );
-  handle(STORE_INSTALL_IPC.start, (_e, p) => installer?.start(String(p)));
+  handle(STORE_INSTALL_IPC.start, (_e, p) => activeProfileServices()?.installer.start(String(p)));
 
   handle(AGENT_IPC.newSession, () => agent?.newSession());
   handle(AGENT_IPC.prompt, (_e, p) => {
@@ -270,19 +570,197 @@ function wireIpc(): void {
   );
 }
 
-app.whenReady().then(async () => {
-  installSecurityPolicy();
-  extensions = new ExtensionHost({ events });
-  installer = new StoreInstaller({ events, host: extensions });
+function initializeWindowServices(): void {
+  if (!win || !arc || !chrome) throw new Error("Zenmium window services could not be created.");
   agent = new AgentKernel({ events });
-  wireIpc();
-  createWindow();
+  const userDataDir = app.getPath("userData");
+  permissions = new BrowserPermissions(userDataDir, {
+    window: () => win,
+    mayPrompt: (wc) => arc?.getActiveWebContents() === wc,
+    trustedChrome: (wc) => chrome?.owns(wc) ?? false,
+    changed: () => native?.changed(),
+  });
+  blocking = new BrowserBlocking(userDataDir, () => native?.changed());
   downloads = new BrowserDownloads(app.getPath("userData"), () => {
     if (chrome) chrome.broadcast(CHROME_IPC.event, chrome.snapshot());
   });
-  Menu.setApplicationMenu(
-    Menu.buildFromTemplate([
-      { label: "Zenmium", role: "appMenu" },
+  authentication = new AuthenticationBroker({
+    isCurrentTarget: async (scope) => {
+      const current = control?.getSessionForTab(scope.tabId);
+      const wc = arc?.getWebContentsForTab(scope.tabId);
+      if (!current || current.id !== scope.agentSessionId || current.controller !== "agent" || current.workspaceId !== scope.workspaceId || current.profileId !== scope.profileId || !wc || wc.isDestroyed()) return false;
+      try { return new URL(wc.getURL()).origin === scope.origin; } catch { return false; }
+    },
+  });
+  control = new BrowserControlService(arc, {
+    stateFile: join(userDataDir, "zenmium", "browser-control.v1.json"),
+    driver: new NativeBrowserControlDriver(),
+    authenticate: async (request) => {
+      if (!authentication) return { status: "unavailable" };
+      const result = await authentication.request({
+        actorId: request.actorId,
+        workspaceId: request.workspaceId,
+        profileId: request.profileId,
+        agentSessionId: request.sessionId,
+        tabId: request.tabId,
+        origin: request.origin,
+      });
+      if (result.status === "authenticated") return { status: "filled" };
+      if (result.status === "awaiting-consent" || result.status === "awaiting-unlock" || result.status === "needs-user") return { status: "awaiting-user" };
+      if (result.status === "denied") return { status: "denied" };
+      if (result.status === "cancelled") return { status: "cancelled" };
+      if (result.status === "expired") return { status: "expired" };
+      return { status: "unavailable" };
+    },
+    isProtectedTarget: (profileId, tabId) => authentication?.isProtectedTarget(profileId, tabId) ?? false,
+  });
+  native = new NativeBrowserServices(
+    win,
+    arc,
+    userDataDir,
+    permissions,
+    blocking,
+    (channel, payload) => chrome?.broadcast(channel, payload),
+    (tabId) => humanTab(tabId),
+  );
+  unsubscribeProfiles = arc.onSessionCreated((entry) => attachWorkspaceSession(entry));
+  chrome.setHumanInputHandler((wc) => humanTab(arc?.getTabIdForWebContents(wc.id)));
+  chrome.setNativeCommandHandler((command) => {
+    if (!native) return false;
+    const utility = command === "zoom-in" || command === "zoom-out" || command === "zoom-reset" ? command : null;
+    if (!utility) return false;
+    void native.utility({ action: utility }).catch((error) => {
+      chrome?.broadcast(CHROME_IPC.commandEvent, { error: error instanceof Error ? error.message : "The browser utility failed." });
+    });
+    return true;
+  });
+  const storageCodec = safeStorage.isEncryptionAvailable()
+    ? {
+        encrypt: (value: string) => safeStorage.encryptString(value),
+        decrypt: (value: Uint8Array) => safeStorage.decryptString(Buffer.from(value)),
+      }
+    : undefined;
+  chat = new AgentChatManager({
+    directory: join(userDataDir, "zenmium"),
+    kernel: agent,
+    adapters: {
+      isEnabled: () => native?.isAgentEnabled() ?? false,
+      spaceExists: (spaceId) => Boolean(arc?.snapshot().spaces.some((space) => space.id === spaceId)),
+      capturePage: async (spaceId, requestedTabId) => {
+        if (!arc) throw new Error("Browser is not ready.");
+        const state = arc.snapshot();
+        const tabId = requestedTabId ?? state.activeTabId;
+        if (!tabId) throw new Error("There is no active page to capture.");
+        const tab = state.tabs.find((candidate) => candidate.id === tabId && candidate.spaceId === spaceId);
+        const wc = tabId ? arc.getWebContentsForTab(tabId) : undefined;
+        if (!tab || !wc || wc.isDestroyed()) throw new Error("The requested Workspace page is unavailable.");
+        const value = await wc.executeJavaScript(`(() => {
+          const root = document.body ? document.body.cloneNode(true) : document.documentElement.cloneNode(true);
+          root.querySelectorAll?.("input,textarea,select,button,script,style,noscript,[contenteditable],[aria-hidden=true]").forEach((node) => node.remove());
+          return {
+            title: document.title,
+            url: location.href,
+            text: (root.textContent || "").replace(/\\s+/g, " ").trim().slice(0, ${CHAT_LIMITS.pageText}),
+          };
+        })()`, true) as { title?: unknown; url?: unknown; text?: unknown };
+        return {
+          title: String(value.title ?? tab.title ?? "Current page"),
+          url: String(value.url ?? tab.url),
+          text: String(value.text ?? ""),
+          tabId,
+        };
+      },
+      bookmarks: async (spaceId) => {
+        const profileId = arc?.getProfileId(spaceId);
+        if (!profileId) return [];
+        return native!.bookmarks.list(profileId)
+          .filter((bookmark) => bookmark.kind === "bookmark" && Boolean(bookmark.url))
+          .map((bookmark) => ({ title: bookmark.title, url: bookmark.url! }));
+      },
+      pickFiles: async () => {
+        if (!win) return [];
+        const chosen = await dialog.showOpenDialog(win, { properties: ["openFile", "multiSelections"], title: "Attach to Zenmium Agent" });
+        if (chosen.canceled) return [];
+        const paths = chosen.filePaths.slice(0, CHAT_LIMITS.attachments);
+        const files = [];
+        for (const path of paths) {
+          const info = await stat(path);
+          if (info.size > CHAT_LIMITS.attachmentBytes) throw new Error(`${basename(path)} is larger than 10 MB.`);
+          files.push({ filename: basename(path), mime: attachmentMime(path), bytes: new Uint8Array(await readFile(path)) });
+        }
+        return files;
+      },
+      prepareBrowser: async ({ conversationId, spaceId, runtimeSessionId, mode }) => {
+        if (!control || !native || !arc) throw new Error("Browser control is unavailable.");
+        const existing = chatGrants.get(conversationId);
+        if (existing) {
+          try {
+            control.validateToken(existing.token);
+            if (mode === "resume") await control.reobserveAndResume(existing.token, existing.sessionId);
+            const server = await bridge();
+            return {
+              name: "zenmium_browser",
+              url: server.url,
+              headers: { Authorization: `Bearer ${existing.token}` },
+              toolNames: ["zenmium_browser_zenmium_capabilities", "zenmium_browser_zenmium_session", "zenmium_browser_zenmium_action", "zenmium_browser_zenmium_events"],
+              systemContext: "This conversation owns one background tab in the current Workspace. Keep the tab in its generated group, work without focusing the window, and stop immediately if human control is shown.",
+            };
+          } catch {
+            chatGrants.delete(conversationId);
+          }
+        }
+        const grant = control.createGrant({
+          actorId: `chat:${conversationId}`,
+          workspaceIds: [spaceId],
+          capabilities: ["observe", "navigate", "interact", "tabs", "downloads", "authenticate", "cdp"],
+          allowAdditionalTabs: false,
+          ttlMs: 8 * 60 * 60 * 1000,
+        });
+        const workspace = arc.snapshot().spaces.find((space) => space.id === spaceId);
+        const session = control.createSession(grant.token, {
+          requestId: `${conversationId}:${runtimeSessionId}:${randomUUID()}`,
+          workspaceId: spaceId,
+          conversationId,
+          title: `Agent · ${workspace?.name ?? "Workspace"}`,
+        });
+        chatGrants.set(conversationId, { grantId: grant.grantId, token: grant.token, sessionId: session.id });
+        const server = await bridge();
+        return {
+          name: "zenmium_browser",
+          url: server.url,
+          headers: { Authorization: `Bearer ${grant.token}` },
+          toolNames: ["zenmium_browser_zenmium_capabilities", "zenmium_browser_zenmium_session", "zenmium_browser_zenmium_action", "zenmium_browser_zenmium_events"],
+          systemContext: "This conversation owns one background tab in the current Workspace. Keep the tab in its generated group, work without focusing the window, and stop immediately if human control is shown.",
+        };
+      },
+      takeover: async (conversationId) => {
+        const grant = chatGrants.get(conversationId);
+        if (grant) control?.takeover(grant.sessionId);
+      },
+    },
+    storageCodec,
+    legacyHistory: chrome.snapshot().chatHistory,
+  });
+  chat.onChange((change) => chrome?.broadcast(CHAT_IPC.event, change));
+  control.subscribe((event) => chrome?.broadcast(CONTROL_IPC.event, event));
+  if (!ipcWired) {
+    wireIpc();
+    Menu.setApplicationMenu(
+      Menu.buildFromTemplate([
+      {
+        label: "Zenmium",
+        submenu: [
+          { label: "About Zenmium", role: "about" },
+          { type: "separator" },
+          { role: "services" },
+          { type: "separator" },
+          { label: "Hide Zenmium", role: "hide" },
+          { role: "hideOthers" },
+          { role: "unhide" },
+          { type: "separator" },
+          { label: "Quit Zenmium", role: "quit" },
+        ],
+      },
       {
         label: "File",
         submenu: [
@@ -328,23 +806,31 @@ app.whenReady().then(async () => {
         ],
       },
       { role: "windowMenu" },
-    ])
-  );
+      ])
+    );
 
-  events.on(EXTENSION_IPC.progress, (payload) =>
-    chrome?.broadcast(EXTENSION_IPC.progress, payload)
-  );
-  events.on(STORE_INSTALL_IPC.progress, (payload) =>
-    chrome?.broadcast(STORE_INSTALL_IPC.progress, payload)
-  );
+    events.on(EXTENSION_IPC.progress, (payload) =>
+      chrome?.broadcast(EXTENSION_IPC.progress, payload)
+    );
+    events.on(STORE_INSTALL_IPC.progress, (payload) =>
+      chrome?.broadcast(STORE_INSTALL_IPC.progress, payload)
+    );
+    ipcWired = true;
+  }
   agent.onEvent((event) => chrome?.broadcast(AGENT_IPC.event, event));
 
-  await extensions.boot();
-  void agent.start();
+  if (!activateWired) {
+    app.on("activate", () => {
+      if (BrowserWindow.getAllWindows().length === 0) ensureWindow();
+    });
+    activateWired = true;
+  }
+}
 
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+app.whenReady().then(() => {
+  app.setName("Zenmium");
+  installSecurityPolicy();
+  ensureWindow();
 });
 
 app.on("window-all-closed", () => {
@@ -352,8 +838,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  disposeWindowServices();
   void agent?.stop();
   arc?.dispose();
-  extensions?.dispose();
-  downloads?.dispose();
 });

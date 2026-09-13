@@ -18,16 +18,17 @@ import {
 } from "./browser/SidebarDrag";
 import { SidebarTab } from "./browser/SidebarTab";
 import {
-  SidebarWorkspaceIndicator,
+  SidebarPinnedToggle,
   SidebarWorkspaceSwitcher,
 } from "./browser/SidebarWorkspaces";
+import { SidebarChatHistory } from "./browser/SidebarChatHistory";
 import "@/styles/zen-sidebar.css";
 
 /** The complete sidebar WebContentsView, including its transparent gutter. */
 export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
   const p = ui.preferences;
   const expanded = sidebarRevealed(ui);
-  const compactHidden = p.sidebarMode === "compact" && !expanded;
+  const compactHidden = p.sidebarMode !== "expanded" && !expanded;
   const interaction = useSidebarInteraction(invoke, ui.sidebar);
   const drag = useSidebarDrag(state, invoke, interaction.setDragging);
   const [tabsOverflow, setTabsOverflow] = useState(false);
@@ -46,17 +47,15 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
   const rootTabs = tabs.filter(
     (tab) => !(tab.folderId && folderIds.has(tab.folderId))
   );
-  const essentials = rootTabs.filter((tab) => tab.kind === "pinned");
+  // Eight sidebar slots, not an eight-pin storage limit. Remaining pins live
+  // in the optional top strip; both surfaces preserve the same tab ordering.
+  const essentials = rootTabs
+    .filter((tab) => tab.kind === "pinned")
+    .slice(0, MAX_ESSENTIALS);
   const normalTabs = rootTabs.filter((tab) => tab.kind === "today");
   const essentialCount = tabs.filter(isEssentialTab).length;
   const pinnedOpen = !currentSpace?.pinnedCollapsed;
   const destination = { folderId: null, spaceId: state.activeSpaceId };
-  let essentialsWrap: "three" | "four" | undefined;
-  if (essentials.length > 0 && essentials.length % 4 === 0) {
-    essentialsWrap = "four";
-  } else if (essentials.length > 4 && essentials.length % 3 === 0) {
-    essentialsWrap = "three";
-  }
 
   useEffect(() => {
     const viewport = scrollRef.current;
@@ -108,7 +107,7 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
       ref={interaction.surfaceRef}
       style={
         {
-          "--zen-primary-color": currentSpace?.color || "#6ee7a8",
+          "--zen-primary-color": "var(--zen-workspace-color)",
           "--zen-sidebar-width": `${p.width}px`,
         } as CSSProperties
       }
@@ -131,7 +130,7 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
             <section
               aria-label="Essential tabs"
               className="zen-essentials"
-              data-wrap={essentialsWrap}
+              data-count={essentials.length}
               {...drag.zone("essentials", {
                 ...destination,
                 beforeId: null,
@@ -152,15 +151,14 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
               {essentials.length === 0 ? (
                 <div
                   className="zen-essentials-promo"
-                  title={`Drop tabs here to pin (${essentialCount}/${MAX_ESSENTIALS})`}
+                  title={`Drop tabs here to pin (${essentialCount} saved, ${MAX_ESSENTIALS} sidebar slots)`}
                 >
                   <Pin aria-hidden="true" size={14} />
                   <span>Drop tabs here to pin</span>
                 </div>
               ) : null}
             </section>
-            <SidebarWorkspaceIndicator
-              invoke={invoke}
+            <SidebarPinnedToggle
               onTogglePinned={() =>
                 invoke(ARC_IPC.updateSpace, {
                   id: state.activeSpaceId,
@@ -168,7 +166,6 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                 })
               }
               pinnedOpen={pinnedOpen}
-              space={currentSpace}
             />
             <section
               aria-label="Pinned tabs"
@@ -286,14 +283,40 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
             {drag.error}
           </p>
         ) : null}
+        {drag.pendingMove ? (
+          <section aria-label="Move tab to another profile" className="zen-sidebar-move-confirm" role="alert">
+            <strong>Move and reload this tab?</strong>
+            <p>{drag.pendingMove.reason}</p>
+            <p>Unsaved input may be lost. This Workspace uses its own accounts and cookies.</p>
+            <div>
+              <button disabled={drag.moving} onClick={() => void drag.confirmMove()} type="button">Move and reload</button>
+              <button disabled={drag.moving} onClick={drag.cancelMove} type="button">Cancel</button>
+            </div>
+          </section>
+        ) : null}
         <footer className="zen-sidebar-footer">
+          <SidebarChatHistory
+            activeSpaceId={state.activeSpaceId}
+            entries={ui.chatHistory}
+            invoke={invoke}
+            overlayChatId={ui.overlay?.chatId}
+            spaces={state.spaces}
+          />
           <SidebarWorkspaceSwitcher
             activeSpaceId={state.activeSpaceId}
             drag={drag}
             invoke={invoke}
+            open={
+              ui.overlay?.kind === "workspace" ||
+              ui.overlay?.kind === "workspace-edit"
+            }
             spaces={state.spaces}
           />
-          <SidebarFootActions invoke={invoke} ui={ui} />
+        <SidebarFootActions
+          agentOpen={ui.overlay?.kind === "agent"}
+          agentSessionId={ui.overlay?.sessionId}
+          invoke={invoke}
+        />
         </footer>
       </aside>
       {expanded ? (

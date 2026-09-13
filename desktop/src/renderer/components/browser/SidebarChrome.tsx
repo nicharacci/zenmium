@@ -8,15 +8,18 @@ import { ARC_IPC } from "@shared/ipc";
 import {
   ArrowLeft,
   ArrowRight,
+  Bookmark,
+  Check,
+  Copy,
   Download,
   Menu,
+  MessageCircle,
   PanelLeft,
   PanelRight,
   Plus,
   Puzzle,
   RotateCw,
   Search,
-  Sparkles,
   X,
 } from "lucide-react";
 import type { ButtonHTMLAttributes, PointerEvent, ReactNode } from "react";
@@ -63,8 +66,21 @@ export function SidebarToolbar({
   ui,
   invoke,
 }: Pick<BrowserSurfaceProps, "ui" | "invoke"> & { active?: SidebarTabModel }) {
-  const compact = ui.preferences.sidebarMode === "compact";
+  const expanded = ui.preferences.sidebarMode === "expanded";
+  const [copied, setCopied] = useState(false);
   const SideIcon = ui.preferences.side === "left" ? PanelLeft : PanelRight;
+  const copyableUrl =
+    active?.url && active.url !== "about:blank" ? active.url : undefined;
+  const copyLink = async () => {
+    if (!copyableUrl) return;
+    try {
+      await navigator.clipboard?.writeText(copyableUrl);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      setCopied(false);
+    }
+  };
   return (
     <header className="zen-sidebar-header">
       <div
@@ -74,11 +90,11 @@ export function SidebarToolbar({
       />
       <div aria-label="Browser navigation" className="zen-top" role="toolbar">
         <SidebarButton
-          aria-pressed={compact}
-          label={compact ? "Disable compact mode" : "Enable compact mode"}
+          aria-pressed={expanded}
+          label={expanded ? "Collapse sidebar" : "Keep sidebar expanded"}
           onClick={() =>
             invoke(CHROME_IPC.preferences, {
-              sidebarMode: compact ? "expanded" : "compact",
+              sidebarMode: expanded ? "collapsed" : "expanded",
             })
           }
         >
@@ -114,35 +130,60 @@ export function SidebarToolbar({
         </SidebarButton>
         <span className="zen-top-spacer" />
         <SidebarButton
+          className="zen-top-bookmarks"
+          label="Bookmarks"
+          aria-pressed={ui.overlay?.kind === "bookmarks"}
+          onClick={() =>
+            ui.overlay?.kind === "bookmarks"
+              ? invoke(CHROME_IPC.close, {sessionId: ui.overlay.sessionId})
+              : invoke(CHROME_IPC.open, {kind: "bookmarks"})
+          }
+        >
+          <Bookmark size={15} />
+        </SidebarButton>
+        <SidebarButton
           className="zen-top-extensions"
           label="Extensions"
           onClick={() => invoke(CHROME_IPC.open, { kind: "extensions" })}
         >
           <Puzzle size={15} />
         </SidebarButton>
-        <SidebarButton
-          className="zen-top-menu"
-          label="Browser menu"
-          onClick={() => invoke(CHROME_IPC.open, { kind: "menu" })}
-        >
-          <Menu size={16} />
-        </SidebarButton>
       </div>
       <div className="zen-urlbar-container">
-        <button
-          aria-expanded={ui.overlay?.kind === "address"}
-          aria-haspopup="dialog"
-          aria-label="Search or enter address"
-          className="zen-urlbar"
-          onClick={() =>
-            invoke(CHROME_IPC.open, { kind: "address", tabId: active?.id })
-          }
-          title={active?.url || "Search or enter address"}
-          type="button"
-        >
-          <Search aria-hidden="true" size={14} />
-          <span>{addressLabel(active?.url)}</span>
-        </button>
+        <div className="zen-urlbar-shell">
+          <button
+            aria-expanded={ui.overlay?.kind === "address"}
+            aria-haspopup="dialog"
+            aria-label="Search or enter address"
+            className="zen-urlbar"
+            onClick={() =>
+              invoke(CHROME_IPC.open, { kind: "address", tabId: active?.id })
+            }
+            title={active?.url || "Search or enter address"}
+            type="button"
+          >
+            <Search aria-hidden="true" size={14} />
+            <span>{addressLabel(active?.url)}</span>
+          </button>
+          {copyableUrl ? (
+            <button
+              aria-label={copied ? "Link copied" : "Copy link"}
+              className="zen-urlbar-copy"
+              onClick={(event) => {
+                event.stopPropagation();
+                void copyLink();
+              }}
+              title={copied ? "Link copied" : "Copy link"}
+              type="button"
+            >
+              {copied ? (
+                <Check aria-hidden="true" size={14} />
+              ) : (
+                <Copy aria-hidden="true" size={14} />
+              )}
+            </button>
+          ) : null}
+        </div>
       </div>
     </header>
   );
@@ -169,27 +210,19 @@ export function SidebarNewTab({
 }
 
 export function SidebarFootActions({
-  ui,
+  agentOpen = false,
+  agentSessionId,
   invoke,
-}: Pick<BrowserSurfaceProps, "ui" | "invoke">) {
-  const expanded = ui.preferences.sidebarMode === "expanded";
-  const SideIcon = ui.preferences.side === "left" ? PanelLeft : PanelRight;
+}: Pick<BrowserSurfaceProps, "invoke"> & {
+  agentOpen?: boolean;
+  agentSessionId?: number;
+}) {
   return (
     <div
       aria-label="Sidebar actions"
       className="zen-foot-actions"
       role="toolbar"
     >
-      <SidebarButton
-        label={expanded ? "Collapse sidebar" : "Keep sidebar expanded"}
-        onClick={() =>
-          invoke(CHROME_IPC.preferences, {
-            sidebarMode: expanded ? "collapsed" : "expanded",
-          })
-        }
-      >
-        <SideIcon size={15} />
-      </SidebarButton>
       <SidebarButton
         label="Downloads"
         onClick={() => invoke(CHROME_IPC.open, { kind: "downloads" })}
@@ -204,10 +237,14 @@ export function SidebarFootActions({
       </SidebarButton>
       <span className="zen-foot-spacer" />
       <SidebarButton
-        label="Agent"
-        onClick={() => invoke(CHROME_IPC.open, { kind: "agent" })}
+        label={agentOpen ? "Close Agent" : "Agent"}
+        onClick={() =>
+          agentOpen
+            ? invoke(CHROME_IPC.close, { sessionId: agentSessionId })
+            : invoke(CHROME_IPC.open, { kind: "agent" })
+        }
       >
-        <Sparkles size={15} />
+        <MessageCircle size={15} />
       </SidebarButton>
       <SidebarButton
         label="Browser menu"

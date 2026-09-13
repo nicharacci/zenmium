@@ -26,6 +26,7 @@ import {
 import { type CommandItem, CommandPalette } from "../motion/command-palette";
 import { AddressPalette, clearAddressDrafts } from "./AddressPalette";
 import { BrowserUtilities } from "./BrowserUtilities";
+import { FindPanel } from "./BrowserNativePanels";
 import {
   ActionStatus,
   checkedInvoke,
@@ -39,6 +40,9 @@ const EXIT_MS = 150;
 const labels: Record<PanelKind, string> = {
   address: "Address bar",
   agent: "Agent",
+  bookmarks: "Bookmarks",
+  find: "Find in page",
+  onboarding: "Welcome to Zenmium",
   commands: "Commands",
   downloads: "Downloads",
   extensions: "Extensions",
@@ -75,7 +79,15 @@ export function BrowserOverlay(props: BrowserSurfaceProps) {
       : "light";
     document.documentElement.dataset.zenOverlayKind = kind ?? "";
   }, [props.ui.dark, kind]);
-  if (!props.ui.overlay) return null;
+  // Agent chat is docked into the live browsing surface. Keeping it out of
+  // this detached overlay renderer prevents a second, floating chat pane from
+  // ever being mounted while the native page is being resized for the dock.
+  if (!props.ui.overlay || props.ui.overlay.kind === "agent" || props.ui.overlay.kind === "bookmarks") return null;
+  if (props.ui.overlay.kind === "find") return (
+    <div aria-label="Find in page" role="dialog" className="zen-native-find-surface" onKeyDown={(event) => { if (event.key === "Escape") void props.invoke(CHROME_IPC.close, {sessionId: props.ui.overlay?.sessionId}); }}>
+      <FindPanel {...props} close={() => void props.invoke(CHROME_IPC.close, {sessionId: props.ui.overlay?.sessionId})}/>
+    </div>
+  );
   return (
     <OverlaySession
       key={
@@ -99,10 +111,12 @@ function OverlaySession(props: BrowserSurfaceProps) {
   const alive = useRef(true);
   const commands = overlay.kind === "commands";
   const address = overlay.kind === "address" || overlay.kind === "new-tab";
+  const drawer = overlay.kind === "agent";
   const anchored =
     overlay.kind === "menu" ||
     overlay.kind === "tab-menu" ||
     overlay.kind === "workspace" ||
+    overlay.kind === "workspace-edit" ||
     overlay.kind === "site-info";
   const close = useCallback(() => {
     if (closeStarted.current) return;
@@ -160,7 +174,9 @@ function OverlaySession(props: BrowserSurfaceProps) {
           : window.innerWidth - ui.preferences.width - width - 16);
       const y =
         overlay.y ??
-        (overlay.kind === "workspace" ? window.innerHeight - height - 20 : 54);
+        (overlay.kind === "workspace" || overlay.kind === "workspace-edit" || overlay.kind === "menu"
+          ? window.innerHeight - height - 20
+          : 54);
       setPosition({
         left: Math.max(gutter, Math.min(x, window.innerWidth - width - gutter)),
         top: Math.max(
@@ -218,8 +234,13 @@ function OverlaySession(props: BrowserSurfaceProps) {
       first.focus();
     };
     const frame = requestAnimationFrame(focusFirst);
+    // Native WebContentsView focus can settle one turn after the React mount.
+    // Re-assert focus after that hand-off so every utility surface remains
+    // keyboard-first without leaving focus on the document body.
+    const retry = window.setTimeout(focusFirst, 40);
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !event.isComposing) {
+        if ((event.target as HTMLElement).closest('[data-escape-boundary="true"]')) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         close();
@@ -262,6 +283,7 @@ function OverlaySession(props: BrowserSurfaceProps) {
     document.addEventListener("focusin", focusFirst);
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(retry);
       observer.disconnect();
       window.removeEventListener("keydown", onKey, true);
       document.removeEventListener("focusin", focusFirst);
@@ -270,7 +292,8 @@ function OverlaySession(props: BrowserSurfaceProps) {
 
   return (
     <div
-      className={`zen-overlay-root${closing ? " is-closing" : ""}${anchored ? " is-anchored" : ""}`}
+      className={`zen-overlay-root${closing ? " is-closing" : ""}${anchored ? " is-anchored" : ""}${drawer ? " is-drawer" : ""}${drawer && ui.preferences.themedChatWindow ? " is-chat-themed" : ""}`}
+      data-chat-themed={drawer && ui.preferences.themedChatWindow ? "true" : "false"}
       data-side={ui.preferences.side}
     >
       <button
@@ -288,7 +311,7 @@ function OverlaySession(props: BrowserSurfaceProps) {
         <div
           aria-label={labels[overlay.kind]}
           aria-modal="true"
-          className={`zen-overlay-panel zen-overlay-panel--${overlay.kind}${address ? " zen-overlay-panel--address" : ""}`}
+          className={`zen-overlay-panel zen-overlay-panel--${overlay.kind}${address ? " zen-overlay-panel--address" : ""}${drawer ? " zen-overlay-panel--drawer" : ""}`}
           inert={closing}
           ref={panel}
           role="dialog"

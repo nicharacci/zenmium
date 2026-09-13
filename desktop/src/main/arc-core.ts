@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { EventEmitter } from "node:events";
-import { join } from "node:path";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { extname, isAbsolute, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   BrowserWindow,
   clipboard,
@@ -12,14 +14,23 @@ import type {
   ArchiveEntry,
   ArcState,
   Folder,
+  HistoryEntry,
+  NewTabOptions,
   Rect,
   Space,
   Tab,
+  TabMoveResult,
   TabUpdate,
 } from "../shared/ipc";
-import { emptyState, getPaneTabIds, SPACE_COLORS } from "../shared/ipc";
+import {
+  emptyState,
+  getPaneTabIds,
+  SPACE_COLORS,
+} from "../shared/ipc";
 import { resolveAddress } from "../shared/navigation";
 import { JsonStore } from "./state-store";
+import { backupLegacyProfileState, migrateProfileState, newBrowserProfile } from "./profile-state";
+import { WorkspaceSessions, type WorkspaceSession } from "./workspace-sessions";
 
 const id = (prefix: string) => `${prefix}_${randomUUID().slice(0, 8)}`;
 const ARCHIVE_AFTER_MS = 12 * 60 * 60 * 1000;
@@ -30,6 +41,8 @@ const sameBounds = (a: Rect, b: Rect): boolean =>
 export class ArcCore {
   private readonly store: JsonStore<ArcState>;
   private readonly views = new Map<string, WebContentsView>();
+  private readonly sessions = new WorkspaceSessions();
+  private readonly navigationVersions = new Map<string, number>();
   private readonly emitter = new EventEmitter();
   private state: ArcState;
   private bounds: Rect = { height: 0, width: 0, x: 8, y: 8 };
@@ -49,7 +62,22 @@ export class ArcCore {
     userDataDir: string
   ) {
     this.store = new JsonStore(userDataDir, "state.json");
-    this.state = this.normalize(this.store.read(emptyState()));
+    const stateFile = join(userDataDir, "zenmium", "state.json");
+    const hasLegacyState = existsSync(stateFile);
+    // Unlike preferences, corrupt profile metadata must not reset authentication
+    // assignments or overwrite its only recoverable copy with a fresh default.
+    const raw = hasLegacyState
+      ? JSON.parse(readFileSync(stateFile, "utf8")) as ArcState
+      : emptyState();
+    if (!raw || typeof raw !== "object" || Array.isArray(raw))
+      throw new Error("Browser profile metadata could not be read. Restore its backup before continuing.");
+    const migrated = migrateProfileState(this.normalize(raw), hasLegacyState);
+    this.state = migrated.state;
+    if (migrated.changed) {
+      backupLegacyProfileState(userDataDir);
+      // Persist identity before any native session can open or a crash can occur.
+      this.store.write(this.state);
+    }
     this.lastActivation = this.state.tabs.reduce(
       (latest, tab) =>
         Math.max(
@@ -74,8 +102,19 @@ export class ArcCore {
         color: SPACE_COLORS[0],
         icon: "◎",
         id: id("sp"),
-        name: "Space",
+        name: "Workspace 1",
       });
+    state.spaces = state.spaces.map((space, index) => {
+      const name = typeof space.name === "string" ? space.name.trim() : "";
+      return {
+        ...space,
+        icon:
+          typeof space.icon === "string" && space.icon.trim()
+            ? space.icon.trim()
+            : "◎",
+        name: name && name !== "Space" ? name : `Workspace ${index + 1}`,
+      };
+    });
     if (!state.spaces.some((s) => s.id === state.activeSpaceId))
       state.activeSpaceId = state.spaces[0]!.id;
     state.tabs = (Array.isArray(state.tabs) ? state.tabs : []).map((tab) => ({
@@ -113,7 +152,68 @@ export class ArcCore {
     this.searchEngine = engine;
   }
   snapshot(): ArcState {
-    return structuredClone(this.state);
+    const snapshot = structuredClone(this.state);
+    snapshot.history = snapshot.history?.filter((entry) => entry.spaceId === snapshot.activeSpaceId);
+    snapshot.archive = snapshot.archive.filter((entry) => entry.spaceId === snapshot.activeSpaceId);
+    return snapshot;
+  }
+  getProfileId(spaceId: string): string {
+    const profileId = this.state.spaces.find((space) => space.id === spaceId)?.profileId;
+    if (!profileId) throw new Error("Workspace not found.");
+    return profileId;
+  }
+  getSessionForSpace(spaceId: string): Electron.Session {
+    if (this.disposed) throw new Error("Browser is closed.");
+    const profileId = this.getProfileId(spaceId);
+    const space = this.state.spaces.find((entry) => entry.id === spaceId)!;
+    const profile = this.state.profiles?.find((entry) => entry.id === profileId);
+    if (!profile) throw new Error("Workspace browser profile not found.");
+    return this.sessions.get(space, profile);
+  }
+  onSessionCreated(listener: (entry: WorkspaceSession) => void | Promise<void>): () => void {
+    return this.sessions.onCreated(listener);
+  }
+  listWorkspaceSessions(): WorkspaceSession[] {
+    return this.state.spaces.map((space) => ({
+      spaceId: space.id,
+      profileId: this.getProfileId(space.id),
+      session: this.getSessionForSpace(space.id),
+    }));
+  }
+  getWebContentsForTab(tabId: string): Electron.WebContents | undefined {
+    const wc = this.views.get(tabId)?.webContents;
+    return wc && !wc.isDestroyed() ? wc : undefined;
+  }
+  getTabIdForWebContents(webContentsId: number): string | undefined {
+    for (const [tabId, view] of this.views) {
+      if (!view.webContents.isDestroyed() && view.webContents.id === webContentsId)
+        return tabId;
+    }
+    return undefined;
+  }
+  /** Trusted control service only. Not exposed by ARC_IPC or TabUpdate. */
+  setTabOwner(tabId: string, ownerSessionId: string | undefined): void {
+    const tab = this.tab(tabId);
+    if (!tab) throw new Error("Tab not found.");
+    if (ownerSessionId !== undefined && !/^[a-zA-Z0-9_.:-]{1,160}$/.test(ownerSessionId))
+      throw new Error("Invalid agent session identity.");
+    if (tab.ownerSessionId && ownerSessionId && tab.ownerSessionId !== ownerSessionId)
+      throw new Error("Release existing agent ownership before assigning another session.");
+    tab.ownerSessionId = ownerSessionId;
+    this.getWebContentsForTab(tabId)?.setBackgroundThrottling(!ownerSessionId);
+    this.emit();
+  }
+  getSpaceIdForWebContents(webContentsId: number): string | undefined {
+    if (this.peek && !this.peek.webContents.isDestroyed() && this.peek.webContents.id === webContentsId)
+      return this.state.glance?.spaceId;
+    for (const [tabId, view] of this.views)
+      if (!view.webContents.isDestroyed() && view.webContents.id === webContentsId)
+        return this.tab(tabId)?.spaceId;
+    return undefined;
+  }
+  getHistoryForSpace(spaceId: string): HistoryEntry[] {
+    this.getProfileId(spaceId);
+    return structuredClone((this.state.history ?? []).filter((entry) => entry.spaceId === spaceId));
   }
   private emit(): void {
     if (this.disposed) return;
@@ -143,19 +243,54 @@ export class ArcCore {
     for (const view of this.views.values())
       if (!view.webContents.isDestroyed()) view.webContents.close();
     this.views.clear();
+    this.sessions.dispose();
   }
   private tab(tabId: string): Tab | undefined {
     return this.state.tabs.find((t) => t.id === tabId);
+  }
+  private tabForView(tabId: string, view: WebContentsView): Tab | undefined {
+    return !this.disposed && this.views.get(tabId) === view ? this.tab(tabId) : undefined;
+  }
+  private destroyView(tabId: string): void {
+    const view = this.views.get(tabId);
+    if (!view) return;
+    // Fence old async page events before the same logical tab gets a new profile.
+    this.views.delete(tabId);
+    this.navigationVersions.delete(tabId);
+    if (!this.win.isDestroyed() && this.win.contentView.children.includes(view))
+      this.win.contentView.removeChildView(view);
+    if (!view.webContents.isDestroyed()) view.webContents.close();
+  }
+  private loadTab(tab: Tab, view: WebContentsView, url: string): void {
+    const version = (this.navigationVersions.get(tab.id) ?? 0) + 1;
+    this.navigationVersions.set(tab.id, version);
+    const load = () => {
+      if (!this.tabForView(tab.id, view) || view.webContents.isDestroyed() || this.navigationVersions.get(tab.id) !== version) return;
+      void view.webContents.loadURL(url).catch(() => {});
+    };
+    const ready = this.sessions.ready(this.getProfileId(tab.spaceId));
+    if (!ready) load();
+    else {
+      tab.loading = true;
+      void ready.then(load, () => {
+        if (!this.tabForView(tab.id, view) || this.navigationVersions.get(tab.id) !== version) return;
+        tab.loading = false;
+        tab.error = "This Workspace's browser policy could not initialize. Restart Zenmium to retry.";
+        this.emit();
+      });
+    }
   }
   private ensureView(tab: Tab): WebContentsView {
     const existing = this.views.get(tab.id);
     if (existing) return existing;
     const view = new WebContentsView({
       webPreferences: {
+        backgroundThrottling: !tab.ownerSessionId,
         contextIsolation: true,
         nodeIntegration: false,
         preload: join(import.meta.dirname, "../preload/tab.cjs"),
         sandbox: true,
+        session: this.getSessionForSpace(tab.spaceId),
       },
     });
     view.setBorderRadius(10);
@@ -169,7 +304,7 @@ export class ArcCore {
         this.disposed ||
         this.win.isDestroyed() ||
         this.state.activeTabId === tab.id ||
-        !this.tab(tab.id) ||
+        !this.tabForView(tab.id, view) ||
         !getPaneTabIds(this.state).includes(tab.id) ||
         !this.win.contentView.children.includes(view)
       )
@@ -185,18 +320,20 @@ export class ArcCore {
         !/^https?:\/\//i.test(url)
       )
         return;
-      this.openPeek(url);
+      if (!this.tabForView(tab.id, view)) return;
+      if (tab.ownerSessionId) this.navigate(tab.id, url);
+      else this.openPeek(url, { spaceId: tab.spaceId });
     });
     wc.on("context-menu", (_event, params) => {
       const items: Electron.MenuItemConstructorOptions[] = [];
       if (/^https?:\/\//i.test(params.linkURL))
         items.push(
           {
-            click: () => this.newTab({ url: params.linkURL }),
+            click: () => this.newTab({ url: params.linkURL, spaceId: tab.spaceId, background: true }),
             label: "Open Link in New Tab",
           },
           {
-            click: () => this.openPeek(params.linkURL),
+            click: () => this.openPeek(params.linkURL, { spaceId: tab.spaceId }),
             label: "Open Link in Glance",
           },
           {
@@ -234,14 +371,21 @@ export class ArcCore {
       Menu.buildFromTemplate(items).popup({ window: this.win });
     });
     wc.setWindowOpenHandler(({ url, disposition }) => {
-      if (/^https?:/.test(url)) {
-        if (disposition === "new-window") this.openPeek(url);
-        else this.newTab({ url });
-      } else if (/^(mailto|tel):/.test(url)) void shell.openExternal(url);
+      if (!this.tabForView(tab.id, view)) return { action: "deny" };
+      if (/^https?:/i.test(url)) {
+        if (tab.ownerSessionId) {
+          // A task owns one reusable tab. A page popup cannot expand its scope,
+          // steal human focus, create Glance, or spawn a second browser window.
+          queueMicrotask(() => {
+            if (this.tabForView(tab.id, view)) this.navigate(tab.id, url);
+          });
+        } else if (disposition === "new-window") this.openPeek(url, { spaceId: tab.spaceId });
+        else this.newTab({ url, spaceId: tab.spaceId, background: disposition === "background-tab" });
+      } else if (!tab.ownerSessionId && /^(mailto|tel):/i.test(url)) void shell.openExternal(url);
       return { action: "deny" };
     });
     const refreshNavigation = () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (!t || wc.isDestroyed()) return;
       t.canGoBack = wc.navigationHistory.canGoBack();
       t.canGoForward = wc.navigationHistory.canGoForward();
@@ -251,14 +395,14 @@ export class ArcCore {
       this.emit();
     };
     wc.on("page-title-updated", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.title = t.customTitle || wc.getTitle() || t.url;
         this.emit();
       }
     });
     wc.on("page-favicon-updated", (_event, icons) => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.faviconUrl = icons.find((icon) =>
           /^(https?:|data:image\/)/i.test(icon)
@@ -269,7 +413,7 @@ export class ArcCore {
     wc.on("did-navigate", refreshNavigation);
     wc.on("did-navigate-in-page", refreshNavigation);
     wc.on("did-start-loading", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.loading = true;
         t.error = null;
@@ -278,7 +422,7 @@ export class ArcCore {
       }
     });
     wc.on("did-stop-loading", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (!t) return;
       t.loading = false;
       t.title = t.customTitle || wc.getTitle() || t.url;
@@ -287,17 +431,21 @@ export class ArcCore {
         this.state.history = [
           {
             id: id("visit"),
+            spaceId: t.spaceId,
             title: t.title,
             url: t.url,
             visitedAt: Date.now(),
           },
-          ...(this.state.history ?? []).filter((h) => h.url !== t.url),
-        ].slice(0, 1000);
+          ...(this.state.history ?? []).filter((h) => h.url !== t.url || h.spaceId !== t.spaceId),
+        ];
+      // One profile cannot evict another profile's history by navigating often.
+      let profileVisits = 0;
+      this.state.history = this.state.history?.filter((entry) => entry.spaceId !== t.spaceId || ++profileVisits <= 1000);
       this.emit();
     });
     wc.on("did-fail-load", (_event, code, description, _url, mainFrame) => {
       if (code === -3 || !mainFrame) return;
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.loading = false;
         t.error = description;
@@ -306,21 +454,21 @@ export class ArcCore {
       }
     });
     wc.on("media-started-playing", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.audio = true;
         this.emit();
       }
     });
     wc.on("media-paused", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.audio = false;
         this.emit();
       }
     });
     wc.on("render-process-gone", () => {
-      const t = this.tab(tab.id);
+      const t = this.tabForView(tab.id, view);
       if (t) {
         t.error = "This tab stopped responding. Reload to continue.";
         t.loading = false;
@@ -330,7 +478,7 @@ export class ArcCore {
     });
     this.views.set(tab.id, view);
     tab.discarded = false;
-    void wc.loadURL(tab.url).catch(() => {});
+    this.loadTab(tab, view, tab.url);
     return view;
   }
   private attachActive(): void {
@@ -383,14 +531,17 @@ export class ArcCore {
     else this.win.webContents.focus();
   }
   getActiveWebContents(): Electron.WebContents | undefined {
-    return this.views.get(this.state.activeTabId ?? "")?.webContents;
+    return this.getWebContentsForTab(this.state.activeTabId ?? "");
   }
   private clearSplit(): void {
     this.state.splitTabId = null;
     this.state.splitPrimaryTabId = null;
   }
   private selectTab(tab: Tab): void {
-    if (tab.spaceId !== this.state.activeSpaceId) this.clearSplit();
+    if (tab.spaceId !== this.state.activeSpaceId) {
+      this.closePeek(false);
+      this.clearSplit();
+    }
     this.state.activeSpaceId = tab.spaceId;
     const primary = getPaneTabIds(this.state)[0];
     if (this.state.splitTabId) this.state.splitPrimaryTabId = primary ?? null;
@@ -441,33 +592,67 @@ export class ArcCore {
     // Playback, failures, discard and pinned-change flags are derived, never user-fabricated.
     this.emit();
   }
-  newTab(
-    opts: { spaceId?: string; url?: string; kind?: Tab["kind"] } = {}
-  ): Tab {
+  newTab(opts: NewTabOptions = {}): Tab {
+    if (this.disposed) throw new Error("Browser is closed.");
+    if (opts.spaceId && !this.state.spaces.some((space) => space.id === opts.spaceId))
+      throw new Error("Workspace not found.");
     const spaceId =
       opts.spaceId && this.state.spaces.some((s) => s.id === opts.spaceId)
         ? opts.spaceId
         : this.state.activeSpaceId;
     const url = resolveAddress(opts.url ?? "", this.searchEngine);
+    this.getSessionForSpace(spaceId);
     const tab: Tab = {
       folderId: null,
       id: id("tab"),
       kind: "today",
-      lastActiveAt: Date.now(),
+      lastActiveAt: opts.background || opts.ownerSessionId ? 0 : Date.now(),
       loading: false,
+      ownerSessionId: opts.ownerSessionId,
       spaceId,
       title: url === "about:blank" ? "New Tab" : url,
       url,
     };
-    if (opts.kind === "pinned") this.checkEssentialLimit(tab);
     this.state.tabs.push(tab);
     if (opts.kind === "pinned") this.pinTab(tab.id);
-    this.activateTab(tab.id);
+    if (opts.background || opts.ownerSessionId) {
+      // Materialize even about:blank for control clients, without attaching,
+      // changing active workspace/tab, or calling focus on any native surface.
+      this.ensureView(tab);
+      this.emit();
+    } else this.activateTab(tab.id);
+    return structuredClone(tab);
+  }
+  /** Main-only OS/file-picker entry. General navigation and agent commands still reject file URLs. */
+  openLocalFile(absolutePath: string, spaceId = this.state.activeSpaceId): Tab {
+    if (!isAbsolute(absolutePath)) throw new Error("Choose an absolute local file path.");
+    const file = realpathSync(absolutePath);
+    if (!/\.(html?|xhtml|pdf)$/i.test(extname(file)) || !statSync(file).isFile())
+      throw new Error("Choose a local HTML or PDF document.");
+    const created = this.newTab({ spaceId });
+    const tab = this.tab(created.id)!;
+    tab.url = pathToFileURL(file).href;
+    tab.title = file.split(/[\\/]/).at(-1) ?? "Local document";
+    tab.localFile = true;
+    this.ensureView(tab);
+    this.attachActive();
+    this.emit();
+    this.focusActive();
     return structuredClone(tab);
   }
   resetTab(tabId: string): void {
     const tab = this.tab(tabId);
-    if (tab?.pinnedUrl) this.navigate(tabId, tab.pinnedUrl);
+    if (!tab?.pinnedUrl) return;
+    if (tab.localFile && tab.pinnedUrl.startsWith("file:")) {
+      tab.url = tab.pinnedUrl;
+      tab.error = null;
+      tab.pinnedChanged = false;
+      const view = this.views.get(tab.id);
+      if (view) this.loadTab(tab, view, tab.url);
+      else this.ensureView(tab);
+      this.attachActive();
+      this.emit();
+    } else this.navigate(tabId, tab.pinnedUrl);
   }
   closeTab(tabId: string): void {
     const tab = this.tab(tabId);
@@ -479,7 +664,7 @@ export class ArcCore {
         ? panes.find((paneId) => paneId !== tabId)
         : undefined;
     if (survivor) this.clearSplit();
-    if (tab.kind === "pinned") {
+    if (tab.kind === "pinned" && !tab.ownerSessionId) {
       tab.url = tab.pinnedUrl ?? tab.url;
       tab.pinnedChanged = false;
       tab.discarded = true;
@@ -489,6 +674,7 @@ export class ArcCore {
       this.state.archive.unshift({
         archivedAt: Date.now(),
         id: tab.id,
+        localFile: tab.localFile,
         spaceId: tab.spaceId,
         title: tab.title,
         url: tab.url,
@@ -496,12 +682,7 @@ export class ArcCore {
       this.state.archive = this.state.archive.slice(0, 200);
       this.state.tabs = this.state.tabs.filter((t) => t.id !== tabId);
     }
-    const view = this.views.get(tabId);
-    if (view) {
-      this.win.contentView.removeChildView(view);
-      this.views.delete(tabId);
-      view.webContents.close();
-    }
+    this.destroyView(tabId);
     if (survivor) this.activateTab(survivor);
     else if (isActive) {
       const next = this.state.tabs
@@ -522,7 +703,7 @@ export class ArcCore {
     tab.discarded = false;
     tab.pinnedChanged = Boolean(tab.pinnedUrl && tab.pinnedUrl !== target);
     const existing = this.views.get(tabId);
-    if (existing) void existing.webContents.loadURL(target).catch(() => {});
+    if (existing) this.loadTab(tab, existing, target);
     else if (target !== "about:blank") this.ensureView(tab);
     this.attachActive();
     this.emit();
@@ -536,32 +717,44 @@ export class ArcCore {
     if (wc?.navigationHistory.canGoForward()) wc.navigationHistory.goForward();
   }
   stop(tabId: string): void {
+    this.navigationVersions.set(tabId, (this.navigationVersions.get(tabId) ?? 0) + 1);
     this.views.get(tabId)?.webContents.stop();
+    const tab = this.tab(tabId);
+    if (tab) {
+      tab.loading = false;
+      this.emit();
+    }
   }
   reload(tabId: string): void {
     const tab = this.tab(tabId);
     if (!tab) return;
     tab.error = null;
     const wc = this.views.get(tabId)?.webContents;
-    if (wc) wc.reload();
+    if (wc && this.sessions.ready(this.getProfileId(tab.spaceId))) this.loadTab(tab, this.views.get(tabId)!, tab.url);
+    else if (wc) wc.reload();
     else this.ensureView(tab);
     this.attachActive();
     this.emit();
   }
   createSpace(name: string, color?: string): Space {
+    const profile = newBrowserProfile();
     const space: Space = {
       color:
         color ?? SPACE_COLORS[this.state.spaces.length % SPACE_COLORS.length]!,
       icon: "◎",
       id: id("sp"),
-      name: name.trim() || "New Space",
+      name: name.trim() || `Workspace ${this.state.spaces.length + 1}`,
+      profileId: profile.id,
     };
+    this.state.profiles ??= [];
+    this.state.profiles.push(profile);
     this.state.spaces.push(space);
     this.activateSpace(space.id);
-    return space;
+    return structuredClone(space);
   }
   activateSpace(spaceId: string): void {
     if (!this.state.spaces.some((s) => s.id === spaceId)) return;
+    if (spaceId !== this.state.activeSpaceId) this.closePeek(false);
     this.state.activeSpaceId = spaceId;
     this.clearSplit();
     const next = this.state.tabs
@@ -589,7 +782,9 @@ export class ArcCore {
     this.emit();
   }
   deleteSpace(spaceId: string): void {
-    if (this.state.spaces.length <= 1) return;
+    if (this.state.spaces.length <= 1 || !this.state.spaces.some((space) => space.id === spaceId)) return;
+    const profileId = this.getProfileId(spaceId);
+    if (this.state.glance?.spaceId === spaceId) this.closePeek(false);
     for (const tab of [...this.state.tabs].filter(
       (t) => t.spaceId === spaceId
     )) {
@@ -600,26 +795,18 @@ export class ArcCore {
     this.state.folders = this.state.folders.filter(
       (f) => f.spaceId !== spaceId
     );
+    this.state.profiles = this.state.profiles?.filter((profile) => profile.id !== profileId);
+    this.sessions.forget(profileId);
+    this.state.history = this.state.history?.filter((entry) => entry.spaceId !== spaceId);
+    this.state.archive = this.state.archive.filter((entry) => entry.spaceId !== spaceId);
     if (this.state.activeSpaceId === spaceId)
       this.activateSpace(this.state.spaces[0]!.id);
     this.emit();
   }
-  private checkEssentialLimit(tab: Tab, spaceId = tab.spaceId): void {
-    if (
-      this.state.tabs.filter(
-        (t) =>
-          t.spaceId === spaceId &&
-          t.kind === "pinned" &&
-          !t.folderId &&
-          t.id !== tab.id
-      ).length >= 12
-    )
-      throw new Error("This workspace already has 12 Essentials.");
-  }
   pinTab(tabId: string): void {
     const tab = this.tab(tabId);
     if (!tab) return;
-    this.checkEssentialLimit(tab);
+    if (tab.ownerSessionId) throw new Error("An agent-session tab cannot become an Essential while owned by the agent.");
     tab.kind = "pinned";
     tab.folderId = null;
     tab.pinnedUrl ??= tab.url;
@@ -645,7 +832,7 @@ export class ArcCore {
     };
     this.state.folders.push(folder);
     this.emit();
-    return folder;
+    return structuredClone(folder);
   }
   renameFolder(folderId: string, name: string): void {
     this.updateFolder(folderId, { name });
@@ -679,34 +866,62 @@ export class ArcCore {
         (f) => f.id === folderId && f.spaceId === tab.spaceId
       );
       if (!folder) throw new Error("Folder not found in this workspace.");
-      tab.kind = "pinned";
-      tab.pinnedUrl ??= tab.url;
-    } else if (tab.kind === "pinned") this.checkEssentialLimit(tab);
+      if (tab.ownerSessionId) {
+        tab.kind = "today";
+        tab.pinnedUrl = undefined;
+        tab.pinnedChanged = false;
+      } else {
+        tab.kind = "pinned";
+        tab.pinnedUrl ??= tab.url;
+      }
+    }
     tab.folderId = folderId;
     this.emit();
   }
-  moveTabToSpace(tabId: string, spaceId: string): void {
+  moveTabToSpace(tabId: string, spaceId: string, options: { confirmReload?: boolean } = {}): TabMoveResult {
     const tab = this.tab(tabId);
     if (
       !tab ||
       tab.spaceId === spaceId ||
       !this.state.spaces.some((s) => s.id === spaceId)
     )
-      return;
-    if (tab.kind === "pinned") this.checkEssentialLimit(tab, spaceId);
+      return { status: "unchanged", tabId, spaceId };
+    const wasLive = Boolean(this.getWebContentsForTab(tabId));
+    if (wasLive && !options.confirmReload)
+      return {
+        status: "confirmation-required",
+        tabId,
+        spaceId,
+        reason: "Moving to another Workspace reloads this page in its separate browser profile. Unsaved input will be lost; signed-in accounts are not transferred.",
+      };
+    if (tab.ownerSessionId)
+      throw new Error("Release agent ownership before moving its tab to another Workspace.");
     const panes = getPaneTabIds(this.state);
     const survivor =
       panes.length === 2 && panes.includes(tabId)
         ? panes.find((paneId) => paneId !== tabId)
         : undefined;
+    this.destroyView(tabId);
     tab.spaceId = spaceId;
     tab.folderId = null;
+    tab.url = tab.kind === "pinned" ? (tab.pinnedUrl ?? tab.url) : tab.url;
+    tab.audio = false;
+    tab.loading = false;
+    tab.error = null;
+    tab.discarded = true;
+    tab.canGoBack = false;
+    tab.canGoForward = false;
+    tab.pinnedChanged = false;
+    // This is a new browsing context, not a live authentication-bearing view
+    // moved across spaces. Its stable logical tab ID may still be referenced.
+    if (wasLive && tab.url !== "about:blank") this.ensureView(tab);
     if (survivor) {
       this.clearSplit();
       this.activateTab(survivor);
     } else if (this.state.activeTabId === tab.id)
       this.activateSpace(this.state.activeSpaceId);
     this.emit();
+    return { status: "moved", tabId, spaceId };
   }
   reorderTab(tabId: string, beforeId: string | null): void {
     const tab = this.tab(tabId);
@@ -732,17 +947,21 @@ export class ArcCore {
   restoreTab(archiveId: string): void {
     const entry = this.state.archive.find((a) => a.id === archiveId);
     if (!entry) return;
-    const restored = this.newTab({ spaceId: entry.spaceId, url: entry.url });
+    const restored = entry.localFile && entry.url.startsWith("file:")
+      ? this.openLocalFile(fileURLToPath(entry.url), entry.spaceId)
+      : this.newTab({ spaceId: entry.spaceId, url: entry.url });
     this.updateTab(restored.id, { title: entry.title });
     this.state.archive = this.state.archive.filter((a) => a.id !== archiveId);
     this.emit();
   }
-  clearArchive(): void {
-    this.state.archive = [];
+  clearArchive(spaceId = this.state.activeSpaceId): void {
+    this.getProfileId(spaceId);
+    this.state.archive = this.state.archive.filter((entry) => entry.spaceId !== spaceId);
     this.emit();
   }
-  clearHistory(): void {
-    this.state.history = [];
+  clearHistory(spaceId = this.state.activeSpaceId): void {
+    this.getProfileId(spaceId);
+    this.state.history = this.state.history?.filter((entry) => entry.spaceId !== spaceId);
     this.emit();
   }
   toggleSplit(tabId: string): void {
@@ -768,37 +987,50 @@ export class ArcCore {
     this.emit();
     this.focusActive();
   }
-  openPeek(input: string): void {
-    this.closePeek();
+  openPeek(input: string, options: { spaceId?: string } = {}): void {
+    const spaceId = options.spaceId ?? this.state.activeSpaceId;
+    const profileSession = this.getSessionForSpace(spaceId);
+    // An inactive profile cannot put an overlay over the human's active page.
+    if (spaceId !== this.state.activeSpaceId) return;
     const url = resolveAddress(input, this.searchEngine);
+    this.closePeek(false);
     const view = new WebContentsView({
       webPreferences: {
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: true,
+        session: profileSession,
       },
     });
     this.peek = view;
     view.setBorderRadius(10);
     this.keyboardHandler(view.webContents);
     view.webContents.setWindowOpenHandler(({ url: target }) => {
-      if (/^https?:/.test(target)) this.newTab({ url: target });
+      if (this.peek === view && /^https?:/.test(target)) this.newTab({ url: target, spaceId });
       return { action: "deny" };
     });
-    this.state.glance = { title: "Glance", url };
+    this.state.glance = { title: "Glance", url, spaceId };
     view.webContents.on("page-title-updated", () => {
-      if (this.state.glance) {
+      if (this.peek === view && this.state.glance) {
         this.state.glance.title = view.webContents.getTitle();
         this.emit();
       }
     });
     view.webContents.on("did-navigate", (_e, target) => {
-      if (this.state.glance) {
+      if (this.peek === view && this.state.glance) {
         this.state.glance.url = target;
         this.emit();
       }
     });
-    void view.webContents.loadURL(url).catch(() => {});
+    const load = () => {
+      if (this.peek === view && !view.webContents.isDestroyed())
+        void view.webContents.loadURL(url).catch(() => {});
+    };
+    const ready = this.sessions.ready(this.getProfileId(spaceId));
+    if (!ready) load();
+    else void ready.then(load, () => {
+      if (this.peek === view) this.closePeek(false);
+    });
     this.emit();
     this.raiseChrome();
     view.webContents.focus();
@@ -819,7 +1051,7 @@ export class ArcCore {
   getPeekView(): WebContentsView | null {
     return this.peek;
   }
-  closePeek(): void {
+  closePeek(restoreFocus = true): void {
     const peek = this.peek;
     this.peek = null;
     this.state.glance = null;
@@ -828,18 +1060,20 @@ export class ArcCore {
       if (!peek.webContents.isDestroyed()) peek.webContents.close();
     }
     this.emit();
-    if (peek && !this.disposed) this.focusActive();
+    if (peek && !this.disposed && restoreFocus) this.focusActive();
   }
   promotePeek(): void {
     const url = this.state.glance?.url;
+    const spaceId = this.state.glance?.spaceId;
     this.closePeek();
-    if (url) this.newTab({ url });
+    if (url) this.newTab({ url, spaceId });
   }
   private autoArchive(): void {
     const cutoff = Date.now() - ARCHIVE_AFTER_MS;
     for (const tab of [...this.state.tabs])
       if (
         tab.kind === "today" &&
+        !tab.ownerSessionId &&
         tab.lastActiveAt < cutoff &&
         tab.id !== this.state.activeTabId &&
         tab.id !== this.state.splitTabId
