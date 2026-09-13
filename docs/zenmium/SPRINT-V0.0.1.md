@@ -59,6 +59,9 @@ Work on `2026-09-12`, update existing PR #8, honor protected main. Merge/tag/pub
   HTTPS URL registrations, app icon, ASAR integrity, and required Electron
   fuses were verified. Notarization was skipped because credentials/options are
   not configured.
+- PR #8 remains open. GitHub Actions run `34777755375` failed before starting
+  any workflow step and exposed no job log; this is the existing account/billing
+  infrastructure blocker, not a failed local TypeScript, build, or test step.
 - The genuine 1Password provider is not connected in this environment; the
   authentication broker remains explicitly unavailable rather than claiming a
   fill or TOTP success. PR/merge/publish gates therefore remain closed.
