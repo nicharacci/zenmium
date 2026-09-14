@@ -2,7 +2,7 @@
   "name": "@zenmium/desktop",
   "productName": "Zenmium",
   "description": "Zenmium desktop browser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "main": "out/main/index.js",
@@ -82,6 +82,24 @@
         "NSLocationWhenInUseUsageDescription": "Allow websites you approve to request your location."
       }
     },
+    "win": {
+      "icon": "src/renderer/public/zenmium-favicon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "Zenmium"
+    },
     "artifactName": "Zenmium-${version}-${arch}.${ext}"
   },
   "scripts": {
@@ -94,7 +112,8 @@
     "test:native:build": "node scripts/build-native-tests.mjs",
     "test:native": "electron out/verify/native-tests.js",
     "test:ui": "node scripts/verify-browser.mjs",
-    "package": "electron-builder --mac"
+    "package": "electron-builder --mac",
+    "package:win": "electron-builder --win --x64"
   },
   "dependencies": {
     "@ghostery/adblocker-electron": "2.18.2",

@@ -39,18 +39,26 @@ export async function verifyPackagedFuses(bundle) {
 }
 
 export default async function hardenPackage(context) {
-  assert.equal(context.electronPlatformName, "darwin", "Only macOS releases are configured");
+  assert.ok(
+    context.electronPlatformName === "darwin" || context.electronPlatformName === "win32",
+    "Only macOS and Windows releases are configured",
+  );
   const name = context.packager.appInfo.productFilename;
   assert.equal(name, "Zenmium", "Refusing to harden a non-Zenmium bundle");
-  const bundle = join(context.appOutDir, `${name}.app`);
-  await access(join(bundle, "Contents", "Resources", "app.asar"));
-  await flipFuses(bundle, {
+  const isMac = context.electronPlatformName === "darwin";
+  const bundle = isMac ? join(context.appOutDir, `${name}.app`) : context.appOutDir;
+  const executable = isMac ? bundle : join(bundle, `${name}.exe`);
+  const asar = isMac
+    ? join(bundle, "Contents", "Resources", "app.asar")
+    : join(bundle, "resources", "app.asar");
+  await access(asar);
+  await flipFuses(executable, {
     version: FuseVersion.V1,
     ...requiredFuses,
     // electron-builder signs the packaged bundle after this hook. Do not reset
     // or weaken the signature on an existing user installation.
-    resetAdHocDarwinSignature: false,
+    ...(isMac ? { resetAdHocDarwinSignature: false } : {}),
   });
-  await verifyPackagedFuses(bundle);
-  console.log("Verified packaged Zenmium security fuses before signing.");
+  await verifyPackagedFuses(executable);
+  console.log(`Verified packaged Zenmium security fuses before ${isMac ? "signing" : "Windows packaging"}.`);
 }

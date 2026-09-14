@@ -1,0 +1,86 @@
+name: Zenmium Windows release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: desktop/pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Scan repository for secrets
+        run: node scripts/scan-secrets.mjs
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build renderer and main process
+        run: pnpm build
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Package Windows x64
+        run: pnpm package:win
+
+      - name: Verify release artifacts
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem dist -File | Where-Object { $_.Extension -in @('.exe', '.zip') }
+          if ($artifacts.Count -ne 2) {
+            throw "Expected exactly one NSIS installer and one ZIP artifact, found $($artifacts.Count)."
+          }
+          $artifacts | ForEach-Object {
+            if ($_.Length -lt 1MB) { throw "Artifact is unexpectedly small: $($_.Name)" }
+          }
+          Get-ChildItem dist -File | Where-Object { $_.Extension -in @('.exe', '.zip') } |
+            ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($_.Name)" } |
+            Set-Content -Path dist/SHA256SUMS.txt -Encoding ascii
+          Get-Content dist/SHA256SUMS.txt
+
+      - name: Upload Windows release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $package = Get-Content package.json | ConvertFrom-Json
+          if ($tag -ne "v$($package.version)") {
+            throw "Tag $tag does not match desktop/package.json version $($package.version)."
+          }
+          gh release create $tag `
+            dist/Zenmium-$($package.version)-x64.exe `
+            dist/Zenmium-$($package.version)-x64.zip `
+            dist/SHA256SUMS.txt `
+            --verify-tag `
+            --title "Zenmium $tag" `
+            --prerelease `
+            --notes "Early-access Windows x64 prerelease. Includes the current Zenmium native browser, Workspace profile import, extension host, agent controls, and Zen-inspired shell.\n\nThis build is unsigned; Windows SmartScreen may require the user to choose More info > Run anyway. Genuine 1Password browser connectivity still depends on the installed 1Password app and supported browser integration."

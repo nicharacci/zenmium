@@ -20,9 +20,13 @@ test("release fuse policy disables ambient Node entrypoints and protects ASAR/co
 });
 
 test("hardening refuses an unrelated bundle before touching a binary", async () => {
-  await assert.rejects(hardenPackage({ electronPlatformName: "linux" }), /Only macOS/);
+  await assert.rejects(hardenPackage({ electronPlatformName: "linux" }), /Only macOS and Windows/);
   await assert.rejects(hardenPackage({
     electronPlatformName: "darwin",
+    packager: { appInfo: { productFilename: "Electron" } },
+  }), /non-Zenmium/);
+  await assert.rejects(hardenPackage({
+    electronPlatformName: "win32",
     packager: { appInfo: { productFilename: "Electron" } },
   }), /non-Zenmium/);
 });
