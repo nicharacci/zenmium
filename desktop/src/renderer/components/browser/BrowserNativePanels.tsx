@@ -4,6 +4,7 @@ import { ArrowLeft, Bookmark as BookmarkIcon, ChevronDown, ChevronUp, Download, 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "../motion/input";
 import { ActionStatus, checkedInvoke, displayHost, EmptyState, PanelHeader, SurfaceButton, type UtilityProps, useSurfaceAction } from "./SurfacePrimitives";
+import { ChromeImportPicker } from "./ChromeImportPicker";
 
 export function useNativeBrowserState(invoke: Invoke, workspaceId?: string) {
   const [native, setNative] = useState<NativeBrowserState | null>(null);
@@ -170,6 +171,8 @@ export function FindPanel({ state, invoke, close }: UtilityProps) {
 export function NativeSettings({ state, ui, invoke }: BrowserSurfaceProps) {
   const {native, error, refresh} = useNativeBrowserState(invoke, state.activeSpaceId);
   const action = useSurfaceAction();
+  const [selectedChrome, setSelectedChrome] = useState<string[]>([]);
+  const chromeSelectionInitialized = useRef(false);
   const disabled = !native || !!action.busy;
   const isDefault = native?.defaultBrowser.http && native.defaultBrowser.https;
   let siteOrigin: string | undefined;
@@ -177,10 +180,29 @@ export function NativeSettings({ state, ui, invoke }: BrowserSurfaceProps) {
   const protection = native?.protection;
   const excepted = !!siteOrigin && !!protection?.exceptionOrigins.includes(siteOrigin);
   const run = (label: string, channel: string, command: unknown) => void action.run(label, async () => { await checkedInvoke(invoke, channel, command); await refresh(); });
+  useEffect(() => {
+    if (!native || chromeSelectionInitialized.current) return;
+    const imported = new Set(native.onboarding.chromeImports.map((entry) => entry.sourceId));
+    setSelectedChrome(native.onboarding.chromeProfiles.filter((profile) => !imported.has(profile.id)).map((profile) => profile.id));
+    chromeSelectionInitialized.current = true;
+  }, [native]);
+  const refreshChrome = () => {
+    chromeSelectionInitialized.current = false;
+    run("Scanning Chrome profiles", NATIVE_IPC.onboarding, {action: "scan-chrome"});
+  };
+  const importChrome = () => void action.run("Importing selected Chrome profiles", async () => {
+    await checkedInvoke(invoke, NATIVE_IPC.onboarding, {action: "import-chrome", profileIds: selectedChrome});
+    setSelectedChrome([]);
+    chromeSelectionInitialized.current = false;
+    await refresh();
+  });
   return <>
     <h2>Zenmium</h2>
     <div className="zen-overlay-setting"><span>Default browser<small>{isDefault ? "Zenmium opens web links" : native?.defaultBrowser.packaged ? "Choose Zenmium for web links in macOS" : "Available in the installed Zenmium app"}</small></span><SurfaceButton disabled={disabled || isDefault || !native?.defaultBrowser.packaged} onClick={() => run("Setting default browser", NATIVE_IPC.utility, {action: "set-default-browser"})}>{isDefault ? "Default" : "Set default"}</SurfaceButton></div>
     <SurfaceButton onClick={() => void invoke(CHROME_IPC.open, {kind: "onboarding"})}>Welcome to Zenmium</SurfaceButton>
+    <h2>Import your settings</h2>
+    <p className="zen-overlay-help">Choose Chrome profiles to create or refresh isolated Zenmium Spaces. The one-click import includes bookmarks, supported extensions, cookies, and saved passwords when Chrome allows the source to be decrypted.</p>
+    <ChromeImportPicker profiles={native?.onboarding.chromeProfiles ?? []} imports={native?.onboarding.chromeImports ?? []} selected={selectedChrome} setSelected={setSelectedChrome} disabled={disabled} busy={!!action.busy} onRefresh={refreshChrome} onImport={importChrome} />
     <h2>Privacy and agent control</h2>
     <label className="zen-overlay-setting"><span>Block ads and trackers<small>Ghostery protection for this Workspace</small></span><span className="zen-overlay-switch"><input type="checkbox" role="switch" aria-checked={protection?.enabled ?? false} checked={protection?.enabled ?? false} disabled={disabled || !protection} onChange={(event) => run("Updating protection", NATIVE_IPC.protection, {action: "toggle", enabled: event.target.checked})}/><span aria-hidden="true"/></span></label>
     {protection && <p className="zen-native-protection-status" role="status" data-active={protection.status === "active" || protection.status === "cached"}><ShieldCheck size={16}/>{protection.status === "active" ? "Protection active" : protection.status === "cached" ? "Protection active using cached rules" : protection.status === "loading" ? "Loading protection rules" : protection.status === "disabled" ? "Protection is off" : "Protection unavailable"}{(protection.status === "active" || protection.status === "cached") && ` · ${protection.blockedCount} blocked`}{protection.reason && <small>{protection.reason}</small>}</p>}

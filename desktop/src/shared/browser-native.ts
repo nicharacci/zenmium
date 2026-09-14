@@ -53,17 +53,22 @@ export interface ChromeProfileCandidate {
   hasBookmarks: boolean;
   extensionCount: number;
   hasEncryptedCredentials: boolean;
-  passwordStatus: "protected-1password-handoff";
+  hasCookies: boolean;
+  hasSavedPasswords: boolean;
+  credentialAvailability: "available" | "protected-by-chrome" | "not-found";
 }
 export interface ChromeImportRecord {
-  version: 1;
+  version: 1 | 2;
   sourceId: string;
   spaceId: string;
   spaceName: string;
   importedAt: number;
   bookmarks: number;
   extensions: { imported: number; skipped: number; onePasswordDetected: boolean };
-  passwordStatus: "protected-1password-handoff";
+  cookies?: { imported: number; skipped: number; status: "imported" | "partial" | "protected-by-chrome" | "unavailable" | "not-found" };
+  passwords?: { imported: number; skipped: number; status: "imported" | "partial" | "protected-by-chrome" | "unavailable" | "not-found" };
+  /** Backward-compatible summary for v1 records. */
+  passwordStatus?: "protected-1password-handoff" | "imported" | "partial" | "protected-by-chrome" | "unavailable" | "not-found";
   notes: string[];
 }
 export interface ProtectionState {

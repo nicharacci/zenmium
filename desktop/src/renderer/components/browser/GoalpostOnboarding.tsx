@@ -1,12 +1,13 @@
 import { CHROME_IPC } from "@shared/browser-ui";
 import { NATIVE_IPC } from "@shared/browser-native";
 import { ARC_IPC, SPACE_COLORS } from "@shared/ipc";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, ExternalLink, KeyRound, LockKeyhole, MessageCircle, RefreshCw, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ExternalLink, KeyRound, LockKeyhole, MessageCircle, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "../motion/input";
 import { useNativeBrowserState } from "./BrowserNativePanels";
 import { ActionStatus, checkedInvoke, SurfaceButton, type UtilityProps, useSurfaceAction } from "./SurfacePrimitives";
 import { ThemeColorPicker } from "./ThemeColorPicker";
+import { ChromeImportPicker } from "./ChromeImportPicker";
 
 const logo = new URL("../../../../../docs/zenmium/brand/zenmium-canonical.png", import.meta.url).href;
 const STEP_LABELS = ["Welcome", "Your space", "Agent access", "Import Chrome", "Ready"];
@@ -21,15 +22,19 @@ export function GoalpostOnboarding({ state, ui, invoke, close }: UtilityProps) {
   const [serviceToken, setServiceToken] = useState("");
   const [selectedChrome, setSelectedChrome] = useState<string[]>([]);
   const scanned = useRef(false);
+  const selectionInitialized = useRef(false);
   const enabled = agentEnabled ?? native?.onboarding.agentEnabled ?? false;
   const isDefault = native?.defaultBrowser.http && native.defaultBrowser.https;
   const busy = !native || !!action.busy;
   const options = SPACE_COLORS.map((color, index) => ({ color, label: ["Goalpost mint", "Sky", "Rose", "Amber", "Lilac", "Lagoon", "Coral"][index] ?? `Color ${index + 1}` }));
   const profiles = native?.onboarding.chromeProfiles ?? [];
-  const importedIds = new Set((native?.onboarding.chromeImports ?? []).map((entry) => entry.sourceId));
 
   useEffect(() => {
-    if (step !== 3 || !native || scanned.current) return;
+    if (step !== 3) {
+      selectionInitialized.current = false;
+      return;
+    }
+    if (!native || scanned.current) return;
     scanned.current = true;
     void action.run("Finding Chrome profiles", async () => {
       await checkedInvoke(invoke, NATIVE_IPC.onboarding, { action: "scan-chrome" });
@@ -37,8 +42,14 @@ export function GoalpostOnboarding({ state, ui, invoke, close }: UtilityProps) {
     });
   }, [action, invoke, native, refresh, step]);
 
+  useEffect(() => {
+    if (step !== 3 || !native || selectionInitialized.current) return;
+    const importedIds = new Set(native.onboarding.chromeImports.map((entry) => entry.sourceId));
+    setSelectedChrome(native.onboarding.chromeProfiles.filter((profile) => !importedIds.has(profile.id)).map((profile) => profile.id));
+    selectionInitialized.current = true;
+  }, [native, step]);
+
   const run = (label: string, task: () => Promise<unknown>, success?: () => void) => void action.run(label, task, success);
-  const toggleChrome = (id: string, checked: boolean) => setSelectedChrome((current) => checked ? [...new Set([...current, id])] : current.filter((value) => value !== id));
 
   const next = () => {
     if (step === 1 && space) {
@@ -72,7 +83,7 @@ export function GoalpostOnboarding({ state, ui, invoke, close }: UtilityProps) {
 
     {step === 2 && <section><h1>Keep the agent on your side.</h1><p>Chat beside the page while you browse. Agents use a task-owned tab in this window, without taking over your screen.</p><label className="zen-onboarding-choice"><MessageCircle size={20} /><span><strong>Enable agent features</strong><small>Optional. A configured provider or paired host is still required.</small></span><input type="checkbox" role="switch" checked={enabled} disabled={busy} onChange={(event) => setAgentEnabled(event.target.checked)} /></label><div className="zen-onboarding-token"><Input label="Service token" type="password" autoComplete="off" placeholder={native?.onboarding.serviceTokenConfigured ? "Stored securely · enter a new token to replace it" : "Paste a service token"} value={serviceToken} onChange={setServiceToken} disabled={busy || !native?.onboarding.secureTokenStorageAvailable} leftIcon={<KeyRound size={15} />} /><p className="zen-overlay-help"><LockKeyhole size={13} /> {native?.onboarding.secureTokenStorageAvailable ? "Saved only through macOS safeStorage; the token is never returned to the renderer." : "Secure token storage is unavailable in this environment."}</p></div><div className="zen-onboarding-note"><ShieldCheck size={20} /><p>1Password remains the credential authority. Agents request a scoped fill and TOTP acknowledgement; they never receive passwords or one-time codes.</p></div><SurfaceButton icon={ExternalLink} onClick={() => run("Opening 1Password setup", () => checkedInvoke(invoke, ARC_IPC.newTab, { spaceId: state.activeSpaceId, url: "https://support.1password.com/additional-browsers/" }))}>1Password setup instructions</SurfaceButton></section>}
 
-    {step === 3 && <section><h1>Bring your Chrome spaces with you.</h1><p>Select profiles to create isolated Zenmium Spaces. Names come from the account domain when Chrome exposes one.</p><div className="zen-onboarding-note"><ShieldCheck size={20} /><p>Bookmarks and supported unpacked extensions are copied into each new profile. Cookies, history, and raw passwords stay protected; 1Password is handed off through its genuine signed extension and still asks for approval.</p></div><div className="zen-onboarding-chrome-toolbar"><span>{profiles.length ? `${profiles.length} Chrome profile${profiles.length === 1 ? "" : "s"} found` : "No Chrome profiles found"}</span><SurfaceButton icon={RefreshCw} disabled={!!action.busy} onClick={() => { scanned.current = true; void action.run("Refreshing Chrome profiles", async () => { await checkedInvoke(invoke, NATIVE_IPC.onboarding, { action: "scan-chrome" }); await refresh(); }); }}>Refresh</SurfaceButton></div><div className="zen-onboarding-chrome-list">{profiles.map((profile) => { const imported = importedIds.has(profile.id); return <label className="zen-onboarding-chrome-row" data-imported={imported} key={profile.id}><input type="checkbox" checked={selectedChrome.includes(profile.id)} disabled={busy || imported} onChange={(event) => toggleChrome(profile.id, event.target.checked)} /><span><strong>{profile.emailDomain ? profile.emailDomain : profile.name}{profile.isLastUsed && <em>Last used</em>}</strong><small>{profile.name} · {profile.hasBookmarks ? "Bookmarks" : "No bookmarks"} · {profile.extensionCount} extension{profile.extensionCount === 1 ? "" : "s"}</small>{imported ? <small className="zen-onboarding-imported"><CheckCircle2 size={13} /> Already imported as {native?.onboarding.chromeImports.find((entry) => entry.sourceId === profile.id)?.spaceName ?? "a Space"}</small> : <small className="zen-onboarding-password-note"><LockKeyhole size={12} /> Passwords via protected 1Password handoff</small>}</span></label>; })}</div>{profiles.length === 0 && <p className="zen-overlay-help">Zenmium looks only in Google Chrome’s stable macOS profile directory. Quit Chrome before importing if its bookmark file is locked or mid-write.</p>}</section>}
+    {step === 3 && <section><h1>Import your Chrome settings.</h1><p>Choose the profiles to turn into isolated Zenmium Spaces. One click brings over bookmarks, supported extensions, available cookies, and saved passwords.</p><div className="zen-onboarding-note"><ShieldCheck size={20} /><p>Credential migration runs only in the main process. Cookies go to the selected Workspace session and passwords go into encrypted Workspace storage; app-bound Chrome data is reported as protected instead of being guessed at.</p></div><ChromeImportPicker profiles={profiles} imports={native?.onboarding.chromeImports ?? []} selected={selectedChrome} setSelected={setSelectedChrome} disabled={busy} busy={!!action.busy} disableImported showImportButton={false} onRefresh={() => { scanned.current = true; void action.run("Refreshing Chrome profiles", async () => { await checkedInvoke(invoke, NATIVE_IPC.onboarding, { action: "scan-chrome" }); await refresh(); }); }} onImport={next} /></section>}
 
     {step === 4 && <section><h1>Your next page starts here.</h1><p>Web links can open in Zenmium, using your current Workspace. macOS always leaves that choice with you.</p><SurfaceButton variant="primary" disabled={busy || !!isDefault || !native?.defaultBrowser.packaged} icon={isDefault ? Check : ExternalLink} onClick={() => run("Setting your default browser", async () => { await checkedInvoke(invoke, NATIVE_IPC.utility, { action: "set-default-browser" }); await refresh(); })}>{isDefault ? "Zenmium is your default" : "Make Zenmium the default"}</SurfaceButton>{!native?.defaultBrowser.packaged && <p className="zen-overlay-help">Default-browser setup is available from the installed Zenmium app.</p>}<div className="zen-onboarding-note"><p>⌘L for an address · ⌘T for a new tab · ⌘K for commands. Hover the window gutter to reveal a hidden sidebar.</p></div></section>}
 

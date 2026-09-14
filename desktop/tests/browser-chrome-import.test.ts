@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
+import { createCipheriv } from "node:crypto";
 import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 import { chromeSpaceName, discoverChromeProfiles, parseChromeBookmarks } from "../src/main/chrome-profile-import.ts";
+import { decryptChromeValue } from "../src/main/chrome-credentials.ts";
 import { ServiceTokenStore } from "../src/main/service-token.ts";
 
 test("Chrome discovery exposes account domains and never reads password contents", () => {
@@ -20,8 +22,17 @@ test("Chrome discovery exposes account domains and never reads password contents
   assert.equal(profile.isLastUsed, true);
   assert.equal(profile.extensionCount, 1);
   assert.equal(profile.hasEncryptedCredentials, true);
-  assert.equal(profile.passwordStatus, "protected-1password-handoff");
+  assert.equal(profile.hasCookies, false);
+  assert.equal(profile.hasSavedPasswords, true);
+  assert.equal(profile.credentialAvailability, "available");
   assert.equal("profileDirectory" in profile, true, "main-process descriptor may retain its private path");
+});
+
+test("Chrome macOS v10 values decrypt in main-process fixtures", () => {
+  const key = Buffer.from("0123456789abcdef");
+  const cipher = createCipheriv("aes-128-cbc", key, Buffer.alloc(16, 0x20));
+  const encrypted = Buffer.concat([Buffer.from("v10"), cipher.update("fixture-password", "utf8"), cipher.final()]);
+  assert.equal(decryptChromeValue(encrypted, key), "fixture-password");
 });
 
 test("Chrome bookmark JSON becomes sanitized nested bookmark rows", () => {

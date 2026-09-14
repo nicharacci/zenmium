@@ -141,6 +141,7 @@ html[data-zen-overlay-theme="light"] {
 .zen-onboarding-token { margin-top: 18px; }
 .zen-onboarding-token .zen-overlay-help { display: flex; align-items: center; gap: 6px; }
 .zen-onboarding-chrome-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 8px; color: var(--zo-muted); font-size: 11px; }
+.zen-chrome-import-actions { display: flex; align-items: center; gap: 6px; }
 .zen-onboarding-chrome-toolbar .zen-overlay-button { flex: 0 0 auto; padding: 7px 10px; }
 .zen-onboarding-chrome-list { display: grid; gap: 7px; max-height: 245px; overflow: auto; padding: 2px; overscroll-behavior: contain; }
 .zen-onboarding-chrome-row { display: flex; align-items: flex-start; gap: 11px; padding: 11px 12px; border: 1px solid color-mix(in srgb, var(--zo-text) 9%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--zo-text) 4%, transparent); cursor: pointer; transition: border-color var(--duration-quick) var(--ease-out), background var(--duration-quick) var(--ease-out), opacity var(--duration-quick) var(--ease-out); }
@@ -148,6 +149,7 @@ html[data-zen-overlay-theme="light"] {
 .zen-onboarding-chrome-row[data-imported="true"] { cursor: default; opacity: .72; }
 .zen-onboarding-chrome-row > input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--zo-primary); }
 .zen-onboarding-chrome-row > span { min-width: 0; flex: 1; }
+.zen-onboarding-chrome-row > svg { flex: 0 0 auto; margin-top: 2px; color: var(--zo-primary); }
 .zen-onboarding-chrome-row strong, .zen-onboarding-chrome-row small { display: block; overflow-wrap: anywhere; }
 .zen-onboarding-chrome-row strong { font-size: 12px; font-weight: 600; }
 .zen-onboarding-chrome-row strong em { display: inline-block; margin-left: 7px; padding: 2px 6px; border-radius: 999px; color: var(--zo-primary); background: color-mix(in srgb, var(--zo-primary) 12%, transparent); font-size: 9px; font-style: normal; font-weight: 600; }
@@ -155,6 +157,12 @@ html[data-zen-overlay-theme="light"] {
 .zen-onboarding-chrome-row .zen-onboarding-imported, .zen-onboarding-chrome-row .zen-onboarding-password-note { display: flex; align-items: center; gap: 4px; }
 .zen-onboarding-chrome-row .zen-onboarding-imported { color: var(--zo-primary); }
 .zen-onboarding-chrome-row .zen-onboarding-password-note { color: color-mix(in srgb, var(--zo-muted) 82%, var(--zo-primary)); }
+.zen-chrome-import-capabilities { display: flex; flex-wrap: wrap; gap: 5px 9px; margin-top: 7px; color: var(--zo-muted); font-size: 10px; }
+.zen-chrome-import-capabilities span { display: inline-flex; align-items: center; gap: 3px; opacity: .58; }
+.zen-chrome-import-capabilities span[data-present="true"] { color: var(--zo-primary); opacity: .95; }
+.zen-chrome-import-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--zo-border); color: var(--zo-muted); font-size: 10px; }
+.zen-chrome-import-footer .zen-overlay-button { flex: 0 0 auto; }
+.zen-chrome-import-picker { min-width: 0; }
 .zen-onboarding-chrome-list + .zen-overlay-help { margin-top: 13px; }
 .zen-onboarding-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; margin-top: 14px; }
 .zen-overlay-root {

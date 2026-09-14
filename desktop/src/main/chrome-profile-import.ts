@@ -6,7 +6,7 @@ import type { ImportedBookmark } from "./browser-bookmark-format";
 export const CHROME_PROFILE_SCHEMA_VERSION = 1 as const;
 export const DEFAULT_CHROME_ROOT = join(homedir(), "Library", "Application Support", "Google", "Chrome");
 
-export type ChromePasswordImportStatus = "protected-1password-handoff";
+export type ChromeCredentialAvailability = "available" | "protected-by-chrome" | "not-found";
 
 export interface ChromeProfileCandidate {
   id: string;
@@ -18,7 +18,9 @@ export interface ChromeProfileCandidate {
   hasBookmarks: boolean;
   extensionCount: number;
   hasEncryptedCredentials: boolean;
-  passwordStatus: ChromePasswordImportStatus;
+  hasCookies: boolean;
+  hasSavedPasswords: boolean;
+  credentialAvailability: ChromeCredentialAvailability;
 }
 
 /** Internal descriptor. Absolute paths never cross into the renderer. */
@@ -26,6 +28,9 @@ export interface ChromeProfileDescriptor extends ChromeProfileCandidate {
   profileDirectory: string;
   bookmarksPath: string;
   extensionsPath: string;
+  cookiesPath: string;
+  loginDataPath: string;
+  localStatePath: string;
 }
 
 export interface ChromeExtensionSource {
@@ -108,7 +113,7 @@ function publicCandidate(value: ChromeProfileDescriptor): ChromeProfileCandidate
   return candidate;
 }
 
-/** Discover stable Google Chrome profiles without reading cookies, history, or Login Data. */
+/** Discover stable Google Chrome profiles without reading credential values. */
 export function discoverChromeProfiles(root = DEFAULT_CHROME_ROOT): ChromeProfileDescriptor[] {
   if (!isDirectory(root)) return [];
   const localState = readJson(join(root, "Local State"));
@@ -129,6 +134,12 @@ export function discoverChromeProfiles(root = DEFAULT_CHROME_ROOT): ChromeProfil
     if (!profileDirectoryIsChild(root, profileDirectory)) return [];
     const label = profileLabel(record(cache[directoryName]), directoryName);
     const extensionsPath = join(profileDirectory, "Extensions");
+    const cookiesPath = isFile(join(profileDirectory, "Network", "Cookies"))
+      ? join(profileDirectory, "Network", "Cookies")
+      : join(profileDirectory, "Cookies");
+    const loginDataPath = join(profileDirectory, "Login Data");
+    const hasCookies = isFile(cookiesPath);
+    const hasSavedPasswords = isFile(loginDataPath);
     const descriptor: ChromeProfileDescriptor = {
       id: `chrome:${directoryName}`,
       directoryName,
@@ -138,11 +149,16 @@ export function discoverChromeProfiles(root = DEFAULT_CHROME_ROOT): ChromeProfil
       isLastUsed: lastUsedProfiles.includes(directoryName),
       hasBookmarks: isFile(join(profileDirectory, "Bookmarks")),
       extensionCount: countExtensions(extensionsPath),
-      hasEncryptedCredentials: isFile(join(profileDirectory, "Login Data")),
-      passwordStatus: "protected-1password-handoff",
+      hasEncryptedCredentials: hasSavedPasswords,
+      hasCookies,
+      hasSavedPasswords,
+      credentialAvailability: hasCookies || hasSavedPasswords ? "available" : "not-found",
       profileDirectory,
       bookmarksPath: join(profileDirectory, "Bookmarks"),
       extensionsPath,
+      cookiesPath,
+      loginDataPath,
+      localStatePath: join(root, "Local State"),
     };
     return [descriptor];
   });

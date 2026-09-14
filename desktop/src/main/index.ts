@@ -29,6 +29,7 @@ import { AuthenticationBroker } from "./authentication-broker";
 import { webUrl } from "./browser-url";
 import { EXTENSION_IPC, ExtensionHost } from "./extension-host";
 import { copyChromeExtension, listChromeExtensionSources, type ChromeProfileDescriptor } from "./chrome-profile-import";
+import { ChromeCredentialStore, importChromeCredentials } from "./chrome-credentials";
 import { BrowserPermissions, hardenWindow, installSecurityPolicy } from "./security";
 import { STORE_INSTALL_IPC, StoreInstaller } from "./store-install";
 import type { WorkspaceSession } from "./workspace-sessions";
@@ -51,6 +52,7 @@ let authentication: AuthenticationBroker | null = null;
 let chat: AgentChatManager | null = null;
 let controlBridge: Awaited<ReturnType<typeof startBrowserControlBridge>> | null = null;
 let bridgeStarting: Promise<Awaited<ReturnType<typeof startBrowserControlBridge>>> | null = null;
+let chromeCredentialStore: ChromeCredentialStore | null = null;
 const profileHosts = new Map<string, { host: ExtensionHost; installer: StoreInstaller }>();
 const CHROMIUM_WEB_STORE_ID = "ocaahdebbfolfmndjeplogmgcagdmblk";
 const chatGrants = new Map<string, { grantId: string; token: string; sessionId: string }>();
@@ -120,6 +122,16 @@ async function importChromeExtensionsForSpace(spaceId: string, profile: ChromePr
   if (sources.length < profile.extensionCount) skipped += profile.extensionCount - sources.length;
   if (skipped) notes.push(`${skipped} Chrome extension${skipped === 1 ? "" : "s"} could not be loaded by this Electron build.`);
   return { imported, skipped, onePasswordDetected, notes };
+}
+
+async function importChromeCredentialsForSpace(spaceId: string, profile: ChromeProfileDescriptor) {
+  if (!arc || !chromeCredentialStore) throw new Error("Credential migration is not ready.");
+  return importChromeCredentials(
+    profile,
+    arc.getSessionForSpace(spaceId),
+    arc.getProfileId(spaceId),
+    chromeCredentialStore,
+  );
 }
 
 async function attachWorkspaceSession(entry: WorkspaceSession): Promise<void> {
@@ -712,6 +724,7 @@ function initializeWindowServices(): void {
         decrypt: (value: Uint8Array) => safeStorage.decryptString(Buffer.from(value)),
       }
     : undefined;
+  chromeCredentialStore = new ChromeCredentialStore(join(userDataDir, "zenmium"), storageCodec);
   native = new NativeBrowserServices(
     win,
     arc,
@@ -723,6 +736,7 @@ function initializeWindowServices(): void {
     {
       storageCodec,
       importChromeExtensions: importChromeExtensionsForSpace,
+      importChromeCredentials: importChromeCredentialsForSpace,
     },
   );
   unsubscribeProfiles = arc.onSessionCreated((entry) => attachWorkspaceSession(entry));

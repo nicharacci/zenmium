@@ -19,6 +19,7 @@ import {
   toChromeProfileCandidate,
   type ChromeProfileDescriptor,
 } from "./chrome-profile-import";
+import type { ChromeCredentialImportResult } from "./chrome-credentials";
 import { ServiceTokenStore, type SecureStringCodec } from "./service-token";
 
 const safeFilename = (name: string): string => name.replace(/[<>:"/\\|?*\u0000-\u001f]/g, "_").slice(0, 100) || "Zennium page";
@@ -34,6 +35,7 @@ export interface NativeBrowserServicesOptions {
   storageCodec?: SecureStringCodec;
   chromeRoot?: string;
   importChromeExtensions?: (spaceId: string, profile: ChromeProfileDescriptor) => Promise<ChromeExtensionImportResult>;
+  importChromeCredentials?: (spaceId: string, profile: ChromeProfileDescriptor) => Promise<ChromeCredentialImportResult>;
 }
 
 interface OnboardingPreferences {
@@ -64,7 +66,8 @@ export class NativeBrowserServices {
     const saved = this.onboardingStore.read({ version: 1, completed: false, agentEnabled: false });
     this.onboarding = { version: 1, completed: saved?.version === 1 && saved.completed === true, agentEnabled: saved?.agentEnabled === true };
     const imported = this.chromeImportsStore.read([]);
-    this.chromeImports = Array.isArray(imported) ? imported.filter((entry) => entry?.version === 1 && typeof entry.sourceId === "string" && typeof entry.spaceId === "string") : [];
+    this.chromeImports = Array.isArray(imported) ? imported.filter((entry) =>
+      (entry?.version === 1 || entry?.version === 2) && typeof entry.sourceId === "string" && typeof entry.spaceId === "string") : [];
     this.chromeProfiles = discoverChromeProfiles(options.chromeRoot);
   }
   private profile(): string { return this.core.getProfileId(this.core.snapshot().activeSpaceId); }
@@ -110,7 +113,32 @@ export class NativeBrowserServices {
     const existingSpaces = new Set(state.spaces.map((space) => space.name.toLocaleLowerCase()));
     for (const profile of selected) {
       const previous = this.chromeImports.find((entry) => entry.sourceId === profile.id && state.spaces.some((space) => space.id === entry.spaceId));
-      if (previous) continue;
+      if (previous) {
+        // Re-running the import from Settings is useful after Chrome has
+        // unlocked its Keychain item or after an earlier app-bound attempt.
+        // Never duplicate the Workspace, bookmarks, or extension registry.
+        if (this.options.importChromeCredentials) {
+          try {
+            const credentials = await this.options.importChromeCredentials(previous.spaceId, profile);
+            previous.version = 2;
+            previous.cookies = {
+              imported: credentials.cookiesImported,
+              skipped: credentials.cookiesSkipped,
+              status: credentials.cookieStatus,
+            };
+            previous.passwords = {
+              imported: credentials.passwordsImported,
+              skipped: credentials.passwordsSkipped,
+              status: credentials.passwordStatus,
+            };
+            previous.passwordStatus = credentials.passwordStatus;
+            previous.notes = [...new Set([...previous.notes, ...credentials.notes])];
+          } catch {
+            previous.notes = [...new Set([...previous.notes, "Chrome credential import is unavailable in this build."])];
+          }
+        }
+        continue;
+      }
       const space = this.core.createSpace(
         chromeSpaceName(profile, existingSpaces),
         SPACE_COLORS[this.chromeImports.length % SPACE_COLORS.length],
@@ -119,12 +147,7 @@ export class NativeBrowserServices {
           : undefined,
       );
       existingSpaces.add(space.name.toLocaleLowerCase());
-      const notes = [
-        "Chrome cookies, history, and raw passwords were not copied. The imported Workspace remains isolated.",
-        profile.hasEncryptedCredentials
-          ? "Connect the genuine 1Password extension in this Workspace for credential and TOTP handoff with explicit approval."
-          : "No Chrome encrypted credential database was detected; 1Password remains the protected credential source.",
-      ];
+      const notes: string[] = ["The imported Workspace remains isolated from Chrome's other profiles."];
       let bookmarks = 0;
       try {
         bookmarks = this.bookmarks.importRows(this.core.getProfileId(space.id), await readChromeBookmarkRows(profile));
@@ -140,15 +163,36 @@ export class NativeBrowserServices {
       }
       notes.push(...extensions.notes);
       if (extensions.onePasswordDetected) notes.push("The 1Password extension was copied, but its signed native connection and vault approval are still required; no secret was extracted.");
+      let credentials: ChromeCredentialImportResult = {
+        cookiesImported: 0,
+        cookiesSkipped: 0,
+        passwordsImported: 0,
+        passwordsSkipped: 0,
+        cookieStatus: profile.hasCookies ? "unavailable" : "not-found",
+        passwordStatus: profile.hasSavedPasswords ? "unavailable" : "not-found",
+        notes: [],
+      };
+      if (this.options.importChromeCredentials) {
+        try {
+          credentials = await this.options.importChromeCredentials(space.id, profile);
+        } catch {
+          credentials.notes.push("Chrome credential import is unavailable in this build.");
+        }
+      } else {
+        credentials.notes.push("Chrome credential import is unavailable in this build.");
+      }
+      notes.push(...credentials.notes);
       this.chromeImports.push({
-        version: 1,
+        version: 2,
         sourceId: profile.id,
         spaceId: space.id,
         spaceName: space.name,
         importedAt: Date.now(),
         bookmarks,
         extensions: { imported: extensions.imported, skipped: extensions.skipped, onePasswordDetected: extensions.onePasswordDetected },
-        passwordStatus: "protected-1password-handoff",
+        cookies: { imported: credentials.cookiesImported, skipped: credentials.cookiesSkipped, status: credentials.cookieStatus },
+        passwords: { imported: credentials.passwordsImported, skipped: credentials.passwordsSkipped, status: credentials.passwordStatus },
+        passwordStatus: credentials.passwordStatus,
         notes,
       });
     }
