@@ -9,45 +9,53 @@ export const ARC_STATE_EVENT = "arc:state" as const;
 
 /** Renderer-side mirrors of the main-process agent kernel channels. */
 export const AGENT_IPC = {
-  newSession: "agent:newSession",
-  prompt: "agent:prompt",
   abort: "agent:abort",
   event: "agent:event",
+  newSession: "agent:newSession",
+  prompt: "agent:prompt",
 } as const;
 
 export const ARC_IPC = {
-  snapshot: "arc:snapshot",
-  createSpace: "arc:createSpace",
   activateSpace: "arc:activateSpace",
-  updateSpace: "arc:updateSpace",
-  deleteSpace: "arc:deleteSpace",
-  newTab: "arc:newTab",
-  closeTab: "arc:closeTab",
   activateTab: "arc:activateTab",
-  navigate: "arc:navigate",
-  back: "arc:back",
-  forward: "arc:forward",
-  reload: "arc:reload",
-  pinTab: "arc:pinTab",
-  unpinTab: "arc:unpinTab",
-  createFolder: "arc:createFolder",
-  renameFolder: "arc:renameFolder",
-  deleteFolder: "arc:deleteFolder",
-  moveToFolder: "arc:moveToFolder",
-  reorderTab: "arc:reorderTab",
   archiveTab: "arc:archiveTab",
-  restoreTab: "arc:restoreTab",
+  back: "arc:back",
   clearArchive: "arc:clearArchive",
-  toggleSplit: "arc:toggleSplit",
+  clearHistory: "arc:clearHistory",
+  closePeek: "arc:closePeek",
+  closeTab: "arc:closeTab",
+  createFolder: "arc:createFolder",
+  createSpace: "arc:createSpace",
+  deleteFolder: "arc:deleteFolder",
+  deleteSpace: "arc:deleteSpace",
+  forward: "arc:forward",
+  moveTabToSpace: "arc:moveTabToSpace",
+  moveToFolder: "arc:moveToFolder",
+  navigate: "arc:navigate",
+  newTab: "arc:newTab",
   openPeek: "arc:openPeek",
+  pinTab: "arc:pinTab",
+  promotePeek: "arc:promotePeek",
+  reload: "arc:reload",
+  renameFolder: "arc:renameFolder",
+  reorderTab: "arc:reorderTab",
+  resetTab: "arc:resetTab",
+  restoreTab: "arc:restoreTab",
   setContentBounds: "arc:setContentBounds",
+  snapshot: "arc:snapshot",
+  stop: "arc:stop",
+  toggleSplit: "arc:toggleSplit",
+  unpinTab: "arc:unpinTab",
+  updateFolder: "arc:updateFolder",
+  updateSpace: "arc:updateSpace",
+  updateTab: "arc:updateTab",
 } as const;
 
 export const rectSchema = z.object({
+  height: z.number().int().nonnegative(),
+  width: z.number().int().nonnegative(),
   x: z.number().int().nonnegative(),
   y: z.number().int().nonnegative(),
-  width: z.number().int().nonnegative(),
-  height: z.number().int().nonnegative(),
 });
 export type Rect = z.infer<typeof rectSchema>;
 
@@ -58,7 +66,40 @@ export interface Space {
   name: string;
   color: string;
   icon: string;
+  /** First account identity observed for this Workspace; only display-safe initials persist. */
+  avatar?: WorkspaceAvatar;
+  pinnedCollapsed?: boolean;
+  /** Stable browser identity; names and theme changes never change a partition. */
+  profileId?: string;
 }
+
+export interface WorkspaceAvatar {
+  initials: string;
+  provider: "google" | "microsoft" | "apple" | "github" | "other";
+}
+
+export interface BrowserProfile {
+  id: string;
+  /** Empty only for the one migrated legacy Chromium default session. */
+  partition: string;
+}
+
+export interface NewTabOptions {
+  spaceId?: string;
+  url?: string;
+  kind?: TabKind;
+  background?: boolean;
+  ownerSessionId?: string;
+}
+
+export type TabMoveResult =
+  | { status: "moved" | "unchanged"; tabId: string; spaceId: string }
+  | {
+      status: "confirmation-required";
+      tabId: string;
+      spaceId: string;
+      reason: string;
+    };
 
 export interface Folder {
   id: string;
@@ -76,6 +117,44 @@ export interface Tab {
   loading: boolean;
   folderId: string | null;
   lastActiveAt: number;
+  customTitle?: string;
+  faviconUrl?: string;
+  pinnedUrl?: string;
+  canGoBack?: boolean;
+  canGoForward?: boolean;
+  error?: string | null;
+  /** Optional Zen presentation state, persisted by ArcCore when present. */
+  iconUrl?: string;
+  originalIconUrl?: string;
+  pinnedChanged?: boolean;
+  audio?: boolean;
+  muted?: boolean;
+  blocked?: boolean;
+  discarded?: boolean;
+  glance?: boolean;
+  containerColor?: string | null;
+  sublabel?: string | null;
+  /** Agent-session ownership is main-process assigned, never a TabUpdate field. */
+  ownerSessionId?: string;
+  /** User/OS-selected local HTML/PDF document; never writable through TabUpdate. */
+  localFile?: boolean;
+}
+
+export interface TabUpdate {
+  title?: string;
+  customTitle?: string | null;
+  pinnedUrl?: string;
+  url?: string;
+  iconUrl?: string | null;
+  originalIconUrl?: string | null;
+  pinnedChanged?: boolean;
+  audio?: boolean;
+  muted?: boolean;
+  blocked?: boolean;
+  discarded?: boolean;
+  glance?: boolean;
+  containerColor?: string | null;
+  sublabel?: string | null;
 }
 
 export interface ArchiveEntry {
@@ -84,16 +163,43 @@ export interface ArchiveEntry {
   url: string;
   title: string;
   archivedAt: number;
+  localFile?: boolean;
 }
 
 export interface ArcState {
+  schemaVersion?: number;
+  profiles?: BrowserProfile[];
   spaces: Space[];
   activeSpaceId: string;
   activeTabId: string | null;
+  /** The other visible pane, regardless of which pane currently has focus. */
   splitTabId: string | null;
+  /** Stable left pane. Older snapshots default to activeTabId on the left. */
+  splitPrimaryTabId?: string | null;
   folders: Folder[];
   tabs: Tab[];
   archive: ArchiveEntry[];
+  history?: HistoryEntry[];
+  glance?: { url: string; title: string; spaceId?: string } | null;
+}
+
+export interface HistoryEntry {
+  id: string;
+  url: string;
+  title: string;
+  visitedAt: number;
+  /** Optional only to read pre-profile snapshots; normalized before use. */
+  spaceId?: string;
+}
+
+/** Physical pane order is independent of the active navigation/keyboard target. */
+export function getPaneTabIds(state: ArcState): string[] {
+  const { activeTabId, splitTabId, splitPrimaryTabId } = state;
+  if (!activeTabId) return [];
+  if (!splitTabId || splitTabId === activeTabId) return [activeTabId];
+  return splitPrimaryTabId === splitTabId
+    ? [splitTabId, activeTabId]
+    : [activeTabId, splitTabId];
 }
 
 export const SPACE_COLORS = [
@@ -105,8 +211,12 @@ export const SPACE_COLORS = [
   "#7fd6d6",
   "#f58f8f",
 ] as const;
+/** Sidebar presentation capacity, not a storage cap. Further pins use overflow. */
+export const MAX_ESSENTIALS = 8;
 
-export type Result<T> = { ok: true; value: T } | { ok: false; seam: string; reason: string };
+export type Result<T> =
+  | { ok: true; value: T }
+  | { ok: false; seam: string; reason: string };
 
 export interface ZenmiumBridge {
   invoke<T = unknown>(channel: string, payload?: unknown): Promise<T>;
@@ -114,11 +224,14 @@ export interface ZenmiumBridge {
 }
 
 export const emptyState = (): ArcState => ({
-  spaces: [],
   activeSpaceId: "",
   activeTabId: null,
-  splitTabId: null,
-  folders: [],
-  tabs: [],
   archive: [],
+  folders: [],
+  glance: null,
+  history: [],
+  spaces: [],
+  splitPrimaryTabId: null,
+  splitTabId: null,
+  tabs: [],
 });
