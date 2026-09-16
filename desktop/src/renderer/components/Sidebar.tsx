@@ -166,13 +166,21 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
               >
                 {pinnedExtensions.map((extension) => (
                   <button
-                    aria-label={`Open ${extension.name} extension controls`}
+                    aria-label={`Run ${extension.name}`}
                     className="zen-extension-pin"
                     key={extension.id}
                     onClick={() =>
-                      void invoke(CHROME_IPC.open, { kind: "extensions" })
+                      void (async () => {
+                        try {
+                          const result = await invoke(CHROME_IPC.extensionTrigger, { id: extension.id });
+                          if (result && typeof result === "object" && (result as { ok?: boolean }).ok) return;
+                        } catch {
+                          // Fall through to the Extensions panel.
+                        }
+                        await invoke(CHROME_IPC.open, { kind: "extensions" });
+                      })()
                     }
-                    title={`${extension.name} · Extensions`}
+                    title={`${extension.name} · Click to run, panel on fallback`}
                     type="button"
                   >
                     <Puzzle aria-hidden="true" size={13} />
@@ -261,7 +269,10 @@ export function Sidebar({ state, ui, invoke }: BrowserSurfaceProps) {
                         size={12}
                       />
                     </button>
-                    <div className="zen-folder-tabs t-acc-panel">
+                    <div
+                      className="zen-folder-tabs t-acc-panel"
+                      inert={folder.collapsed ? true : undefined}
+                    >
                       <div className="t-acc-panel-inner" id={`zen-folder-${folder.id}`}>
                         {children.map((tab) => (
                           <SidebarTab
