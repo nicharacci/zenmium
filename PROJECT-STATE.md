@@ -4,7 +4,7 @@ projectId: zenmium
 stateRevision: 3
 activeSprint: V0.0.1
 sourceRef: 2026-09-12
-sourceCommit: 273a51f
+sourceCommit: 13774f9
 authorityEnvironment: goalpost-code
 syncStatus: unverified
 ---
@@ -20,7 +20,7 @@ Complete Zenmium v0.0.1 as a standalone macOS browser with isolated persistent W
 ## Protected zones
 
 - Do not commit `.env`, cookie jars, Browser Profiles, or any secret value.
-- Secrets, data-store credentials, and keys come from the 1Password browser extension in Zen. Names in context, values never. No 1Password CLI. See `docs/zenmium/SECRETS.md`.
+- Secrets, data-store credentials, and keys come from the 1Password browser extension in Zen. Names in context, values never. The 1Password CLI lane is permitted only under the operator-authorized override recorded in `docs/zenmium/SECRETS.md` (2026-09-16). See that file for the lane contract.
 - `BrowserCore` is the only Chromium boundary; no renderer imports Electron or touches Chromium.
 - One agent loop (OpenCode). No second chat engine.
 - `main` stays protected and deployable. Work stays on `2026-09-12` and is reviewed through existing PR #8; merge/release require passing gates.
@@ -29,4 +29,4 @@ Complete Zenmium v0.0.1 as a standalone macOS browser with isolated persistent W
 
 ## Next safe action
 
-Implementation is in progress on the coordinator branch. The native onboarding lane now discovers stable Google Chrome profiles, creates isolated domain-named Spaces, imports sanitized bookmarks, installs supported extension code, and stores the optional service token through Electron safeStorage. It deliberately does not extract Chrome Login Data, cookies, history, or extension storage; genuine signed 1Password/TOTP handoff remains the credential boundary. Desktop TypeScript and 112 unit tests pass. Root lint validation is not clean and must not be represented as passed. PR #8's latest build run `34779825758` did not start because GitHub reported a billing-locked account; no protected gate has been bypassed. Complete local native/control/authentication tests and capture real composed windows, then evaluate signed/notarized release eligibility. Missing signing or genuine 1Password capability blocks release rather than being silently waived.
+Implementation is in progress on the coordinator branch. The native onboarding lane now discovers stable Google Chrome profiles, creates isolated domain-named Spaces, imports sanitized bookmarks, installs supported extension code, and stores the optional service token through Electron safeStorage. It deliberately does not extract Chrome Login Data, cookies, history, or extension storage; genuine signed 1Password/TOTP handoff remains the credential boundary. Desktop TypeScript and 135 unit tests pass (including the sidebar folder inert/focus DOM harness). Root lint validation is not clean and must not be represented as passed. PR #8's latest build run `34779825758` did not start because GitHub reported a billing-locked account; no protected gate has been bypassed. Complete local native/control/authentication tests and capture real composed windows, then evaluate signed/notarized release eligibility. Missing signing or genuine 1Password capability blocks release rather than being silently waived.
