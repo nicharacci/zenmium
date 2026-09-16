@@ -576,13 +576,15 @@ function TabMenu({ state, ui, invoke, close }: UtilityProps) {
           {!isEssential && (
             <>
               <MenuItem
-                disabled={Boolean(action.busy)}
+                disabled={Boolean(action.busy) || tab.kind === "pinned"}
                 icon={Archive}
                 onClick={() =>
                   call("Archiving tab", ARC_IPC.archiveTab, tab.id)
                 }
               >
-                Archive tab
+                {tab.kind === "pinned"
+                  ? "Archive unavailable for pinned tabs"
+                  : "Archive tab"}
               </MenuItem>
               <MenuItem
                 disabled={Boolean(action.busy)}
