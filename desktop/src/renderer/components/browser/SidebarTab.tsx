@@ -1,6 +1,7 @@
 // biome-ignore-all lint/performance/noJsxPropsBind: These small native controls use current render state; callback identity is not a memoization boundary.
 import { CHROME_IPC, type Invoke } from "@shared/browser-ui";
 import { ARC_IPC, type Tab } from "@shared/ipc";
+import { openTabContextMenuFromKeyboard } from "@shared/tab-context-menu";
 import { Globe2, LoaderCircle, Volume2, VolumeX, X } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -188,10 +189,20 @@ export function SidebarTab({
             setRenaming(true);
           }}
           onKeyDown={(event) => {
+            if (event.nativeEvent.isComposing) {
+              return;
+            }
             if (event.key === "F2") {
               event.preventDefault();
               setRenaming(true);
+              return;
             }
+            openTabContextMenuFromKeyboard(
+              event,
+              event.currentTarget,
+              tab.id,
+              (payload) => invoke(CHROME_IPC.open, payload),
+            );
           }}
           title={`${title}${tab.url ? `\n${tab.url}` : ""}`}
           type="button"
