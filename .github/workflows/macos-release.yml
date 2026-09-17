@@ -56,6 +56,11 @@ jobs:
               mac: {
                 notarize: false,
                 timestamp: "none",
+                // Ad-hoc signatures have no Team ID. With the hardened runtime
+                // flag set, dyld enforces same-team library validation and the
+                // app aborts at launch ("different Team IDs") when it loads
+                // Electron Framework, so the local-test build must not harden.
+                hardenedRuntime: false,
                 sign: (options) => signAsync({ ...options, identity: "-", identityValidation: false }),
               },
             },
@@ -66,7 +71,16 @@ jobs:
           NODE
       - name: Verify local-test app signature
         working-directory: desktop
-        run: codesign --verify --deep --strict --verbose=2 dist/mac-arm64/Zenmium.app
+        run: |
+          codesign --verify --deep --strict --verbose=2 dist/mac-arm64/Zenmium.app
+          # A valid ad-hoc signature still crashes at launch if the hardened
+          # runtime flag is set, because dyld enforces same-team library
+          # validation and ad-hoc binaries share no Team ID. Guard the
+          # invariant codesign --verify cannot see.
+          if codesign -dv --verbose=4 dist/mac-arm64/Zenmium.app/Contents/MacOS/Zenmium 2>&1 | grep -q "flags=.*runtime"; then
+            echo "ad-hoc local-test build must not carry the hardened runtime flag"
+            exit 1
+          fi
       - name: Secret scan (artifacts)
         working-directory: desktop
         run: pnpm security:scan:artifacts
