@@ -47,7 +47,7 @@ jobs:
       - name: Upload DMG and ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Zenmium-macOS-${{ github.ref_name }}
+          name: Zenmium-macOS-${{ github.event.pull_request.number || github.ref_name }}
           path: |
             desktop/dist/*.dmg
             desktop/dist/*.zip
