@@ -42,6 +42,11 @@ jobs:
         working-directory: desktop
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          # electron-builder skips signing on pull_request unless this is set.
+          # Safe here: signing is ad-hoc (identity "-"), so no certificate
+          # material exists to leak to fork code. Without it the bundle keeps
+          # Electron's partial shipped signature and the verify step fails.
+          CSC_FOR_PULL_REQUEST: "true"
         run: |
           node --input-type=commonjs <<'NODE'
           const { createRequire } = require("node:module");
