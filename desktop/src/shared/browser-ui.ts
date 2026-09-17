@@ -13,6 +13,7 @@ export const CHROME_IPC = {
   extensionEnabled: "extensions:setEnabled",
   extensionLoad: "extensions:choose-directory",
   extensionPinned: "extensions:setPinned",
+  extensionTrigger: "extensions:trigger",
   extensionRegistryChanged: "zenmium:extension:registry-changed",
   extensions: "extensions:list",
   migratePreferences: "chrome:migrate-preferences",

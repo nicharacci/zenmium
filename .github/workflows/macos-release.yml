@@ -1,14 +1,20 @@
 name: Zenmium macOS release
 
 on:
+  pull_request:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/macos-release.yml"
   workflow_dispatch:
   push:
+    branches:
+      - "2026-09-12"
     tags:
       - "v*"
 
 jobs:
   macos:
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -36,7 +42,7 @@ jobs:
         run: pnpm test
       - name: Package (unsigned)
         working-directory: desktop
-        run: pnpm package
+        run: pnpm exec electron-builder --mac --arm64
       - name: Secret scan (artifacts)
         working-directory: desktop
         run: pnpm security:scan:artifacts
