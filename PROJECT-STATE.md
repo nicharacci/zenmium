@@ -1,10 +1,10 @@
 ---
 version: 1
 projectId: zenmium
-stateRevision: 3
+stateRevision: 4
 activeSprint: V0.0.1
 sourceRef: 2026-09-12
-sourceCommit: 13774f9
+sourceCommit: dc2850d
 authorityEnvironment: goalpost-code
 syncStatus: unverified
 ---
@@ -29,4 +29,4 @@ Complete Zenmium v0.0.1 as a standalone macOS browser with isolated persistent W
 
 ## Next safe action
 
-Implementation is in progress on the coordinator branch. The native onboarding lane now discovers stable Google Chrome profiles, creates isolated domain-named Spaces, imports sanitized bookmarks, installs supported extension code, and stores the optional service token through Electron safeStorage. It deliberately does not extract Chrome Login Data, cookies, history, or extension storage; genuine signed 1Password/TOTP handoff remains the credential boundary. Desktop TypeScript and 135 unit tests pass (including the sidebar folder inert/focus DOM harness). Root lint validation is not clean and must not be represented as passed. PR #8's latest build run `34779825758` did not start because GitHub reported a billing-locked account; no protected gate has been bypassed. Complete local native/control/authentication tests and capture real composed windows, then evaluate signed/notarized release eligibility. Missing signing or genuine 1Password capability blocks release rather than being silently waived.
+Implementation is in progress on the coordinator branch. The native onboarding lane now discovers stable Google Chrome profiles, creates isolated domain-named Spaces, imports sanitized bookmarks, installs supported extension code, and stores the optional service token through Electron safeStorage. It deliberately does not extract Chrome Login Data, cookies, history, or extension storage; genuine signed 1Password/TOTP handoff remains the credential boundary. Desktop TypeScript and 158 unit tests pass; the native harness reports 36/36 attempted with 0 failures and 2 unavailable trusted-click cases that require host focus in UI verification. Root lint validation is not clean and must not be represented as passed. PR #8 checks are green: the desktop build job and the macOS packaging lane pass on both push and pull_request, and the ad-hoc local-test artifact was signature-verified and launch-tested locally from both ZIP and DMG. The macOS lane previously shipped an ad-hoc plus hardened-runtime bundle that dyld rejected at launch with a Team ID mismatch; that is fixed, and PR runs now sign ad-hoc rather than skipping signing. The earlier billing-lock report is stale; runs execute normally. Next: complete local native/control/authentication tests and capture real composed windows, then evaluate signed/notarized release eligibility. Missing signing or genuine 1Password capability blocks release rather than being silently waived.
