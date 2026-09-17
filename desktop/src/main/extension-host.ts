@@ -55,6 +55,8 @@ export interface ExtensionHostOptions {
   profileId?: string;
   /** Must mount the popup in the supplied Session; never the browser chrome's session. */
   openPopup?: (action: ExtensionAction, session: ExtensionSessionLike) => Promise<void>;
+  /** Dispatch an action click to a no-popup extension via its bridge page. */
+  dispatchAction?: (extensionId: string, session: ExtensionSessionLike, tabId?: number) => Promise<void>;
 }
 const fail = <T>(reason: string): ExtensionResult<T> => ({ ok: false, seam: EXTENSION_SEAM, reason });
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -265,11 +267,43 @@ export class ExtensionHost {
     } catch { return fail("The extension popup URL is invalid."); }
   }
   openAction(id: string): Promise<ExtensionResult<ExtensionAction>> {
+    return this.serial(() => this.openActionInternal(id));
+  }
+  private async openActionInternal(id: string): Promise<ExtensionResult<ExtensionAction>> {
+    const action = this.actionPopup(id);
+    if (!action.ok) {
+      return action;
+    }
+    if (!this.options.openPopup) {
+      return fail("The native extension popup surface is not connected.");
+    }
+    try {
+      await this.options.openPopup(action.value, this.targetSession);
+      return action;
+    } catch {
+      return fail("The native extension popup could not be opened.");
+    }
+  }
+  /** Toolbar trigger: popup when declared, otherwise the extension bridge page. */
+  triggerAction(id: string, tabId?: number): Promise<ExtensionResult<{ triggered: true }>> {
     return this.serial(async () => {
-      const action = this.actionPopup(id); if (!action.ok) return action;
-      if (!this.options.openPopup) return fail("The native extension popup surface is not connected.");
-      try { await this.options.openPopup(action.value, this.targetSession); return action; }
-      catch { return fail("The native extension popup could not be opened."); }
+      const record = this.records.get(id);
+      if (!record || !record.enabled) return fail("The extension is not available in this profile.");
+      if (!this.loaded.has(id)) return fail("The extension is not loaded in this profile.");
+      const popup = this.actionPopup(id);
+      if (popup.ok) {
+        const opened = await this.openActionInternal(id);
+        return opened.ok
+          ? { ok: true, value: { triggered: true as const } }
+          : fail("The native extension popup could not be opened.");
+      }
+      if (!this.options.dispatchAction) return fail("This extension has no popup; bridge dispatch is not connected.");
+      try {
+        await this.options.dispatchAction(id, this.targetSession, tabId);
+        return { ok: true, value: { triggered: true as const } };
+      } catch {
+        return fail("The extension action could not be triggered.");
+      }
     });
   }
   dispose(): Promise<void> {

@@ -13,7 +13,7 @@ import {
   safeStorage,
   screen,
   shell,
-  type WebContentsView,
+  WebContentsView,
 } from "electron";
 import { z } from "zod";
 import { CHAT_IPC, CHAT_LIMITS } from "../shared/agent-chat";
@@ -60,7 +60,11 @@ import {
   bridgeUrl,
   interpretBridgeResult,
 } from "./extension-action-bridge";
-import { EXTENSION_IPC, ExtensionHost } from "./extension-host";
+import {
+  EXTENSION_IPC,
+  type ExtensionAction,
+  ExtensionHost,
+} from "./extension-host";
 import {
   BrowserPermissions,
   hardenWindow,
@@ -370,6 +374,7 @@ async function attachWorkspaceSession(entry: WorkspaceSession): Promise<void> {
       dispatchAction: (extensionId, _session, tabId) =>
         dispatchExtensionAction(extensionId, entry.session, tabId),
       events,
+      openPopup: (action) => openExtensionPopup(action, entry.session),
       profileId: entry.profileId,
       registryPath: join(profileDirectory, "extensions.json"),
       session: entry.session,
@@ -463,12 +468,79 @@ function humanTab(tabId: string | null | undefined): void {
 function closeExtensionPopup(): void {
   const view = popup;
   popup = null;
+  win?.removeListener("resize", extensionPopupResizeHandler);
   if (view && !view.webContents.isDestroyed()) {
     if (win && !win.isDestroyed()) {
       win.contentView.removeChildView(view);
     }
     view.webContents.close();
   }
+}
+
+function sizeExtensionPopup(): void {
+  const view = popup;
+  if (!(win && view && !win.isDestroyed())) {
+    return;
+  }
+  const bounds = win.getContentBounds();
+  const height = 480;
+  const width = 360;
+  view.setBounds({
+    height,
+    width,
+    x: bounds.width - width,
+    y: bounds.height - height,
+  });
+}
+
+function extensionPopupResizeHandler(): void {
+  sizeExtensionPopup();
+}
+
+/** Mounts the declared extension popup in the profile's own Session. */
+function openExtensionPopup(
+  action: ExtensionAction,
+  session: Electron.Session
+): Promise<void> {
+  if (verificationGuard) {
+    throw new Error("Extension popups are unavailable during verification.");
+  }
+  if (!win || win.isDestroyed()) {
+    throw new Error("The Zenmium window is not ready.");
+  }
+  closeExtensionPopup();
+  const view = new WebContentsView({
+    webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      session,
+    },
+  });
+  popup = view;
+  view.webContents.once("destroyed", () => {
+    if (popup === view && win && !win.isDestroyed()) {
+      popup = null;
+      win.contentView.removeChildView(view);
+    }
+  });
+  view.webContents.on("did-fail-load", (_event, _code, _desc, _url, main) => {
+    if (main) {
+      closeExtensionPopup();
+    }
+  });
+  win.contentView.addChildView(view);
+  win.on("resize", extensionPopupResizeHandler);
+  return view.webContents
+    .loadURL(action.url)
+    .then(() => {
+      sizeExtensionPopup();
+      view.webContents.focus();
+    })
+    .catch((error: unknown) => {
+      closeExtensionPopup();
+      throw error;
+    });
 }
 function queueOpen(item: { url?: string; path?: string }): void {
   if (!primaryInstance) {
