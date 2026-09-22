@@ -75,6 +75,7 @@ jobs:
       - name: Fetch Chromium sources
         run: |
           cd platform/macos
+          mkdir -p build/download_cache
           ./retrieve_and_unpack_resource.sh -g ${{ matrix.arch }}
 
       - name: Dry-run every series patch (browser + platform)
