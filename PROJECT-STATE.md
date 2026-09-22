@@ -1,13 +1,13 @@
 ---
 version: 1
 projectId: zenmium
-stateRevision: 7
+stateRevision: 8
 activeSprint: S005 - Helium base
 sourceRef: 2026-09-22
-sourceCommit: 10eef8c
+sourceCommit: 14bb5de
 authorityEnvironment: devin-cloud
 syncStatus: aligned
-lastVerifiedAt: 2026-09-22T19:30:00Z
+lastVerifiedAt: 2026-09-22T22:45:00Z
 latestReceipt: docs/zenmium/S004-receipt.md
 ---
 
@@ -31,9 +31,14 @@ TP directive (2026-09-22): rebuild everything Chromium-related to follow Helium 
 
 ## Current truth
 
-- S005 dispatched: date branch `2026-09-22` created from `2026-09-12`@`7cf7cf3` at `10eef8c`; preservation ref `refs/sprints/S005/P1`; Devin Cloud sessions `5c8ac5096afe4bcc9aa1fb43b8b416d3` (T1 clone/identity/CI) and `466cb483b12a4229b57a1cfdb274d343` (T4 services) verified repo-attached and on-branch. T2/T3 hold for T1's checkpoint.
+- S005 integrated on `2026-09-22` through `14bb5de`: T1 vendoring + identity (`00dab5f`), T1 workflow gate fixes (`7b3f1cd`), T2 chrome UI (`64133fc`), T4 services vendoring + Fly lane + endpoint patch (`615a749`, `c8311c8`), T3 internal products + agent rail (`e31a022`), orchestrator unification (`511e04c`) and patch-context repairs (`770959c`, `c8beaf2`, `14bb5de`). Checkpoints: `refs/sprints/S005/{P1,T1/P1,T2/P1,T3/P1,T4/P1,T4/P2}`.
+- Patch-series verification is now local and complete: all 338 upstream patches + 10 zenmium patches replayed in series order onto real Chromium `153.0.8010.52` files fetched at the pinned tag — zero rejects. CI `browser-macos` run 35792063577 confirmed 348/348 apply + resource substitution; failed at `gn gen` on a missing grit dep (fixed in `14bb5de`).
+- Services lane live on Fly org `solvys-technologies`: `zenmium-services` (edge: bangs 200, connectivitycheck 204, ubo assets 200 w/ br), `zenmium-updates` (appcast 200), `zenmium-svc-{cup2,ext,push,ubo}` deployed. `zenmium-svc-crash`/`zenmium-svc-symbolicator` deliberately deferred to phase 2 (GitHub OAuth app + new volume = human gate). Endpoint rewire patch targets `zenmium-*.fly.dev` hosts.
+- Fly auth resolved: token recovered from `~/.fly/config.yml`, delivered to the T4 Cloud box and registered as org secret `secret-c7fa4cea`; `flyctl` locally still reports no token — use `FLY_API_TOKEN` env lane.
+- Side-monitor lane verified live: `desktop/scripts/verify-side-monitor.mjs` exits 0 (DELL P2422H present). No built artifact exists yet — local launch proof pending CI artifact.
+- T1 box commit `50cf6c5` (scratch-tree sequential dry-run gate) deliberately NOT merged — superseded by `7b3f1cd` (real in-order apply is the gate); the variant doubles apply time and uses `cp -al`, absent on Windows runners.
 - Upstream pins verified live: helium `0.17.2` (Chromium `153.0.8010.52`), helium-macos/helium-windows `0.17.2.2`, helium-services `7f3d42ebf00b`, cup2 `bee47000cd87`, helium-filters `95d0ac36162a`, helium-prism `e73a15554e29`.
-- Provider state: `gh` nicharacci ✓, `vercel` tp-solvys ✓, `flyctl` installed but unauthenticated (T4 deploy gate). Local disk ~1 GB free — all local implementation lanes closed; CI/Cloud only.
+- Provider state: `gh` nicharacci ✓, `vercel` tp-solvys ✓, Fly token valid for `solvys-technologies`. BrowserOS/Neo: no MCP and no app on this machine — no browser-automation lane. Local disk ~1 GB free — CI/Cloud only.
 - Branch `2026-09-12` is synced with origin at `7cf7cf3`; PR #8 checks (`build`, `macos` push and pull_request) are green and the PR is mergeable. Its merge decision stays with TP, independent of the rebase.
 - The macOS local-test lane produces a launchable ad-hoc artifact on both push and PR events; the ad-hoc plus hardened-runtime dyld crash and the PR signing skip are fixed and verified by local launch of the CI-produced ZIP and DMG.
 - The committed CI artifact additionally passed the live `verify-browser.mjs` harness (15/15 steps) under `ZENMIUM_VERIFY_SIDE_MONITOR=1` with an isolated profile on the DELL P2422H side monitor; one native split-pane click remains unavailable via CDP.
