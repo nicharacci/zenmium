@@ -1,0 +1,19 @@
+--- a/chrome/browser/ui/tabs/tab_strip_prefs.cc
++++ b/chrome/browser/ui/tabs/tab_strip_prefs.cc
+@@ -34,9 +34,13 @@ void RegisterProfilePrefs(user_prefs::Pr
+   registry->RegisterIntegerPref(prefs::kHeliumLayout,
+-                                std::to_underlying(HeliumLayoutType::kClassic));
++                                std::to_underlying(HeliumLayoutType::kVertical));
+   registry->RegisterBooleanPref(prefs::kHeliumVerticalRightAligned, false);
+-  registry->RegisterBooleanPref(prefs::kHeliumZenMode, false);
++  // Zenmium compact mode ships on at startup (operator config): the
++  // sidebar floats off-canvas and reveals on edge hover; top chrome stays
++  // pinned. Zen-mode is Helium's auto-hide seam; sidebar_unpinned is what
++  // maps to Zenmium's compact sidebar.
++  registry->RegisterBooleanPref(prefs::kHeliumZenMode, true);
+   registry->RegisterBooleanPref(prefs::kHeliumZenModeSidebarPinned, false);
+-  registry->RegisterBooleanPref(prefs::kHeliumZenModeTopChromePinned, false);
++  registry->RegisterBooleanPref(prefs::kHeliumZenModeTopChromePinned, true);
+ 
+   registry->RegisterBooleanPref(prefs::kVerticalTabsCollapsedState, false);
+   registry->RegisterIntegerPref(prefs::kVerticalTabsUncollapsedWidth,

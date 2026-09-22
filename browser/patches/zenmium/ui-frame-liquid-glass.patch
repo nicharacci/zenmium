@@ -1,0 +1,47 @@
+--- a/chrome/browser/ui/ui_features.cc
++++ b/chrome/browser/ui/ui_features.cc
+@@ -42,7 +42,10 @@ bool HeliumUseCompactLocationWidth() {
+   return base::FeatureList::IsEnabled(kHeliumCompactLocationWidth);
+ }
+ 
+-BASE_FEATURE(kHeliumNativeFrameMaterials, base::FEATURE_DISABLED_BY_DEFAULT);
++// Zenmium liquid-glass frame: the native material seam stays on. The flat
++// tint over the vibrancy layer is what gives the glass its flat look, per
++// docs/zenmium/DESIGN_SYSTEM.md (no glow, no gradient, single flat tint).
++BASE_FEATURE(kHeliumNativeFrameMaterials, base::FEATURE_ENABLED_BY_DEFAULT);
+ 
+ bool HeliumNativeFrameAvailable() {
+ #if BUILDFLAG(IS_MAC)
+--- a/chrome/browser/ui/browser_ui_prefs.cc
++++ b/chrome/browser/ui/browser_ui_prefs.cc
+@@ -133,7 +133,7 @@ void RegisterBrowserUserPrefs(user_prefs
+ 
+   registry->RegisterBooleanPref(prefs::kHeliumRoundedFrame, true);
+ 
+-  registry->RegisterBooleanPref(prefs::kHeliumNativeFrameMaterials, false);
++  registry->RegisterBooleanPref(prefs::kHeliumNativeFrameMaterials, true);
+ 
+   registry->RegisterBooleanPref(prefs::kHeliumCenteredLocationBar, false);
+ 
+--- a/chrome/browser/ui/views/helium/native_frame_materials_mac.mm
++++ b/chrome/browser/ui/views/helium/native_frame_materials_mac.mm
+@@ -300,6 +300,6 @@ namespace {
+ 
+ // Low-alpha black or white overlay applied before the browser theme tint.
+-constexpr CGFloat kFrameMaterialNeutralOverlayAlpha = 0.2;
++constexpr CGFloat kFrameMaterialNeutralOverlayAlpha = 0.12;
+ 
+ // Menu material is slightly brighter and more translucent in light mode,
+ // so we use it for the light theme instead of Sidebar.
+@@ -311,8 +311,10 @@ NSVisualEffectMaterial GetFrameMaterial(
+ 
+ // Light material needs a stronger theme tint than dark material to avoid
+ // looking washed out.
++// Zenmium liquid glass is a near-flat tint (canon shell alpha .88/.90),
++// keeping the vibrancy layer mostly hidden behind the theme color.
+ CGFloat GetFrameMaterialThemeTintOverlayAlpha(bool is_dark) {
+-  return is_dark ? 0.55 : 0.8;
++  return is_dark ? 0.88 : 0.9;
+ }
+ 
+ NSColor* GetFrameMaterialNeutralOverlayColor(bool is_dark) {

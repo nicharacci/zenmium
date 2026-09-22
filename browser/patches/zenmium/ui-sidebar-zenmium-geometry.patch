@@ -1,0 +1,64 @@
+--- a/chrome/browser/ui/layout_constants.cc
++++ b/chrome/browser/ui/layout_constants.cc
+@@ -153,8 +153,11 @@ int GetLayoutConstant(LayoutConstant con
+     case LayoutConstant::kVerticalTabHeight:
+-      return 30;
++      // Zenmium tab row: 36px target height (ZEN_SIDEBAR_SPEC tokens).
++      return 36;
+     case LayoutConstant::kVerticalTabPinnedHeight:
+-      return 30;
++      // Essentials rows match tab rows (canon essentials live here).
++      return 36;
+     case LayoutConstant::kVerticalTabMinWidth:
+-      return 30;
++      // Zenmium collapsed content column is 48px inside the 60px rail.
++      return 48;
+     case LayoutConstant::kVerticalTabStripHorizontalPadding:
+       return 6;
+--- a/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h
++++ b/chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h
+@@ -62,7 +62,7 @@ class VerticalTabStripRegionView final
+   // TODO(crbug.com/465832180): Replace constant based width final max width for
+   // view.
+   static constexpr int kUncollapsedMaxWidth = 400;
+-  static constexpr int kCollapsedWidth = 42;
++  static constexpr int kCollapsedWidth = 60;
+   // TODO(crbug.com/465833741): Determine snapping behavior.
+   static constexpr int kCollapseSnapWidth =
+       (kUncollapsedMinWidth + kCollapsedWidth) / 2;
+--- a/chrome/browser/ui/tabs/vertical_tab_strip_state.h
++++ b/chrome/browser/ui/tabs/vertical_tab_strip_state.h
+@@ -7,7 +7,8 @@
+ 
+ namespace tabs {
+ 
+-inline constexpr int kVerticalTabStripDefaultUncollapsedWidth = 200;
++// Zenmium expanded sidebar default: 230px (ZEN_SIDEBAR_SPEC).
++inline constexpr int kVerticalTabStripDefaultUncollapsedWidth = 230;
+ 
+ // Per-window state for the vertical tab strip.
+ struct VerticalTabStripState {
+--- a/chrome/browser/ui/views/frame/multi_contents_view.h
++++ b/chrome/browser/ui/views/frame/multi_contents_view.h
+@@ -63,7 +63,8 @@ class MultiContentsView
+     int end = 0;
+   };
+ 
+-  static constexpr int kSplitViewContentInset = 3;
++  // Zenmium content card gutter: 8px around the webview.
++  static constexpr int kSplitViewContentInset = 8;
+ 
+   MultiContentsView(BrowserView* browser_view,
+                     std::unique_ptr<MultiContentsViewDelegate> delegate);
+--- a/chrome/browser/ui/views/helium/frame_corner_radius.cc
++++ b/chrome/browser/ui/views/helium/frame_corner_radius.cc
+@@ -15,7 +15,8 @@
+ #include "chrome/browser/ui/layout_constants.h"
+ 
+ int GetGenericFrameRadius() {
+-  return 8;
++  // Zenmium content card corner radius: ~10.4px canon -> 10 DIP.
++  return 10;
+ }
+ 
+ #if !BUILDFLAG(IS_MAC)

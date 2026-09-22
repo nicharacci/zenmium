@@ -370,3 +370,8 @@ helium/ui/exclusive-access-bubble.patch
 zenmium/identity-branding.patch
 zenmium/identity-icons.patch
 zenmium/identity-protocol.patch
+zenmium/ui-frame-liquid-glass.patch
+zenmium/ui-onboarding-remove.patch
+zenmium/ui-sidebar-zenmium-defaults.patch
+zenmium/ui-sidebar-zenmium-geometry.patch
+zenmium/ui-theme-zenmium-tokens.patch

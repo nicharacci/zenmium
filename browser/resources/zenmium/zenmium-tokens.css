@@ -1,0 +1,57 @@
+/*
+ * Zenmium chrome token reference (docs/zenmium canon).
+ *
+ * This file is documentation, not a build input. It records the canon
+ * values that ui-theme-zenmium-tokens.patch maps into the Chromium
+ * color pipeline (ui/color/ref_color_mixer.cc) so future Zenmium-owned
+ * WebUI surfaces can reference the same numbers without re-deriving them
+ * from the Electron lane's tailwind.css / zen-shell.css.
+ *
+ * Law (docs/zenmium/DESIGN_SYSTEM.md): flat colors, no gradients, no
+ * glow, no blur. Radius scale: tab 8px, content card ~10.4px, sidebar
+ * toolbox 14px, base 0.625rem (10px).
+ */
+
+:root {
+  /* Workspace accent (primary). */
+  --zen-primary: #6ee7a8;          /* dark-mode anchor = Primary80 */
+  --zen-primary-rgb: 110, 231, 168;
+  --zen-primary-strong: #2cb16a;   /* light-mode anchor = Primary60-ish */
+  --zen-primary-strong-rgb: 44, 177, 106;
+  --zen-ring: rgba(110, 231, 168, 0.5);
+
+  /* Dark mode (charcoal ramp). */
+  --zen-dark-bg: #101214;          /* Neutral6  */
+  --zen-dark-card: #16191c;        /* Neutral10 */
+  --zen-dark-fg: #e7e9ec;          /* Neutral95 */
+  --zen-dark-muted-fg: #8b9198;
+  --zen-dark-muted: rgba(255, 255, 255, 0.07);
+  --zen-dark-accent: rgba(255, 255, 255, 0.12);
+  --zen-dark-border: rgba(255, 255, 255, 0.1);
+  --zen-dark-shell: rgba(24, 28, 30, 0.88);      /* glass frame tint */
+  --zen-dark-glass: rgba(32, 36, 38, 0.84);      /* glass surface tint */
+  --zen-dark-highlight: rgba(255, 255, 255, 0.06);
+  --zen-dark-edge: rgba(255, 255, 255, 0.1);
+
+  /* Light mode (warm neutral ramp). */
+  --zen-light-bg: #eeefed;         /* Neutral92 */
+  --zen-light-card: #fafbf9;       /* Neutral98 */
+  --zen-light-fg: #272927;         /* Neutral10 */
+  --zen-light-muted-fg: #6a706a;
+  --zen-light-border: rgba(0, 0, 0, 0.13);
+  --zen-light-shell: rgba(226, 232, 229, 0.88);
+  --zen-light-glass: rgba(242, 246, 243, 0.84);
+  --zen-light-edge: rgba(255, 255, 255, 0.6);
+
+  /* Sidebar geometry (ZEN_SIDEBAR_SPEC). */
+  --zen-sidebar-expanded: 230px;
+  --zen-sidebar-collapsed-content: 48px; /* inside the 60px rail */
+  --zen-sidebar-rail: 60px;
+  --zen-sidebar-toolbox-padding: 6px;
+  --zen-sidebar-radius: 14px;
+  --zen-tab-radius: 8px;
+  --zen-tab-height: 36px;
+  --zen-tab-separation: 8px;
+  --zen-content-radius: 10.4px;    /* -> 10 DIP in frame_corner_radius.cc */
+  --zen-content-gutter: 8px;       /* kSplitViewContentInset */
+}

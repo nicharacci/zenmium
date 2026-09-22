@@ -1,0 +1,4 @@
+# Zenmium resource manifest for utils/replace_resources.py.
+# Format (same as helium_resources.txt): <source under this dir> <dest under chromium src/>
+# Empty: no Zenmium-owned WebUI surfaces exist yet (helium-onboarding
+# removed in T2; Zenmium WebUI assets arrive with T3).

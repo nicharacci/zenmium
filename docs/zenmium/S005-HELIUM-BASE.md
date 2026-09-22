@@ -101,7 +101,8 @@ opening anything on main.
 
 - Service endpoints (`services.helium.imput.net`, `crash.helium.computer`,
   `updates.helium.computer`, Sparkle/WinSparkle wiring) - T4 scope; untouched.
-- `helium/hop/` and `onboarding-page.patch` still build - removal/rewire is T2.
+- `helium/hop/` still builds - it is a policy provider, not the greeting.
+  `onboarding-page.patch` is unwound by T2 (`ui-onboarding-remove.patch`).
 - Real code signing + notarization - deferred to the release gate; CI ships
   ad-hoc.
 - Upstream staged/resume CI choreography - T1 ships a single-job lane;
@@ -113,3 +114,70 @@ Patch context lines were verified against upstream patch output (the
 post-helium tree), not against a real Chromium checkout - that tree only
 exists after the ~100 GB source fetch, so first proof is the dry-run gate in
 CI itself.
+
+## T2 - Zenmium chrome UI
+
+Five `ui-*.patch` files under `browser/patches/zenmium/` (entries + seam notes
+in `browser/patches/zenmium/SERIES.md`) plus `browser/resources/zenmium/`
+(manifest + canon token reference; no assets copied yet).
+
+### Seam map
+
+| Zenmium surface | Helium seam it rides |
+|---|---|
+| Sidebar (vertical tabs) | `helium.browser.layout` pref -> `kVertical` is the shipping default; upstream `VerticalTabStripRegionView` + `vertical_tab_strip_bottom_container` provide top buttons, tabs, foot buttons in spec order |
+| Compact mode | Helium zen-mode auto-hide: `kHeliumZenMode=true`, `ZenModeSidebarPinned=false` (sidebar floats off-canvas, edge reveal), `ZenModeTopChromePinned=true` (toolbar stays). Operator config: compact ships ON at first launch |
+| Liquid-glass frame | `kHeliumNativeFrameMaterials` enabled by default (feature flag + `helium.browser.native_frame_materials` pref); flat-tint law via overlay alphas so vibrancy stays behind a near-flat theme tint (macOS). Windows/Linux frames are theme-token driven, no material API needed |
+| Zenmium palette | `ref_color_mixer.cc` baseline palette: Primary ramp = workspace green (#6ee7a8 at Primary80), Neutral/NeutralVariant overridden for both modes (charcoal dark #101214/#16191c/#e7e9ec, warm-neutral light #eeefed/#fafbf9/#272927). Accent vars (`--helium-blue`, `google-blue-*`, `kGoogleBlue*`, theme-picker baselines) -> green; internal names stay upstream |
+| Sidebar geometry | expanded 230px, collapsed rail 60px (48 content + 2x6 padding), row height 36, tab min width 48, content card gutter 8, card radius 10 |
+| Greeting animation | dead: `ui-onboarding-remove.patch` unwinds chrome://setup end to end; first launch lands in the browser window |
+
+### Parity notes (Electron lane -> Helium lane)
+
+- Compact mode: Electron compact = fixed off-canvas sidebar, hover reveal
+  0.25s/0.15s, edge zones. Helium zen-mode = 6px edge trigger, 200ms reveal
+  slide, 3000ms/150ms exit grace, FAST_OUT_SLOW_IN_3. Reduced motion: zen-mode
+  animates via `gfx::Animation::RichAnimationDuration`, which honors
+  `PrefersReducedMotion()` -> reduced-motion behavior preserved by the seam,
+  no Zenmium code needed.
+- Keyboard: Helium ships `kVerticalCollapseShortcut` (sidebar collapse
+  toggle) + `IDC_BROWSER_LAYOUT_*` commands; spec's keyboard parity is
+  satisfied by the native command layer (remap lives in settings, not
+  patches).
+- Url bar: Zenmium rides the native omnibox. `kHeliumCenteredLocationBar`
+  pref + `kHeliumCompactLocationWidth` stay user-facing Helium options;
+  colors come from the token ramp (location-bar bg already translucent
+  pearl, alpha 0xCC dark / theme tint).
+- Zenmium right click: Electron `CHROME_IPC {kind:"tab-menu"}` custom menu
+  -> Chromium native tab context menu plus Helium's `IDC_BROWSER_LAYOUT_MENU`
+  layout submenu (classic/compact/vertical/vertical-right/dynamic). No
+  custom menu code ported; parity = native menu + layout submenu.
+- Workspaces / essentials / folders: approximated by native tab groups,
+  pinned tab section, and the upstream bottom container respectively - no
+  custom layout surgery in T2; true DOM-order parity (top buttons ->
+  nav-bar -> titlebar grid -> tabs -> foot buttons) is already what the
+  upstream vertical strip renders.
+- Frameless mode stays a user-facing Helium option (unchanged).
+
+### GoalpostOnboarding death record
+
+Electron `GoalpostOnboarding` (first-run greeting, profile-name + extension
+pickers) has no counterpart on the Helium lane: `ui-onboarding-remove.patch`
+deletes the four onboarding WebUI files and unwires every seam; Helium's
+`chrome://setup` host, pak, resource ids, settings pending-notice and
+strings are gone. The Electron file remains in `desktop/**` (frozen lane)
+but is dead product. Residue: `deps.ini [onboarding]` may still download the
+`components/helium_onboarding` tarball at fetch time - inert files, no GN
+target references them; removing the dep entry is a fetch-hygiene nit left
+for unification (deps.ini is a vendored non-src file, outside patch reach).
+
+### Proof status (T2)
+
+Patch syntax verified locally: every `ui-*.patch` passes `git apply --stat`,
+and every `-`/context anchor was mechanically checked against the post-helium
+patch output for the touched file. `git apply --check --directory=src` and
+the screenshot gate (1440x900 + 1280x800, light/dark, compact on/off) need a
+real Chromium tree + build - first proof is the CI dry-run gate, then a
+built artifact; any local launch smoke runs on the DELL P2422H per the local
+verification surface rule. `desktop/scripts/verify-side-monitor.mjs` was not
+run: no launch verification happened this session.

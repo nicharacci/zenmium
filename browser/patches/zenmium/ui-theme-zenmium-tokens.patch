@@ -1,0 +1,241 @@
+--- a/ui/color/ref_color_mixer.cc
++++ b/ui/color/ref_color_mixer.cc
+@@ -30,17 +30,17 @@ void AddBaselinePalette(ColorProvider* p
+   ColorMixer& mixer = provider->AddMixer();
+   mixer[kColorRefPrimary0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
+-  mixer[kColorRefPrimary10] = {SkColorSetRGB(0x00, 0x11, 0x59)};
+-  mixer[kColorRefPrimary20] = {SkColorSetRGB(0x00, 0x21, 0x8D)};
+-  mixer[kColorRefPrimary25] = {SkColorSetRGB(0x00, 0x29, 0xA8)};
+-  mixer[kColorRefPrimary30] = {SkColorSetRGB(0x12, 0x35, 0xBA)};
+-  mixer[kColorRefPrimary40] = {SkColorSetRGB(0x35, 0x51, 0xD2)};
+-  mixer[kColorRefPrimary50] = {SkColorSetRGB(0x51, 0x6B, 0xEC)};
+-  mixer[kColorRefPrimary60] = {SkColorSetRGB(0x70, 0x87, 0xFF)};
+-  mixer[kColorRefPrimary70] = {SkColorSetRGB(0x95, 0xA6, 0xFF)};
+-  mixer[kColorRefPrimary80] = {SkColorSetRGB(0xBA, 0xC3, 0xFF)};
+-  mixer[kColorRefPrimary90] = {SkColorSetRGB(0xDE, 0xE1, 0xFF)};
+-  mixer[kColorRefPrimary95] = {SkColorSetRGB(0xF0, 0xEF, 0xFF)};
+-  mixer[kColorRefPrimary99] = {SkColorSetRGB(0xFE, 0xFB, 0xFF)};
++  mixer[kColorRefPrimary10] = {SkColorSetRGB(0x06, 0x28, 0x1A)};
++  mixer[kColorRefPrimary20] = {SkColorSetRGB(0x0B, 0x44, 0x29)};
++  mixer[kColorRefPrimary25] = {SkColorSetRGB(0x0D, 0x55, 0x33)};
++  mixer[kColorRefPrimary30] = {SkColorSetRGB(0x0F, 0x68, 0x3D)};
++  mixer[kColorRefPrimary40] = {SkColorSetRGB(0x12, 0x91, 0x4F)};
++  mixer[kColorRefPrimary50] = {SkColorSetRGB(0x1A, 0xA0, 0x5C)};
++  mixer[kColorRefPrimary60] = {SkColorSetRGB(0x33, 0xB4, 0x74)};
++  mixer[kColorRefPrimary70] = {SkColorSetRGB(0x54, 0xD1, 0x8F)};
++  mixer[kColorRefPrimary80] = {SkColorSetRGB(0x6E, 0xE7, 0xA8)};
++  mixer[kColorRefPrimary90] = {SkColorSetRGB(0xB8, 0xF3, 0xD5)};
++  mixer[kColorRefPrimary95] = {SkColorSetRGB(0xD5, 0xF9, 0xE7)};
++  mixer[kColorRefPrimary99] = {SkColorSetRGB(0xEF, 0xFF, 0xF7)};
+   mixer[kColorRefPrimary100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+ 
+   mixer[kColorRefSecondary0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
+@@ -189,5 +189,91 @@ void AddBaselinePalette(ColorProvider* p
+     mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xEF, 0xF0, 0xFC)};
+     mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFE, 0xFB, 0xFF)};
+     mixer[kColorRefNeutralVariant100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
+-  }
+-}
++  }
++
++  // Zenmium chrome palette. Dark mode is the charcoal ramp (shell
++  // #101214, card #16191c, foreground #e7e9ec); light mode is the warm
++  // neutral ramp (shell #eeefed, card #fafbf9, foreground #272927).
++  // Canon: docs/zenmium/DESIGN_SYSTEM.md and the frozen Electron lane's
++  // zen-shell.css. NeutralVariant keeps a faint cool bias in dark mode and
++  // a faint warm bias in light mode, mirroring the Electron values.
++  if (color_mode == ui::ColorProviderKey::ColorMode::kDark) {
++    mixer[kColorRefNeutral4] = {SkColorSetRGB(0x0D, 0x0E, 0x0F)};
++    mixer[kColorRefNeutral6] = {SkColorSetRGB(0x10, 0x12, 0x14)};
++    mixer[kColorRefNeutral8] = {SkColorSetRGB(0x14, 0x16, 0x18)};
++    mixer[kColorRefNeutral10] = {SkColorSetRGB(0x16, 0x19, 0x1C)};
++    mixer[kColorRefNeutral12] = {SkColorSetRGB(0x1A, 0x1D, 0x1F)};
++    mixer[kColorRefNeutral15] = {SkColorSetRGB(0x1E, 0x21, 0x23)};
++    mixer[kColorRefNeutral17] = {SkColorSetRGB(0x22, 0x25, 0x27)};
++    mixer[kColorRefNeutral20] = {SkColorSetRGB(0x26, 0x29, 0x2B)};
++    mixer[kColorRefNeutral22] = {SkColorSetRGB(0x2A, 0x2D, 0x2F)};
++    mixer[kColorRefNeutral24] = {SkColorSetRGB(0x2E, 0x32, 0x34)};
++    mixer[kColorRefNeutral25] = {SkColorSetRGB(0x30, 0x34, 0x36)};
++    mixer[kColorRefNeutral30] = {SkColorSetRGB(0x38, 0x3B, 0x3D)};
++    mixer[kColorRefNeutral40] = {SkColorSetRGB(0x4A, 0x4D, 0x50)};
++    mixer[kColorRefNeutral50] = {SkColorSetRGB(0x61, 0x64, 0x66)};
++    mixer[kColorRefNeutral60] = {SkColorSetRGB(0x7B, 0x7E, 0x80)};
++    mixer[kColorRefNeutral70] = {SkColorSetRGB(0x94, 0x97, 0x9B)};
++    mixer[kColorRefNeutral80] = {SkColorSetRGB(0xB0, 0xB3, 0xB6)};
++    mixer[kColorRefNeutral87] = {SkColorSetRGB(0xC5, 0xC7, 0xCA)};
++    mixer[kColorRefNeutral90] = {SkColorSetRGB(0xD0, 0xD3, 0xD6)};
++    mixer[kColorRefNeutral92] = {SkColorSetRGB(0xDA, 0xDB, 0xDE)};
++    mixer[kColorRefNeutral94] = {SkColorSetRGB(0xE0, 0xE2, 0xE4)};
++    mixer[kColorRefNeutral95] = {SkColorSetRGB(0xE7, 0xE9, 0xEC)};
++    mixer[kColorRefNeutral96] = {SkColorSetRGB(0xEB, 0xED, 0xEF)};
++    mixer[kColorRefNeutral98] = {SkColorSetRGB(0xF5, 0xF6, 0xF7)};
++    mixer[kColorRefNeutral99] = {SkColorSetRGB(0xFA, 0xFB, 0xFC)};
++
++    mixer[kColorRefNeutralVariant10] = {SkColorSetRGB(0x14, 0x17, 0x1B)};
++    mixer[kColorRefNeutralVariant15] = {SkColorSetRGB(0x1E, 0x21, 0x26)};
++    mixer[kColorRefNeutralVariant20] = {SkColorSetRGB(0x26, 0x29, 0x2E)};
++    mixer[kColorRefNeutralVariant30] = {SkColorSetRGB(0x3A, 0x3D, 0x42)};
++    mixer[kColorRefNeutralVariant40] = {SkColorSetRGB(0x4D, 0x50, 0x55)};
++    mixer[kColorRefNeutralVariant50] = {SkColorSetRGB(0x66, 0x69, 0x6E)};
++    mixer[kColorRefNeutralVariant60] = {SkColorSetRGB(0x7F, 0x82, 0x87)};
++    mixer[kColorRefNeutralVariant70] = {SkColorSetRGB(0x99, 0x9C, 0x9F)};
++    mixer[kColorRefNeutralVariant80] = {SkColorSetRGB(0xB4, 0xB6, 0xBA)};
++    mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xD0, 0xD2, 0xD4)};
++    mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xDE, 0xDF, 0xE1)};
++    mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xF6, 0xF7, 0xF8)};
++  } else {
++    mixer[kColorRefNeutral4] = {SkColorSetRGB(0x17, 0x19, 0x16)};
++    mixer[kColorRefNeutral6] = {SkColorSetRGB(0x1C, 0x1E, 0x1B)};
++    mixer[kColorRefNeutral8] = {SkColorSetRGB(0x23, 0x25, 0x20)};
++    mixer[kColorRefNeutral10] = {SkColorSetRGB(0x27, 0x29, 0x27)};
++    mixer[kColorRefNeutral12] = {SkColorSetRGB(0x2D, 0x2F, 0x2B)};
++    mixer[kColorRefNeutral15] = {SkColorSetRGB(0x34, 0x36, 0x2F)};
++    mixer[kColorRefNeutral17] = {SkColorSetRGB(0x38, 0x3A, 0x34)};
++    mixer[kColorRefNeutral20] = {SkColorSetRGB(0x3E, 0x40, 0x3A)};
++    mixer[kColorRefNeutral22] = {SkColorSetRGB(0x44, 0x46, 0x3F)};
++    mixer[kColorRefNeutral24] = {SkColorSetRGB(0x4B, 0x4D, 0x45)};
++    mixer[kColorRefNeutral25] = {SkColorSetRGB(0x4E, 0x50, 0x48)};
++    mixer[kColorRefNeutral30] = {SkColorSetRGB(0x58, 0x5A, 0x51)};
++    mixer[kColorRefNeutral40] = {SkColorSetRGB(0x71, 0x74, 0x68)};
++    mixer[kColorRefNeutral50] = {SkColorSetRGB(0x8B, 0x8E, 0x80)};
++    mixer[kColorRefNeutral60] = {SkColorSetRGB(0xA5, 0xA8, 0x9B)};
++    mixer[kColorRefNeutral70] = {SkColorSetRGB(0xBF, 0xC2, 0xB6)};
++    mixer[kColorRefNeutral80] = {SkColorSetRGB(0xD9, 0xDC, 0xD0)};
++    mixer[kColorRefNeutral87] = {SkColorSetRGB(0xE6, 0xE8, 0xDD)};
++    mixer[kColorRefNeutral90] = {SkColorSetRGB(0xEC, 0xEE, 0xE4)};
++    mixer[kColorRefNeutral92] = {SkColorSetRGB(0xEE, 0xEF, 0xED)};
++    mixer[kColorRefNeutral94] = {SkColorSetRGB(0xF2, 0xF3, 0xF0)};
++    mixer[kColorRefNeutral95] = {SkColorSetRGB(0xF4, 0xF5, 0xF2)};
++    mixer[kColorRefNeutral96] = {SkColorSetRGB(0xF6, 0xF7, 0xF4)};
++    mixer[kColorRefNeutral98] = {SkColorSetRGB(0xFA, 0xFB, 0xF9)};
++    mixer[kColorRefNeutral99] = {SkColorSetRGB(0xFC, 0xFD, 0xFB)};
++
++    mixer[kColorRefNeutralVariant10] = {SkColorSetRGB(0x24, 0x26, 0x1F)};
++    mixer[kColorRefNeutralVariant15] = {SkColorSetRGB(0x2E, 0x30, 0x28)};
++    mixer[kColorRefNeutralVariant20] = {SkColorSetRGB(0x3A, 0x3C, 0x33)};
++    mixer[kColorRefNeutralVariant30] = {SkColorSetRGB(0x55, 0x57, 0x4C)};
++    mixer[kColorRefNeutralVariant40] = {SkColorSetRGB(0x6E, 0x70, 0x62)};
++    mixer[kColorRefNeutralVariant50] = {SkColorSetRGB(0x88, 0x8A, 0x79)};
++    mixer[kColorRefNeutralVariant60] = {SkColorSetRGB(0xA2, 0xA4, 0x93)};
++    mixer[kColorRefNeutralVariant70] = {SkColorSetRGB(0xBC, 0xBF, 0xAF)};
++    mixer[kColorRefNeutralVariant80] = {SkColorSetRGB(0xD8, 0xDA, 0xCB)};
++    mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xED, 0xEF, 0xE1)};
++    mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xF5, 0xF6, 0xEA)};
++    mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFB, 0xFC, 0xF6)};
++  }
++}
+--- a/ui/gfx/color_palette.h
++++ b/ui/gfx/color_palette.h
+@@ -15,16 +15,16 @@ constexpr SkColor kPlaceholderColor = SK
+ 
+ // The number refers to the shade of darkness. Each color in the MD
+ // palette ranges from 050-900.
+-constexpr SkColor kGoogleBlue050 = SkColorSetRGB(0xEE, 0xF5, 0xFF);
+-constexpr SkColor kGoogleBlue100 = SkColorSetRGB(0xE1, 0xED, 0xFF);
+-constexpr SkColor kGoogleBlue200 = SkColorSetRGB(0xCA, 0xDD, 0xFF);
+-constexpr SkColor kGoogleBlue300 = SkColorSetRGB(0xAE, 0xC9, 0xFF);
+-constexpr SkColor kGoogleBlue400 = SkColorSetRGB(0x90, 0xB1, 0xFF);
+-constexpr SkColor kGoogleBlue500 = SkColorSetRGB(0x72, 0x96, 0xFF);
+-constexpr SkColor kGoogleBlue600 = SkColorSetRGB(0x55, 0x78, 0xF4);
+-constexpr SkColor kGoogleBlue700 = SkColorSetRGB(0x3A, 0x58, 0xDA);
+-constexpr SkColor kGoogleBlue800 = SkColorSetRGB(0x24, 0x39, 0xB5);
+-constexpr SkColor kGoogleBlue900 = SkColorSetRGB(0x12, 0x1A, 0x86);
++constexpr SkColor kGoogleBlue050 = SkColorSetRGB(0xE8, 0xFA, 0xF0);
++constexpr SkColor kGoogleBlue100 = SkColorSetRGB(0xD0, 0xF4, 0xDF);
++constexpr SkColor kGoogleBlue200 = SkColorSetRGB(0xA5, 0xE9, 0xC2);
++constexpr SkColor kGoogleBlue300 = SkColorSetRGB(0x7A, 0xDE, 0xA7);
++constexpr SkColor kGoogleBlue400 = SkColorSetRGB(0x54, 0xD1, 0x8F);
++constexpr SkColor kGoogleBlue500 = SkColorSetRGB(0x33, 0xC0, 0x78);
++constexpr SkColor kGoogleBlue600 = SkColorSetRGB(0x1D, 0xA2, 0x63);
++constexpr SkColor kGoogleBlue700 = SkColorSetRGB(0x15, 0x86, 0x51);
++constexpr SkColor kGoogleBlue800 = SkColorSetRGB(0x10, 0x6B, 0x41);
++constexpr SkColor kGoogleBlue900 = SkColorSetRGB(0x0B, 0x50, 0x30);
+ 
+ constexpr SkColor kGoogleRed050 = SkColorSetRGB(0xFC, 0xE8, 0xE6);
+ constexpr SkColor kGoogleRed100 = SkColorSetRGB(0xFA, 0xD2, 0xCF);
+--- a/ui/webui/resources/cr_elements/cr_shared_vars.css
++++ b/ui/webui/resources/cr_elements/cr_shared_vars.css
+@@ -9,26 +9,27 @@
+ 
+ /* Common css variables for Material Design WebUI */
+ html {
+-  --helium-blue: #3450d1;
+-  --google-blue-50-rgb: 238, 245, 255; /* #eef5ff */
++  /* Zenmium workspace accent. Internal var names stay upstream. */
++  --helium-blue: #2cb16a;
++  --google-blue-50-rgb: 232, 250, 240; /* #e8faf0 */
+   --google-blue-50: rgb(var(--google-blue-50-rgb));
+-  --google-blue-100-rgb: 225, 237, 255; /* #e1edff */
++  --google-blue-100-rgb: 208, 244, 223; /* #d0f4df */
+   --google-blue-100: rgb(var(--google-blue-100-rgb));
+-  --google-blue-200-rgb: 202, 221, 255; /* #caddff */
++  --google-blue-200-rgb: 165, 233, 194; /* #a5e9c2 */
+   --google-blue-200: rgb(var(--google-blue-200-rgb));
+-  --google-blue-300-rgb: 174, 201, 255; /* #aec9ff */
++  --google-blue-300-rgb: 122, 222, 167; /* #7adea7 */
+   --google-blue-300: rgb(var(--google-blue-300-rgb));
+-  --google-blue-400-rgb: 144, 177, 255; /* #90b1ff */
++  --google-blue-400-rgb: 84, 209, 143; /* #54d18f */
+   --google-blue-400: rgb(var(--google-blue-400-rgb));
+-  --google-blue-500-rgb: 114, 150, 255; /* #7296ff */
++  --google-blue-500-rgb: 51, 192, 120; /* #33c078 */
+   --google-blue-500: rgb(var(--google-blue-500-rgb));
+-  --google-blue-600-rgb: 85, 120, 244; /* #5578f4 */
++  --google-blue-600-rgb: 29, 162, 99; /* #1da263 */
+   --google-blue-600: rgb(var(--google-blue-600-rgb));
+-  --google-blue-700-rgb: 58, 88, 218; /* #3a58da */
++  --google-blue-700-rgb: 21, 134, 81; /* #158651 */
+   --google-blue-700: rgb(var(--google-blue-700-rgb));
+-  --google-blue-800-rgb: 36, 57, 181; /* #2439b5 */
++  --google-blue-800-rgb: 16, 107, 65; /* #106b41 */
+   --google-blue-800: rgb(var(--google-blue-800-rgb));
+-  --google-blue-900-rgb: 18, 26, 134; /* #121a86 */
++  --google-blue-900-rgb: 11, 80, 48; /* #0b5030 */
+   --google-blue-900: rgb(var(--google-blue-900-rgb));
+ 
+   --google-green-50-rgb: 230, 244, 234;  /* #e6f4ea */
+--- a/ui/webui/resources/cr_components/theme_color_picker/color_utils.ts
++++ b/ui/webui/resources/cr_components/theme_color_picker/color_utils.ts
+@@ -41,13 +41,13 @@ export const DARK_BASELINE_BLUE_COLOR: C
+ };
+ 
+ export const LIGHT_BASELINE_GREY_COLOR: Color = {
+-  background: {value: 0xff3551d2},
++  background: {value: 0xff2cb16a},
+   foreground: {value: 0xffe3e3e3},
+   base: {value: 0xffc7c7c7},
+ };
+ 
+ export const DARK_BASELINE_GREY_COLOR: Color = {
+-  background: {value: 0xffbac3ff},
++  background: {value: 0xff6ee7a8},
+   foreground: {value: 0xff474747},
+   base: {value: 0xff757575},
+ };
+--- a/components/webui/flags/resources/app.css
++++ b/components/webui/flags/resources/app.css
+@@ -18,17 +18,17 @@
+   --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+   --shadow-color: rgba(0, 0, 0, 0.1);
+ 
+-  --helium-blue: #3450d1;
+-
+-  --google-blue-300-rgb: 174, 201, 255; /* #aec9ff */
++  --helium-blue: #2cb16a;
++
++  --google-blue-300-rgb: 122, 222, 167; /* #7adea7 */
+   --google-blue-300: rgb(var(--google-blue-300-rgb));
+-  --google-blue-400-rgb: 144, 177, 255; /* #90b1ff */
++  --google-blue-400-rgb: 84, 209, 143; /* #54d18f */
+   --google-blue-400: rgb(var(--google-blue-400-rgb));
+-  --google-blue-500-rgb: 114, 150, 255; /* #7296ff */
++  --google-blue-500-rgb: 51, 192, 120; /* #33c078 */
+   --google-blue-500: rgb(var(--google-blue-500-rgb));
+-  --google-blue-600-rgb: 85, 120, 244; /* #5578f4 */
++  --google-blue-600-rgb: 29, 162, 99; /* #1da263 */
+   --google-blue-600: rgb(var(--google-blue-600-rgb));
+-  --google-blue-700-rgb: 58, 88, 218; /* #3a58da */
++  --google-blue-700-rgb: 21, 134, 81; /* #158651 */
+   --google-blue-700: rgb(var(--google-blue-700-rgb));
+ 
+   --google-grey-100: rgb(241, 243, 244);
