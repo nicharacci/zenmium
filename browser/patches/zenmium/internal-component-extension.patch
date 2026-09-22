@@ -23,7 +23,7 @@ new file mode 100644
 index 0000000..2222222
 --- /dev/null
 +++ b/third_party/zenmium_internal/BUILD.gn
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,45 @@
 +import("//ui/webui/resources/tools/generate_grd.gni")
 +import("//tools/grit/grit_rule.gni")
 +
@@ -67,6 +67,8 @@ index 0000000..2222222
 +        "grit/zenmium_internal_resources_map.h",
 +        "zenmium_internal_resources.pak"
 +    ]
++
++    deps = [":zenmium_internal_grd"]
 +}
 diff --git a/third_party/zenmium_internal/generate_file_list.py b/third_party/zenmium_internal/generate_file_list.py
 new file mode 100644
