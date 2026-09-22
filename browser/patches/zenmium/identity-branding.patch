@@ -27,6 +27,6 @@
    CHECK(product_info);
 -  product_info->product_name = "Helium";
 +  product_info->product_name = "Zenmium";
-   product_info->version = UpdaterVersion();
+   product_info->version = version_info::GetHeliumVersionNumber();
    product_info->channel =
        chrome::GetChannelName(chrome::WithExtendedStable(true));
