@@ -1,0 +1,46 @@
+# zenmium-svc-push: minipush autopush websocket endpoint (upstream svc/minipush).
+# Public: the browser connects over wss via the Fly edge.
+
+app = "zenmium-svc-push"
+primary_region = "iad"
+
+[build]
+  context = "../../../svc/minipush"
+
+[env]
+  # Required on Fly: upstream defaults to 127.0.0.1 loopback.
+  MINIPUSH_BIND_HOSTNAME = "0.0.0.0"
+  MINIPUSH_PORT = "10001"
+  MINIPUSH_BASE_URL = "wss://zenmium-svc-push.fly.dev/"
+  # MINIPUSH_HMAC_SECRET and MINIPUSH_ENDPOINT_SECRET are required;
+  # set via `fly secrets set` (see env-manifest.md).
+  # Optional knobs: MINIPUSH_MAX_TTL_SECONDS, MINIPUSH_MAX_QUEUED_PER_CHANNEL,
+  # MINIPUSH_RATE_LIMIT_WINDOW, MINIPUSH_RATE_LIMIT.
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 10001
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.checks]]
+    type = "http"
+    port = 10001
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthcheck"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

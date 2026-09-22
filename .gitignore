@@ -13,3 +13,6 @@ dist
 out
 .DS_Store
 *.tsbuildinfo
+
+# services/vendor/ holds vendored upstream service repos (S005/T4) and must be tracked
+!services/vendor/

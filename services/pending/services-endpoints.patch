@@ -1,0 +1,68 @@
+# S005/T4 zenmium services-endpoints: repoint every services/updater/crash URL
+# from imput/helium hosts to the Solvys Fly lane. Applies on top of the helium
+# patch group (services-prefs.patch, add-updater-preference.patch,
+# crash-reporting-prefs.patch, proxy-extension-downloads.patch all introduce
+# the constants edited here). Hostnames are the Fly defaults; swap them for the
+# final hostname when the TP DNS gate lands. Staged via services/pending/
+# because browser/ is T1's tree and does not exist on this checkout yet.
+
+--- a/components/helium_services/helium_services_helpers.h
++++ b/components/helium_services/helium_services_helpers.h
+@@ -12,7 +12,7 @@
+ namespace helium {
+ 
+ const char kHeliumDefaultOrigin[] =
+-    "https://services.helium.imput.net";
++    "https://zenmium-services.fly.dev";
+ 
+ const char kHeliumDummyOrigin[] =
+     "https://helium-services-are-disabled.qjz9zk";
+
+--- a/chrome/browser/resources/settings/privacy_page/services_page.html
++++ b/chrome/browser/resources/settings/privacy_page/services_page.html
+@@ -75,7 +75,7 @@
+     </div>
+     <cr-input
+         id="heliumOriginOverride"
+-        placeholder="https://services.helium.imput.net"
++        placeholder="https://zenmium-services.fly.dev"
+         value="[[prefs.helium.services.origin_override.value]]"
+         pattern="https://.*"
+         on-keydown="onOriginOverrideKeydown_"
+
+--- a/components/helium_services/helium_services_helpers.cc
++++ b/components/helium_services/helium_services_helpers.cc
+@@ -30,7 +30,7 @@
+ #define UPDATES_SUPPORTED
+ #endif
+ 
+ #if defined(UPDATES_SUPPORTED)
+-constexpr std::string_view kUpdateBaseUrl = "https://updates.helium.computer/";
++constexpr std::string_view kUpdateBaseUrl = "https://zenmium-updates.fly.dev/";
+ constexpr const char kUpdatePath[] =
+ #if BUILDFLAG(IS_MAC)
+     "mac/appcast-" CPU_ARCH_STR ".xml";
+
+--- a/components/crash/core/app/crash_reporter_client.cc
++++ b/components/crash/core/app/crash_reporter_client.cc
+@@ -160,7 +160,7 @@
+   }
+ #endif
+ 
+ #if defined(OFFICIAL_BUILD)
+-  return "https://crash.helium.computer/crash";
++  return "https://zenmium-svc-crash.fly.dev/crash";
+ #else
+   return std::string();
+ #endif
+
+--- a/chrome/browser/extensions/updater/chrome_extension_downloader_factory.cc
++++ b/chrome/browser/extensions/updater/chrome_extension_downloader_factory.cc
+@@ -55,7 +55,7 @@
+     manifest_query_params += "&testrequest=1";
+   }
+   downloader->set_manifest_query_params(manifest_query_params);
+-  downloader->set_ping_enabled_domain("helium.computer");
++  downloader->set_ping_enabled_domain("zenmium-services.fly.dev");
+   return downloader;
+ }

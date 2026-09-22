@@ -1,6 +1,11 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/biome/core"],
+  "files": {
+    // services/ is vendored upstream code (S005/T4) plus deploy-only config;
+    // keep it byte-identical to upstream and out of the repo lint surface.
+    "includes": ["!services"]
+  },
   "linter": {
     "rules": {
       "style": {

@@ -1,0 +1,51 @@
+# zenmium-updates: Sparkle/WinSparkle appcast feed (upstream util/sparkler
+# daemon + a Zenmium-owned static file server, two processes on one machine).
+# Public: browser update checks fetch /appcast-<arch>.xml over the Fly edge.
+
+app = "zenmium-updates"
+primary_region = "iad"
+
+[build]
+  context = "../../.."
+  dockerfile = "deploy/fly/updates/Dockerfile"
+
+[processes]
+  web = "deno run -A serve.ts"
+  worker = "deno run -A main.ts"
+
+[env]
+  APPCAST_PUBLIC_DIR = "/srv/appcasts"
+  ASSETS_DIR = "/srv/assets"
+  # Repo whose releases sparkler turns into appcast entries (T3 output).
+  # GITHUB_REPO = "nicharacci/zenmium-macos"   # set when the releases repo exists
+  # ED_PRIVATE_KEY: base64 Ed25519 private key for appcast signatures (secret).
+  # GITHUB_ACCESS_TOKEN: optional, raises API rate limits (secret).
+  # SERVE_ASSETS_LOCALLY = "yes"  # also mirror release binaries under /assets/
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["web"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8080
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

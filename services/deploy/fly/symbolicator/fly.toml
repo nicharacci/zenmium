@@ -1,0 +1,29 @@
+# zenmium-svc-symbolicator: getsentry/symbolicator sidecar for minidumpster.
+# Internal-only: reachable as zenmium-svc-symbolicator.internal:3021.
+# Upstream compose pins getsentry/symbolicator:latest; pin a digest before
+# production use (see DEPLOY.md).
+
+app = "zenmium-svc-symbolicator"
+primary_region = "iad"
+
+[build]
+  image = "getsentry/symbolicator:latest"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3021
+  processes = ["app"]
+
+  [[services.checks]]
+    type = "http"
+    port = 3021
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthcheck"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

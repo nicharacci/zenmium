@@ -1,0 +1,35 @@
+# zenmium-svc-ext: extension install/update proxy (upstream svc/extension-proxy).
+# Internal-only: no exposed ports; reachable on the Fly private network as
+# zenmium-svc-ext.internal:8000 from the edge app.
+
+app = "zenmium-svc-ext"
+primary_region = "iad"
+
+[build]
+  context = "../../../svc/extension-proxy"
+
+[env]
+  # Public base URL this app's proxied CRX URLs are signed for (the edge host).
+  # PROXY_BASE_URL and HMAC_SECRET are required for CRX proxying; without them
+  # the app still serves /com (Omaha passthrough) but logs an error.
+  PROXY_BASE_URL = "https://zenmium-services.fly.dev/ext/"
+  # HMAC_SECRET: >=32 chars, set via `fly secrets set` (see env-manifest.md).
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8000
+  processes = ["app"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8000
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/?response=redirect&x=id%3Daeblfdkhhhdcdjpifhhbdiojplfjncoa%26uc"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

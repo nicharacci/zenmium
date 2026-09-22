@@ -1,0 +1,9 @@
+{
+    "tasks": {
+        "start": "deno run --allow-net --allow-env --allow-read main.ts",
+        "check": "deno run --allow-net --allow-env check.ts"
+    },
+    "imports": {
+        "@imput/cup2": "../../../vendor/cup2/mod.ts"
+    }
+}

@@ -1,0 +1,39 @@
+# zenmium-svc-ubo: uBO filter-list mirror (upstream svc/ubo).
+# Internal-only: reachable as zenmium-svc-ubo.internal:8000 from the edge app.
+
+app = "zenmium-svc-ubo"
+primary_region = "iad"
+
+[build]
+  context = "../../../svc/ubo"
+
+[env]
+  # Public base URL used to rewrite every list's contentURL in assets.json.
+  # Must be the /ubo/ prefix on the public edge host.
+  UBO_PROXY_BASE_URL = "https://zenmium-services.fly.dev/ubo/"
+  # Optional overrides (see env-manifest.md):
+  # UBO_ASSETS_JSON_URL      custom assets.json manifest source
+  # UBO_ASSETS_JSON_SHA256   expected checksum for that manifest
+  # UBO_USE_ORIGINAL_UBLOCK_ASSETS  set to bypass the helium assets catalog
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8000
+  processes = ["app"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8000
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/assets.json"
+    protocol = "http"
+    # The service only answers brotli-encoded requests (same as its Dockerfile
+    # HEALTHCHECK's curl --compressed).
+    headers = { "Accept-Encoding" = "br" }
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

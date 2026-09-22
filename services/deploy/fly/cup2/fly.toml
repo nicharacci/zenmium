@@ -1,0 +1,47 @@
+# zenmium-svc-cup2: Omaha-style update endpoint with CUP-ECDSA response
+# signatures (Zenmium-owned edge wrapping vendored @imput/cup2).
+# Public. Stays dormant until T1's tree wires a signed component-update feed.
+
+app = "zenmium-svc-cup2"
+primary_region = "iad"
+
+[build]
+  context = "../../.."
+  dockerfile = "deploy/fly/cup2/Dockerfile"
+
+[env]
+  PORT = "8080"
+  CUP2_KEY_ID = "1"
+  # UPDATE_MANIFEST_JSON: inline JSON map of appid -> {version, codebase,
+  # hash_sha256, size} served to update clients.
+  # UPDATE_MANIFEST_JSON = '{"zenmium":{"version":"0.0.0","codebase":"","hash_sha256":"","size":0}}'
+  # CUP2_PRIVATE_KEY_PKCS8_B64: base64 PKCS8 ECDSA P-256 private key (secret).
+  # Generate: deno eval 'const k=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},true,["sign"]); console.log(btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey("pkcs8",k.privateKey)))))'
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8080
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
