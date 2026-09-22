@@ -30,12 +30,10 @@
    mixer[kColorRefPrimary100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
  
    mixer[kColorRefSecondary0] = {SkColorSetRGB(0x00, 0x00, 0x00)};
-@@ -189,5 +189,91 @@ void AddBaselinePalette(ColorProvider* p
+@@ -177,6 +177,92 @@
      mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xEF, 0xF0, 0xFC)};
      mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFE, 0xFB, 0xFF)};
      mixer[kColorRefNeutralVariant100] = {SkColorSetRGB(0xFF, 0xFF, 0xFF)};
--  }
--}
 +  }
 +
 +  // Zenmium chrome palette. Dark mode is the charcoal ramp (shell
@@ -122,8 +120,9 @@
 +    mixer[kColorRefNeutralVariant90] = {SkColorSetRGB(0xED, 0xEF, 0xE1)};
 +    mixer[kColorRefNeutralVariant95] = {SkColorSetRGB(0xF5, 0xF6, 0xEA)};
 +    mixer[kColorRefNeutralVariant99] = {SkColorSetRGB(0xFB, 0xFC, 0xF6)};
-+  }
-+}
+   }
+ }
+ 
 --- a/ui/gfx/color_palette.h
 +++ b/ui/gfx/color_palette.h
 @@ -15,16 +15,16 @@ constexpr SkColor kPlaceholderColor = SK

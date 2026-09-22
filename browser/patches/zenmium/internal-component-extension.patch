@@ -203,10 +203,11 @@ diff --git a/chrome/browser/extensions/component_loader.h b/chrome/browser/exten
 index 0000000..9999999
 --- a/chrome/browser/extensions/component_loader.h
 +++ b/chrome/browser/extensions/component_loader.h
-@@ -224,6 +224,7 @@ class ComponentLoader : public KeyedServ
+@@ -224,7 +224,8 @@ class ComponentLoader : public KeyedServ
                                   const std::string& description_string);
    void AddWebStoreApp();
    void AddUBlock();
+   void AddExtstoreFixups();
 +  void AddZenmiumInternal();
  
  #if BUILDFLAG(IS_CHROMEOS)
@@ -235,10 +236,11 @@ index 0000000..aaaaaaa
  #if BUILDFLAG(IS_CHROMEOS)
  void ComponentLoader::AddChromeApp() {
    AddWithNameAndDescription(
-@@ -557,6 +563,7 @@ void ComponentLoader::AddDefaultComponen
+@@ -557,7 +563,8 @@ void ComponentLoader::AddDefaultComponen
    if (!skip_session_components) {
      AddWebStoreApp();
      AddUBlock();
+     AddExtstoreFixups();
 +    AddZenmiumInternal();
  #if BUILDFLAG(IS_CHROMEOS)
      AddChromeApp();
