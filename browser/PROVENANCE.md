@@ -9,3 +9,4 @@ Vendored clone of imputnet/helium (not a fork; free to diverge).
 - Note: upstream consumers reach this tree where platform repos expected the helium-chromium submodule (which pointed here).
 - Divergence log lives in git history + docs/zenmium/S005-HELIUM-BASE.md. Zenmium-owned patches sit under patches/zenmium/ and queue at the end of patches/series (see patches/zenmium/SERIES.md).
 - Removed at vendor time: AGENTS.md + CLAUDE.md (upstream contributor policy that forbids agent edits; inert here but would block T2/T3/T4 lanes — recorded as intentional divergence).
+- Direct-edit divergence: utils/replace_resources.py now creates parent directories for nested resource destinations (os.makedirs before copyfile). Upstream only copied flat files; the zenmium_internal extension ships pairing/ dock/ icons/ subdirs. One-line robustness fix, no behavior change for flat paths. (S005, run 35790036058)

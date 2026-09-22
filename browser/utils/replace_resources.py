@@ -31,6 +31,7 @@ def copy_resources(resource_list, resource_dir, chromium_dir):
             source = os.path.join(resource_dir, line_parts[0])
             dest = os.path.join(chromium_dir, line_parts[1])
 
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
             shutil.copyfile(source, dest)
             print(f"Copied {line_parts[0]} to {line_parts[1]}")
 
