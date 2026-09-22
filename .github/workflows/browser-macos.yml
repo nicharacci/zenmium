@@ -78,22 +78,6 @@ jobs:
           mkdir -p build/download_cache
           ./retrieve_and_unpack_resource.sh -g ${{ matrix.arch }}
 
-      - name: Dry-run every series patch (browser + platform)
-        run: |
-          set -euo pipefail
-          cd platform/macos
-          check_series() {
-            local pdir="$(cd "$1" && pwd)"  # patch -d chdirs before opening -i; -i must be absolute
-            grep -vE '^\s*(#|$)' "$pdir/series" | tr -d '\r' | while read -r rel; do
-              echo "checking $pdir/$rel"
-              patch -p1 --ignore-whitespace --dry-run --forward \
-                -i "$pdir/$rel" -d build/src --no-backup-if-mismatch \
-                || { echo "FAILED: $pdir/$rel"; exit 1; }
-            done
-          }
-          check_series helium-chromium/patches
-          check_series patches
-
       - name: Fetch toolchain + apply patches + substitutions
         run: |
           cd platform/macos
