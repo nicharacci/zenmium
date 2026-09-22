@@ -1,0 +1,59 @@
+name: Build and release binaries
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        required: false
+        description: 'Runner image name'
+        default: 'windows-2025'
+      do-release:
+        required: false
+        type: boolean
+        description: 'Create a release after build is done'
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+      fail-fast: false
+    uses: ./.github/workflows/build-steps.yml
+    secrets:
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+      AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+      AZURE_SIGNING_CERTIFICATE_NAME: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
+    with:
+      arch: ${{ matrix.arch }}
+      runs-on: ${{ inputs.runner }}
+
+  publish-release:
+    needs: build
+    if: ${{ inputs.do-release }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Get release version
+        id: version
+        shell: bash
+        run: |
+          version=$(python3 helium-chromium/utils/helium_version.py --print --tree helium-chromium --platform-tree .)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/release
+        with:
+          version: ${{ steps.version.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
