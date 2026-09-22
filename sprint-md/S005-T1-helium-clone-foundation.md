@@ -27,6 +27,8 @@ Existing workflows in this repo — `desktop.yml`, `macos-release.yml`, `windows
 
 The patchset repos are small (config + patches). The heavyweight part — depot_tools checkout of Chromium `153.0.8010.52` source, `gn gen`, `ninja` — happens only inside the CI build lane (see Execution Lane). depot_tools/gn/ninja are not installed locally; that is expected and correct.
 
+Upstream CI evidence (verified 2026-09-22): `imputnet/helium-macos` builds on GitHub Actions with `runs-on` defaulting to `macos-latest`, split into phased jobs (`building.yml`: `retrieve-resources` → `build-phase` jobs passing artifacts between them — that's how they fit a Chromium build into runner disk/time limits). Live runs visible in upstream Actions today. Reuse their phased decomposition in `browser-macos.yml` rather than inventing a monolithic job; the large-runner choice (TP-locked) buys headroom, and upstream's `macos-latest` phasing is the proven fallback if a large runner is unavailable.
+
 ## Solvys Coding-Agent Contract
 
 - Follow `SOLVYS_AGENT_SYSTEM_PROMPT.md`.
