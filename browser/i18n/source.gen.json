@@ -3,19 +3,19 @@
     "name": "IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION",
     "source": "chrome/app/settings_chromium_strings.grdp",
     "context": "Description for the memory saver mode setting",
-    "message": "Helium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Helium fast. Your inactive tabs automatically become active again when you go back to them."
+    "message": "Zenmium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Zenmium fast. Your inactive tabs automatically become active again when you go back to them."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION",
     "source": "chrome/app/settings_chromium_strings.grdp",
     "context": "Description for the energy saver mode setting",
-    "message": "Helium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates."
+    "message": "Zenmium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY",
     "source": "chrome/app/settings_chromium_strings.grdp",
     "context": "Summary for the preload pages setting",
-    "message": "Helium preloads pages which makes browsing and searching faster."
+    "message": "Zenmium preloads pages which makes browsing and searching faster."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP",
@@ -45,7 +45,7 @@
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_MESSAGE",
     "source": "chrome/app/generated_resources.grd",
     "context": "Message for the dialog shown when Full Disk Access is needed to import bookmarks from Safari.",
-    "message": "Helium needs Full Disk Access to import your Bookmarks from Safari."
+    "message": "Zenmium needs Full Disk Access to import your Bookmarks from Safari."
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_LINK",
@@ -63,7 +63,7 @@
     "name": "IDS_IMPORTED_FROM_BOOKMARK_FOLDER",
     "source": "chrome/app/generated_resources.grd",
     "context": "Name for bookmark panel folder imported from another browser",
-    "message": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>"
+    "message": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>"
   },
   {
     "name": "IDS_EXTENSIONS_IMPORTER_LOCK_TITLE",
@@ -80,25 +80,25 @@
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Name of the page which controls connectivity to Helium services",
-    "message": "Helium services"
+    "context": "Name of the page which controls connectivity to Zenmium services",
+    "message": "Zenmium services"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Description of the controls available on the Helium services settings page",
-    "message": "Manage what Helium services are allowed in your browser"
+    "context": "Description of the controls available on the Zenmium services settings page",
+    "message": "Manage what Zenmium services are allowed in your browser"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_TITLE",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Title of the alert shown when Helium services have a change in behavior",
-    "message": "Updates to Helium services:"
+    "context": "Title of the alert shown when Zenmium services have a change in behavior",
+    "message": "Updates to Zenmium services:"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Description of the alert shown when Helium services have a change in behavior",
+    "context": "Description of the alert shown when Zenmium services have a change in behavior",
     "message": "These changes are not active until you dismiss this notice."
   },
   {
@@ -110,68 +110,68 @@
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Global toggle for enabling/disabling of all Helium services",
-    "message": "Allow connecting to Helium services"
+    "context": "Global toggle for enabling/disabling of all Zenmium services",
+    "message": "Allow connecting to Zenmium services"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Description of the toggle for enabling/disabling of all Helium services",
-    "message": "When enabled, Helium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work."
+    "context": "Description of the toggle for enabling/disabling of all Zenmium services",
+    "message": "When enabled, Zenmium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Text input for overriding the Helium services server",
-    "message": "Use your own instance of Helium services"
+    "context": "Text input for overriding the Zenmium services server",
+    "message": "Use your own instance of Zenmium services"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Description of the text input for overriding the Helium services server",
-    "message": "You can host your own instance of Helium services and use it in your browser instead of the default one. HTTPS only."
+    "context": "Description of the text input for overriding the Zenmium services server",
+    "message": "You can host your own instance of Zenmium services and use it in your browser instead of the default one. HTTPS only."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION_WARNING",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Warning section of description for overriding the Helium services server",
+    "context": "Warning section of description for overriding the Zenmium services server",
     "message": "Do not use this field unless you know exactly what you are doing. Never paste URLs from other people here, they are trying to steal your data. We are not responsible for any damages caused by using a custom server and will not be able to help you."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_ARIA_LABEL",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "ARIA label of the text input for overriding the Helium services server",
-    "message": "Custom origin URL for Helium services"
+    "context": "ARIA label of the text input for overriding the Zenmium services server",
+    "message": "Custom origin URL for Zenmium services"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_INVALID_ORIGIN",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Validation error shown when the custom Helium services origin is invalid.",
+    "context": "Validation error shown when the custom Zenmium services origin is invalid.",
     "message": "Invalid origin"
   },
   {
     "name": "IDS_APPMENU_TOOLTIP_HELIUM_SERVICES_UPDATE",
     "source": "chrome/app/chromium_strings.grd",
-    "context": "The tooltip to show for the browser menu when Helium services schema changes",
-    "message": "Helium services have been updated. Please review the changes."
+    "context": "The tooltip to show for the browser menu when Zenmium services schema changes",
+    "message": "Zenmium services have been updated. Please review the changes."
   },
   {
     "name": "IDS_HELIUM_SERVICES_SCHEMA_MENU_ITEM",
     "source": "chrome/app/chromium_strings.grd",
-    "context": "Text for the bubble that notifies the user of a schema change in Helium services.",
-    "message": "Review Helium services updates"
+    "context": "Text for the bubble that notifies the user of a schema change in Zenmium services.",
+    "message": "Review Zenmium services updates"
   },
   {
     "name": "IDS_APP_MENU_BUTTON_HELIUM_SERVICES_UPDATE",
     "source": "chrome/app/generated_resources.grd",
-    "context": "Short label next to app-menu button when Helium services behavior changes.",
+    "context": "Short label next to app-menu button when Zenmium services behavior changes.",
     "message": "Services updated"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_TEXT",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description shown in services settings when user has not completed onboarding",
-    "message": "Helium services are not available until setup is complete to ensure your privacy and consent."
+    "message": "Zenmium services are not available until setup is complete to ensure your privacy and consent."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_BUTTON",
@@ -225,7 +225,7 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_EXT_PROXY_TOGGLE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the toggle for enabling/disabling of downloading and proxying extensions",
-    "message": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work."
+    "message": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE",
@@ -237,13 +237,13 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the toggle for enabling/disabling of downloading bangs",
-    "message": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work."
+    "message": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work."
   },
   {
     "name": "IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP_HELIUM",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Error message when spell dictionary download fails more than once possibly due to a network policy or configuration.",
-    "message": "Please check that Helium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Helium servers."
+    "message": "Please check that Zenmium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Zenmium servers."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE",
@@ -255,7 +255,7 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the for enabling/disabling of downloading spellcheck files",
-    "message": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work."
+    "message": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work."
   },
   {
     "name": "IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION",
@@ -273,7 +273,7 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the toggle for automatic update downloads",
-    "message": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates."
+    "message": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE",
@@ -285,7 +285,7 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the toggle for automatic update downloads",
-    "message": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week."
+    "message": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO",
@@ -297,7 +297,7 @@
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the toggle for automatic update downloads",
-    "message": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying."
+    "message": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying."
   },
   {
     "name": "IDS_SETTINGS_NEW_TAB_NEXT_TO_ACTIVE_BUTTON",
@@ -315,7 +315,7 @@
     "name": "IDS_COMPONENTS_SVC_STATUS_ERROR_HELIUM_SERVICES",
     "source": "chrome/app/generated_resources.grd",
     "context": "Service Status",
-    "message": "Component updates are disabled. See Helium services in settings."
+    "message": "Component updates are disabled. See Zenmium services in settings."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE",
@@ -651,7 +651,7 @@
     "name": "IDS_SETTINGS_SUGGEST_PREF_DESC_HELIUM",
     "source": "chrome/app/settings_chromium_strings.grdp",
     "context": "The description of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.",
-    "message": "When you type in the address bar, Helium sends what you type to your default search engine to get suggestions. This is off in Incognito."
+    "message": "When you type in the address bar, Zenmium sends what you type to your default search engine to get suggestions. This is off in Incognito."
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_HELIUM",
@@ -796,7 +796,7 @@
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the setting that controls crash reporting",
-    "message": "Choose whether Helium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports."
+    "message": "Choose whether Zenmium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DISABLED",
@@ -819,14 +819,14 @@
   {
     "name": "IDS_SETTINGS_NOISE",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Title of the settings page for Helium's fingerprinting protection feature.",
+    "context": "Title of the settings page for Zenmium's fingerprinting protection feature.",
     "message": "Fingerprinting protection"
   },
   {
     "name": "IDS_SETTINGS_NOISE_LINK_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the fingerprinting protection link on the Privacy and security settings page.",
-    "message": "Manage how Helium protects you against fingerprinting"
+    "message": "Manage how Zenmium protects you against fingerprinting"
   },
   {
     "name": "IDS_SETTINGS_NOISE_TOGGLE_DESCRIPTION",
@@ -837,14 +837,14 @@
   {
     "name": "IDS_SETTINGS_NOISE_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Description of how Helium protects against browser fingerprinting.",
-    "message": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection."
+    "context": "Description of how Zenmium protects against browser fingerprinting.",
+    "message": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection."
   },
   {
     "name": "IDS_SETTINGS_NOISE_DISCLAIMER",
     "source": "chrome/app/settings_strings.grdp",
-    "context": "Disclaimer shown below the fingerprinting protection description explaining that Helium makes fingerprint recovery harder but cannot prevent fingerprinting completely.",
-    "message": "Fingerprinting cannot be fully prevented, but Helium's analysis defenses make it harder to recover the original fingerprint."
+    "context": "Disclaimer shown below the fingerprinting protection description explaining that Zenmium makes fingerprint recovery harder but cannot prevent fingerprinting completely.",
+    "message": "Fingerprinting cannot be fully prevented, but Zenmium's analysis defenses make it harder to recover the original fingerprint."
   },
   {
     "name": "IDS_SETTINGS_NOISE_CUSTOM_DESCRIPTION",
@@ -898,7 +898,7 @@
     "name": "IDS_SETTINGS_NETWORK_AND_SECURITY_DESCRIPTION",
     "source": "chrome/app/settings_strings.grdp",
     "context": "Description of the settings row that opens the security settings page",
-    "message": "Manage how Helium connects to sites, what privacy signals are allowed, and more"
+    "message": "Manage how Zenmium connects to sites, what privacy signals are allowed, and more"
   },
   {
     "name": "IDS_SETTINGS_NETWORK_SECTION_TITLE",
@@ -933,8 +933,8 @@
   {
     "name": "IDS_POLICY_SOURCE_HOP",
     "source": "components/policy_strings.grdp",
-    "context": "Indicates that the policy originates from Helium defaults.",
-    "message": "Helium defaults"
+    "context": "Indicates that the policy originates from Zenmium defaults.",
+    "message": "Zenmium defaults"
   },
   {
     "name": "IDS_SETTINGS_HIBERNATED_APPEARANCE_LABEL",
@@ -963,50 +963,50 @@
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_HELIUM_SERVICES_DISABLED",
     "source": "chrome/app/generated_resources.grd",
-    "context": "Subpage summary text for a extension download item that was interrupted because Helium services are disabled.",
-    "message": "Extension downloads are disabled. Enable this feature in Helium services settings and try again."
+    "context": "Subpage summary text for a extension download item that was interrupted because Zenmium services are disabled.",
+    "message": "Extension downloads are disabled. Enable this feature in Zenmium services settings and try again."
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_EXTENSION_DL_DISABLED",
     "source": "chrome/app/generated_resources.grd",
-    "context": "Status text for when Helium services extension downloading is disabled.",
+    "context": "Status text for when Zenmium services extension downloading is disabled.",
     "message": "Extension downloads are disabled"
   },
   {
     "name": "IDS_NTP_CUSTOMIZE_CHROME_CHANGE_WALLPAPER_LABEL",
     "source": "chrome/app/generated_resources.grd",
-    "context": "The label for the action button for changing Helium wallpaper in the New Tab Page customize chrome side panel.",
+    "context": "The label for the action button for changing Zenmium wallpaper in the New Tab Page customize chrome side panel.",
     "message": "Change wallpaper"
   },
   {
     "name": "IDS_NEW_TAB_OTR_SUBTITLE_HELIUM",
     "source": "components/new_or_sad_tab_strings.grdp",
     "context": "Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device, and what data is exempt from it.",
-    "message": "Helium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity."
+    "message": "Zenmium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity."
   },
   {
     "name": "IDS_EXTENSIONS_INSTALL_LOCATION_HELIUM",
     "source": "chrome/app/generated_resources.grd",
-    "context": "The text explaining the the installation location is a Helium component.",
-    "message": "Helium component"
+    "context": "The text explaining the the installation location is a Zenmium component.",
+    "message": "Zenmium component"
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_TITLE",
     "source": "components/new_or_sad_tab_strings.grdp",
-    "context": "Title of the dialog asking whether to send one or more Helium crash reports. The report count is shown for multiple reports. [ICU Syntax]",
+    "context": "Title of the dialog asking whether to send one or more Zenmium crash reports. The report count is shown for multiple reports. [ICU Syntax]",
     "message": "{COUNT, plural, =1 {Would you like to send a crash report?} other {Would you like to send # crash reports?}}"
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_DESCRIPTION",
     "source": "components/new_or_sad_tab_strings.grdp",
-    "context": "Introductory paragraph shown when one or more Helium crash reports are available.",
-    "message": "Helium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again."
+    "context": "Introductory paragraph shown when one or more Zenmium crash reports are available.",
+    "message": "Zenmium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_PRIVACY",
     "source": "components/new_or_sad_tab_strings.grdp",
-    "context": "Paragraph warning that a crash report may contain sensitive information from Helium's memory.",
-    "message": "A crash report may incidentally include some sensitive data present in Helium's memory at the time of crash."
+    "context": "Paragraph warning that a crash report may contain sensitive information from Zenmium's memory.",
+    "message": "A crash report may incidentally include some sensitive data present in Zenmium's memory at the time of crash."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_OPTIONAL",
@@ -1029,13 +1029,13 @@
   {
     "name": "IDS_CRASH_DISABLED_MESSAGE",
     "source": "components/components_chromium_strings.grd",
-    "context": "The explanatory message for helium://crashes when crash reporting is disabled",
-    "message": "Crash reporting is disabled in Helium settings or by policy."
+    "context": "The explanatory message for zenmium://crashes when crash reporting is disabled",
+    "message": "Crash reporting is disabled in Zenmium settings or by policy."
   },
   {
     "name": "IDS_CRASH_BUG_LINK_LABEL",
     "source": "components/crash_strings.grdp",
-    "context": "Link text for creating an issue with additional details in Helium's GitHub repo",
+    "context": "Link text for creating an issue with additional details in Zenmium's GitHub repo",
     "message": "Create an issue with details"
   },
   {
@@ -1245,25 +1245,25 @@
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_DESCRIPTION",
     "source": "components/page_info_strings.grdp",
-    "context": "Explanation of how Helium fingerprinting protection works.",
-    "message": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you."
+    "context": "Explanation of how Zenmium fingerprinting protection works.",
+    "message": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_BREAKAGE",
     "source": "components/page_info_strings.grdp",
-    "context": "Explanation of how disabling Helium's fingerprinting protection may fix privacy-invasive websites, but will reduce user's privacy.",
+    "context": "Explanation of how disabling Zenmium's fingerprinting protection may fix privacy-invasive websites, but will reduce user's privacy.",
     "message": "Turning off the protection will reduce your privacy, but may fix site features that require fingerprinting."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_GLOBALLY_DISABLED",
     "source": "components/page_info_strings.grdp",
     "context": "Explanation shown when the site toggle is unavailable because fingerprinting protection is disabled globally.",
-    "message": "Fingerprinting protection is turned off in Helium settings."
+    "message": "Fingerprinting protection is turned off in Zenmium settings."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_SETTINGS_BUTTON",
     "source": "components/page_info_strings.grdp",
-    "context": "A button label that opens Helium's global fingerprinting protection settings page.",
+    "context": "A button label that opens Zenmium's global fingerprinting protection settings page.",
     "message": "Manage fingerprinting protection"
   },
   {
@@ -1306,19 +1306,19 @@
     "name": "IDS_KEYCHAIN_STARTUP_ERROR",
     "source": "chrome/app/generated_resources.grd",
     "context": "Startup error shown when the browser cannot access its macOS Keychain encryption key.",
-    "message": "Helium couldn't access the macOS Keychain. To protect your data, the browser will close. If prompted by macOS, allow access to Helium's encryption key. Quit any other copies of Helium, then reopen it."
+    "message": "Zenmium couldn't access the macOS Keychain. To protect your data, the browser will close. If prompted by macOS, allow access to Zenmium's encryption key. Quit any other copies of Zenmium, then reopen it."
   },
   {
     "name": "IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY",
     "source": "chrome/app/settings_chromium_strings.grdp",
-    "context": "The text displayed when Helium is launched on Linux, but has no existing .desktop file.",
-    "message": "Helium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
+    "context": "The text displayed when Zenmium is launched on Linux, but has no existing .desktop file.",
+    "message": "Zenmium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PAGE_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "The title of the Helium setup onboarding page.",
-    "message": "Helium Setup"
+    "context": "The title of the Zenmium setup onboarding page.",
+    "message": "Zenmium Setup"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_BUTTON_USE_DEFAULTS",
@@ -1354,25 +1354,25 @@
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Badge title shown for partner services in onboarding.",
-    "message": "Helium Partner"
+    "message": "Zenmium Partner"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TOOLTIP",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Tooltip explaining why a listed service is marked as a Helium partner.",
-    "message": "Paying for this service will support the development of Helium."
+    "context": "Tooltip explaining why a listed service is marked as a Zenmium partner.",
+    "message": "Paying for this service will support the development of Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_GREETING",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Main greeting on the first onboarding screen.",
-    "message": "Meet Helium"
+    "message": "Meet Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_BODY",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Introductory body text on the first onboarding screen.",
-    "message": "Configure Helium to match your taste and import data from other browsers. Make it feel like home or jump straight to browsing."
+    "message": "Configure Zenmium to match your taste and import data from other browsers. Make it feel like home or jump straight to browsing."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_TERMS",
@@ -1383,8 +1383,8 @@
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_FOOTER",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Footer text explaining that setup can be skipped but Helium services require consent.",
-    "message": "If you use defaults, Helium services will be automatically enabled."
+    "context": "Footer text explaining that setup can be skipped but Zenmium services require consent.",
+    "message": "If you use defaults, Zenmium services will be automatically enabled."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_FINISH_TITLE",
@@ -1396,43 +1396,43 @@
     "name": "IDS_HELIUM_ONBOARDING_FINISH_BODY",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Body text on the final onboarding screen.",
-    "message": "The setup is complete, thank you for choosing Helium. Time to enjoy the internet again."
+    "message": "The setup is complete, thank you for choosing Zenmium. Time to enjoy the internet again."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the onboarding screen for Helium services consent.",
-    "message": "Helium services"
+    "context": "Title of the onboarding screen for Zenmium services consent.",
+    "message": "Zenmium services"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SUBTITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Subtitle explaining when Helium services consent choices take effect.",
+    "context": "Subtitle explaining when Zenmium services consent choices take effect.",
     "message": "Services are not active until you consent to using them. Changes will be applied after you go to the next page."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the global toggle for connecting to Helium services.",
-    "message": "Allow connecting to Helium services"
+    "context": "Title of the global toggle for connecting to Zenmium services.",
+    "message": "Allow connecting to Zenmium services"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Description of the global Helium services toggle.",
-    "message": "Helium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Helium will not make any web requests."
+    "context": "Description of the global Zenmium services toggle.",
+    "message": "Zenmium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Zenmium will not make any web requests."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the toggle for downloading the Helium bangs list.",
+    "context": "Title of the toggle for downloading the Zenmium bangs list.",
     "message": "Allow downloading the !bangs list"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Description of the toggle for downloading the Helium bangs list.",
-    "message": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work."
+    "context": "Description of the toggle for downloading the Zenmium bangs list.",
+    "message": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_TITLE",
@@ -1444,7 +1444,7 @@
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description of the toggle for proxying extension downloads and updates.",
-    "message": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work."
+    "message": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_TITLE",
@@ -1456,19 +1456,19 @@
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description of the toggle for downloading uBlock Origin filter lists.",
-    "message": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying."
+    "message": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the toggle for automatic browser updates on platforms where Helium updates the browser.",
+    "context": "Title of the toggle for automatic browser updates on platforms where Zenmium updates the browser.",
     "message": "Allow automatic browser updates"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Description of the toggle for automatic browser updates on platforms where Helium updates the browser.",
-    "message": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates."
+    "context": "Description of the toggle for automatic browser updates on platforms where Zenmium updates the browser.",
+    "message": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE_LINUX",
@@ -1480,7 +1480,7 @@
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC_LINUX",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description of the toggle for automatic component updates on Linux.",
-    "message": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week."
+    "message": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_TITLE",
@@ -1492,19 +1492,19 @@
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description of the toggle for downloading spell check dictionary files.",
-    "message": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work."
+    "message": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the option describing custom Helium services instances.",
-    "message": "Use your own instance of Helium services"
+    "context": "Title of the option describing custom Zenmium services instances.",
+    "message": "Use your own instance of Zenmium services"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Description of the option describing custom Helium services instances.",
-    "message": "You can host your own instance of Helium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Helium settings."
+    "context": "Description of the option describing custom Zenmium services instances.",
+    "message": "You can host your own instance of Zenmium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Zenmium settings."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_TITLE",
@@ -1540,7 +1540,7 @@
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_CUSTOM",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description for a custom search engine in onboarding.",
-    "message": "A custom search engine. Its privacy wasn't verified by Helium."
+    "message": "A custom search engine. Its privacy wasn't verified by Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_ENGINES_DUCKDUCKGO",
@@ -1593,19 +1593,19 @@
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_TITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Title of the onboarding screen asking whether Helium should be the default browser.",
-    "message": "Ready to switch to Helium?"
+    "context": "Title of the onboarding screen asking whether Zenmium should be the default browser.",
+    "message": "Ready to switch to Zenmium?"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_SUBTITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Subtitle of the onboarding screen asking whether Helium should be the default browser.",
-    "message": "Better privacy, speed, and comfort. All in one click. Wanna make links open in Helium by default?"
+    "context": "Subtitle of the onboarding screen asking whether Zenmium should be the default browser.",
+    "message": "Better privacy, speed, and comfort. All in one click. Wanna make links open in Zenmium by default?"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Label for the option to make Helium the default browser.",
+    "context": "Label for the option to make Zenmium the default browser.",
     "message": "Yes"
   },
   {
@@ -1617,14 +1617,14 @@
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
-    "context": "Description for the option to make Helium the default browser.",
-    "message": "Make Helium my default browser."
+    "context": "Description for the option to make Zenmium the default browser.",
+    "message": "Make Zenmium my default browser."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_NO_DESC",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Description for the option to keep the current default browser.",
-    "message": "Just trying Helium for now."
+    "message": "Just trying Zenmium for now."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DATA_IMPORT_TITLE",
@@ -1666,7 +1666,7 @@
     "name": "IDS_HELIUM_ONBOARDING_PASSWORD_SUBTITLE",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Subtitle of the onboarding screen for choosing a password manager.",
-    "message": "Helium doesn't have a built-in password manager. Would you like to install one from the Web Store?"
+    "message": "Zenmium doesn't have a built-in password manager. Would you like to install one from the Web Store?"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PASSWORD_IMPORT_GUIDE",
@@ -1720,7 +1720,7 @@
     "name": "IDS_HELIUM_ONBOARDING_PASSWORD_MANAGERS_ONE_PASSWORD",
     "source": "components/helium_onboarding/helium_onboarding_strings.grdp",
     "context": "Onboarding description of 1Password as a password manager option.",
-    "message": "Popular, paid, and closed-source password manager. Offers data storage in Europe or US. May not work correctly with Helium without extra configuration."
+    "message": "Popular, paid, and closed-source password manager. Offers data storage in Europe or US. May not work correctly with Zenmium without extra configuration."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PASSWORD_MANAGERS_DASHLANE",

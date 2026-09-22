@@ -24,3 +24,8 @@ helium/macos/lockdown-mode-imageio.patch
 helium/macos/disable-chromium-immersive-fullscreen.patch
 helium/macos/helium-immersive-fullscreen.patch
 helium/macos/fix-history-swiper-lifetime.patch
+
+# zenmium
+# See browser/patches/zenmium/SERIES.md for conventions; these entries apply
+# after every upstream patch above.
+zenmium/identity-macos.patch

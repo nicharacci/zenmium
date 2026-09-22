@@ -37,7 +37,7 @@ _BUILD_SRC = _ROOT_DIR / 'build' / 'src'
 _ICON_PATH = _BUILD_SRC / 'chrome' / 'app' / 'theme' / 'chromium' / 'win' / 'chromium.ico'
 _PORTABLE_EXCLUSIONS = {Path(name) for name in (
     'mini_installer.exe', 'mini_installer_exe_version.rc', 'setup.exe',
-    'helium.packed.7z')}
+    'zenmium.packed.7z')}
 
 
 def get_target_cpu(build_outputs):
@@ -61,11 +61,11 @@ def _build_nsis_installer(version, arch, build_outputs, output_file):
         f'-DVERSION={version}',
         f'-DARCH={arch}',
         f'-DSETUP_EXE={build_outputs / "setup.exe"}',
-        f'-DHELIUM_7Z={build_outputs / "helium.packed.7z"}',
+        f'-DZENMIUM_7Z={build_outputs / "zenmium.packed.7z"}',
         f'-DICON_FILE={_ICON_PATH}',
         f'-DOUTPUT_FILE={output_file}',
         f'-DLICENSE_FILE={_ROOT_DIR / "LICENSE"}',
-        str(_ROOT_DIR / 'installer' / 'helium.nsi'),
+        str(_ROOT_DIR / 'installer' / 'zenmium.nsi'),
     ]
     subprocess.run(cmd, check=True)
 
@@ -82,10 +82,10 @@ def create_packages(build_outputs, output_dir, cpu_arch='64bit', *, installer_in
 
     target_cpu = get_target_cpu(installer_inputs)
 
-    installer_output = output_dir / f'helium_{version}_{target_cpu}-installer.exe'
+    installer_output = output_dir / f'zenmium_{version}_{target_cpu}-installer.exe'
     _build_nsis_installer(version, target_cpu, installer_inputs, installer_output)
 
-    mini_installer_output = output_dir / f'helium_{version}_{target_cpu}-mini-installer.exe'
+    mini_installer_output = output_dir / f'zenmium_{version}_{target_cpu}-mini-installer.exe'
     shutil.copy2(installer_inputs / 'mini_installer.exe', mini_installer_output)
 
     timestamp = None
@@ -95,7 +95,7 @@ def create_packages(build_outputs, output_dir, cpu_arch='64bit', *, installer_in
     except FileNotFoundError:
         pass
 
-    output = output_dir / f'helium_{version}_{target_cpu}-windows.zip'
+    output = output_dir / f'zenmium_{version}_{target_cpu}-windows.zip'
 
     filescfg.create_archive(
         portable_files(build_outputs, cpu_arch), tuple(), build_outputs, output, timestamp)
@@ -144,11 +144,11 @@ def stage_build(build_outputs, seven_zip, arch=None):
     for name in ('setup.exe', 'args.gn'):
         shutil.copy2(build_outputs / name, work / name)
     shutil.copy2(build_outputs / 'mini_installer.exe', work / 'unsigned-mini-installer.exe')
-    extract(seven_zip, build_outputs / 'helium.7z', work / 'payload')
+    extract(seven_zip, build_outputs / 'zenmium.7z', work / 'payload')
     version = load_chromium_tool('create_installer_archive').BuildVersion()
     for required in (portable / 'chrome.exe', portable / 'chrome.dll',
-                     work / 'payload/Helium-bin/chrome.exe',
-                     work / 'payload/Helium-bin' / version / 'chrome.dll'):
+                     work / 'payload/Zenmium-bin/chrome.exe',
+                     work / 'payload/Zenmium-bin' / version / 'chrome.dll'):
         if not required.is_file():
             raise FileNotFoundError(required)
 
@@ -163,18 +163,18 @@ def rebuild_mini_installer(work):
         str(work / 'unsigned-mini-installer.exe'), str(work / 'mini_installer.exe'))
     # Refuse layouts we do not support rather than leaving a stale payload in
     # the executable. The release build emits compressed archive + cabinet.
-    if win32api.EnumResourceNames(editor.module, 'B7') != ['HELIUM.PACKED.7Z']:
+    if win32api.EnumResourceNames(editor.module, 'B7') != ['ZENMIUM.PACKED.7Z']:
         raise ValueError('Unexpected mini installer archive resources')
     if win32api.EnumResourceNames(editor.module, 'BL') != ['SETUP.EX_']:
         raise ValueError('Unexpected mini installer setup resources')
-    for kind, name in (('B7', 'HELIUM.PACKED.7Z'), ('BL', 'SETUP.EX_')):
+    for kind, name in (('B7', 'ZENMIUM.PACKED.7Z'), ('BL', 'SETUP.EX_')):
         if win32api.EnumResourceLanguages(editor.module, kind, name) != [1033]:
             raise ValueError('Unexpected mini installer resource language')
     editor.RemoveResource('BL', 1033, 'SETUP.EX_')
     # BN is upstream's supported uncompressed setup representation. The outer
     # installer is signed only after its resources have been replaced.
     editor.UpdateResource('BN', 1033, 'SETUP.EXE', str(work / 'setup.exe'))
-    editor.UpdateResource('B7', 1033, 'HELIUM.PACKED.7Z', str(work / 'helium.packed.7z'))
+    editor.UpdateResource('B7', 1033, 'ZENMIUM.PACKED.7Z', str(work / 'zenmium.packed.7z'))
     editor.Commit()
 
 
@@ -183,14 +183,14 @@ def build_packages(work, build_outputs, seven_zip):
     outputs = work / 'artifacts'
     if outputs.exists():
         raise FileExistsError(f'Release already packaged: {outputs}')
-    subprocess.run([str(seven_zip), 'a', '-t7z', str(work / 'helium.7z'),
-                    str(work / 'payload/Helium-bin'), '-mx0'], check=True)
+    subprocess.run([str(seven_zip), 'a', '-t7z', str(work / 'zenmium.7z'),
+                    str(work / 'payload/Zenmium-bin'), '-mx0'], check=True)
     archive = load_chromium_tool('create_installer_archive')
     # Use upstream's BCJ2/LZMA settings: the mini installer's decoder does not
     # support arbitrary compression methods chosen by modern 7-Zip defaults.
     archive.GetLZMAExec = lambda _: str(seven_zip)
-    archive.CompressUsingLZMA(str(build_outputs), str(work / 'helium.packed.7z'),
-                             str(work / 'helium.7z'), True, False, strip_time=True)
+    archive.CompressUsingLZMA(str(build_outputs), str(work / 'zenmium.packed.7z'),
+                             str(work / 'zenmium.7z'), True, False, strip_time=True)
     rebuild_mini_installer(work)
     return create_packages(work / 'portable', outputs, installer_inputs=work)
 
@@ -203,18 +203,18 @@ def check_equal(actual, expected, description):
 def verify_mini_installer(mini, temp, seven_zip, expected):
     editor = load_chromium_tool('resedit').ResourceEditor(str(mini), None)
     editor.ExtractResource('BN', 1033, 'SETUP.EXE', str(temp / 'setup.exe'))
-    editor.ExtractResource('B7', 1033, 'HELIUM.PACKED.7Z', str(temp / 'helium.packed.7z'))
+    editor.ExtractResource('B7', 1033, 'ZENMIUM.PACKED.7Z', str(temp / 'zenmium.packed.7z'))
     check_equal(digest(temp / 'setup.exe'), expected['setup'], 'Mini installer setup')
-    check_equal(digest(temp / 'helium.packed.7z'), expected['archive'], 'Mini installer archive')
-    extract(seven_zip, temp / 'helium.packed.7z', temp / 'inner')
-    extract(seven_zip, temp / 'inner/helium.7z', temp / 'payload')
+    check_equal(digest(temp / 'zenmium.packed.7z'), expected['archive'], 'Mini installer archive')
+    extract(seven_zip, temp / 'zenmium.packed.7z', temp / 'inner')
+    extract(seven_zip, temp / 'inner/zenmium.7z', temp / 'payload')
     check_equal(inventory(temp / 'payload'), expected['payload'], 'Installer payload')
 
 
 def verify_nsis_installer(nsis, temp, seven_zip, expected):
     extract(seven_zip, nsis, temp / 'nsis')
     for name, hash_value in (('setup.exe', expected['setup']),
-                             ('helium.7z', expected['archive'])):
+                             ('zenmium.7z', expected['archive'])):
         extracted, = (temp / 'nsis').rglob(name)
         check_equal(digest(extracted), hash_value, f'NSIS {name}')
 
@@ -235,7 +235,7 @@ def verify_portable_zip(portable, expected):
 
 def verify_packages(work, seven_zip, nsis, mini, portable, expected):
     """Check that each release package contains the signed staging files."""
-    expected = {**expected, 'archive': digest(work / 'helium.packed.7z')}
+    expected = {**expected, 'archive': digest(work / 'zenmium.packed.7z')}
     with tempfile.TemporaryDirectory(prefix='verify-', dir=work) as temp:
         temp = Path(temp)
         verify_mini_installer(mini, temp, seven_zip, expected)

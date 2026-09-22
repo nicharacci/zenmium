@@ -9,8 +9,8 @@ _tmp="$(mktemp -d)"
 trap 'hdiutil detach "$_tmp/mnt" -quiet 2>/dev/null' EXIT
 
 # Stub bundle is enough, the .DS_Store only records file names
-mkdir -p "$_tmp/Helium.app/Contents/Resources" "$_tmp/mnt"
-cp "$_resources/assets/app.icns" "$_tmp/Helium.app/Contents/Resources/"
+mkdir -p "$_tmp/Zenmium.app/Contents/Resources" "$_tmp/mnt"
+cp "$_resources/assets/app.icns" "$_tmp/Zenmium.app/Contents/Resources/"
 ln -s "$_resources/dmg.json" "$_resources/dmg_background.png" "$_tmp/"
 
 npx -y appdmg@0.6.6 "$_tmp/dmg.json" "$_tmp/layout.dmg"

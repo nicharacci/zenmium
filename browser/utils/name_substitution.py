@@ -3,7 +3,7 @@
 # Copyright 2025 The Helium Authors
 # You can use, redistribute, and/or modify this source code under
 # the terms of the GPL-3.0 license that can be found in the LICENSE file.
-"""Script to replace instances of Chrome/Chromium with Helium"""
+"""Script to replace instances of Chrome/Chromium/Helium with Zenmium"""
 
 from concurrent.futures import ProcessPoolExecutor
 from tarfile import TarInfo
@@ -21,16 +21,18 @@ IGNORE_DIRS = ['.pc', 'chromeos', 'remoting', 'ash', 'testdata']
 def replacement_sanity():
     """Sanity check to ensure replacement regexes are working as intended"""
     before_after = [
-        ('chrome://about', 'helium://about'),
+        ('chrome://about', 'zenmium://about'),
+        ('helium://about', 'zenmium://about'),
         ('Chrome Root Program', 'Chrome Root Program'),
-        (' Chrome  ', ' Helium  '),
+        (' Chrome  ', ' Zenmium  '),
         ('Chrome Web Store', 'Chrome Web Store'),
         ('Chromium Web Store', 'Chromium Web Store'),
         ('Chrome Remote Desktop', 'Chrome Remote Desktop'),
-        ('Google Chrome', 'Helium'),
-        ('Chrome Google Chrome Chrome Chromium', 'Helium Helium Helium Helium'),
-        ('Chrome', 'Helium'),
-        ('Chromium', 'Helium'),
+        ('Google Chrome', 'Zenmium'),
+        ('Chrome Google Chrome Chrome Chromium', 'Zenmium Zenmium Zenmium Zenmium'),
+        ('Chrome', 'Zenmium'),
+        ('Chromium', 'Zenmium'),
+        ('Helium', 'Zenmium'),
     ]
 
     for source, expected in before_after:

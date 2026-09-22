@@ -14,8 +14,10 @@ REPLACEMENT_REGEXES_STR = [
     (r'(\w+) Remote Desktop', r'\1_unreplace Remote Desktop'),
 
     # main replacement(s)
-    (r'(\b)chrome://', r'\1helium://'),
-    (r'(?:Google )?Chrom(e|ium)(?!\w)', r'Helium'),
+    (r'(\b)chrome://', r'\1zenmium://'),
+    (r'(\b)helium://', r'\1zenmium://'),
+    (r'(?:Google )?Chrom(e|ium)(?!\w)', r'Zenmium'),
+    (r'Helium(?!\w)', r'Zenmium'),
 
     # post-replacement cleanup
     (r'((?:Google )?Chrom(e|ium))_unreplace', r'\1'),
@@ -68,7 +70,7 @@ def compute_fp(message):
 
 
 def replace_text(text):
-    """Replaces instances of Chrom(e | ium) with Helium in strings"""
+    """Replaces instances of Chrom(e | ium)/Helium with Zenmium in strings"""
     had_match = False
     for regex, replacement in REPLACEMENT_REGEXES:
         if regex.search(text):

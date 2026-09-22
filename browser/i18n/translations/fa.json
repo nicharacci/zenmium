@@ -1,18 +1,18 @@
 [
   {
     "name": "IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Helium fast. Your inactive tabs automatically become active again when you go back to them.",
-    "message": "Helium حافظه زبانه‌های غیرفعال را آزاد می‌کند. این کار منابع بیشتری را در اختیار زبانه‌های فعال و سایر برنامه‌ها قرار می‌دهد و Helium را سریع نگه می‌دارد. زبانه‌های غیرفعال شما هنگام بازگشت به آن‌ها به‌طور خودکار دوباره فعال می‌شوند."
+    "source": "Zenmium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Zenmium fast. Your inactive tabs automatically become active again when you go back to them.",
+    "message": "Zenmium حافظه زبانه‌های غیرفعال را آزاد می‌کند. این کار منابع بیشتری را در اختیار زبانه‌های فعال و سایر برنامه‌ها قرار می‌دهد و Zenmium را سریع نگه می‌دارد. زبانه‌های غیرفعال شما هنگام بازگشت به آن‌ها به‌طور خودکار دوباره فعال می‌شوند."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
-    "message": "Helium با محدود کردن فعالیت‌های پس‌زمینه و جلوه‌های بصری مانند اسکرول نرم و نرخ فریم ویدیو، مصرف باتری را کاهش می‌دهد."
+    "source": "Zenmium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
+    "message": "Zenmium با محدود کردن فعالیت‌های پس‌زمینه و جلوه‌های بصری مانند اسکرول نرم و نرخ فریم ویدیو، مصرف باتری را کاهش می‌دهد."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY",
-    "source": "Helium preloads pages which makes browsing and searching faster.",
-    "message": "Helium صفحات را از پیش بارگذاری می‌کند که مرور و جستجو را سریع‌تر می‌کند."
+    "source": "Zenmium preloads pages which makes browsing and searching faster.",
+    "message": "Zenmium صفحات را از پیش بارگذاری می‌کند که مرور و جستجو را سریع‌تر می‌کند."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP",
@@ -31,8 +31,8 @@
   },
   {
     "name": "IDS_IMPORTED_FROM_BOOKMARK_FOLDER",
-    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>",
-    "message": "وارد شده از <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>"
+    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>",
+    "message": "وارد شده از <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>"
   },
   {
     "name": "IDS_EXTENSIONS_IMPORTER_LOCK_TITLE",
@@ -46,18 +46,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES",
-    "source": "Helium services",
-    "message": "سرویس‌های Helium"
+    "source": "Zenmium services",
+    "message": "سرویس‌های Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_DESCRIPTION",
-    "source": "Manage what Helium services are allowed in your browser",
-    "message": "مدیریت سرویس‌های Helium مجاز در مرورگر شما"
+    "source": "Manage what Zenmium services are allowed in your browser",
+    "message": "مدیریت سرویس‌های Zenmium مجاز در مرورگر شما"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_TITLE",
-    "source": "Updates to Helium services:",
-    "message": "به‌روزرسانی‌های سرویس‌های Helium:"
+    "source": "Updates to Zenmium services:",
+    "message": "به‌روزرسانی‌های سرویس‌های Zenmium:"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_DESCRIPTION",
@@ -71,23 +71,23 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE",
-    "source": "Allow connecting to Helium services",
-    "message": "اجازه اتصال به سرویس‌های Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "اجازه اتصال به سرویس‌های Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
-    "message": "در صورت فعال بودن، Helium قادر خواهد بود به‌صورت ناشناس به سرویس‌های وب متصل شود تا قابلیت‌های اضافی را ارائه دهد. در صورت غیرفعال بودن، قابلیت‌های اضافی کار نخواهند کرد."
+    "source": "When enabled, Zenmium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
+    "message": "در صورت فعال بودن، Zenmium قادر خواهد بود به‌صورت ناشناس به سرویس‌های وب متصل شود تا قابلیت‌های اضافی را ارائه دهد. در صورت غیرفعال بودن، قابلیت‌های اضافی کار نخواهند کرد."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE",
-    "source": "Use your own instance of Helium services",
-    "message": "استفاده از نمونه شخصی سرویس‌های Helium"
+    "source": "Use your own instance of Zenmium services",
+    "message": "استفاده از نمونه شخصی سرویس‌های Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the default one. HTTPS only.",
-    "message": "می‌توانید نمونه شخصی خود از سرویس‌های Helium را میزبانی کنید و به جای نمونه پیش‌فرض در مرورگرتان استفاده کنید. فقط HTTPS."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the default one. HTTPS only.",
+    "message": "می‌توانید نمونه شخصی خود از سرویس‌های Zenmium را میزبانی کنید و به جای نمونه پیش‌فرض در مرورگرتان استفاده کنید. فقط HTTPS."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION_WARNING",
@@ -96,18 +96,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_ARIA_LABEL",
-    "source": "Custom origin URL for Helium services",
-    "message": "URL مبدأ سفارشی برای سرویس‌های Helium"
+    "source": "Custom origin URL for Zenmium services",
+    "message": "URL مبدأ سفارشی برای سرویس‌های Zenmium"
   },
   {
     "name": "IDS_APPMENU_TOOLTIP_HELIUM_SERVICES_UPDATE",
-    "source": "Helium services have been updated. Please review the changes.",
-    "message": "سرویس‌های Helium به‌روزرسانی شده‌اند. لطفاً تغییرات را بررسی کنید."
+    "source": "Zenmium services have been updated. Please review the changes.",
+    "message": "سرویس‌های Zenmium به‌روزرسانی شده‌اند. لطفاً تغییرات را بررسی کنید."
   },
   {
     "name": "IDS_HELIUM_SERVICES_SCHEMA_MENU_ITEM",
-    "source": "Review Helium services updates",
-    "message": "بررسی به‌روزرسانی‌های سرویس‌های Helium"
+    "source": "Review Zenmium services updates",
+    "message": "بررسی به‌روزرسانی‌های سرویس‌های Zenmium"
   },
   {
     "name": "IDS_APP_MENU_BUTTON_HELIUM_SERVICES_UPDATE",
@@ -116,8 +116,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_TEXT",
-    "source": "Helium services are not available until setup is complete to ensure your privacy and consent.",
-    "message": "سرویس‌های Helium تا تکمیل راه‌اندازی در دسترس نیستند تا حریم خصوصی و رضایت شما تضمین شود."
+    "source": "Zenmium services are not available until setup is complete to ensure your privacy and consent.",
+    "message": "سرویس‌های Zenmium تا تکمیل راه‌اندازی در دسترس نیستند تا حریم خصوصی و رضایت شما تضمین شود."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_BUTTON",
@@ -156,8 +156,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_EXT_PROXY_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "در صورت فعال بودن، Helium دانلود و به‌روزرسانی افزونه‌ها را از طریق پراکسی هدایت می‌کند تا حریم خصوصی شما محافظت شود. در صورت غیرفعال بودن، دانلود و به‌روزرسانی افزونه‌ها کار نخواهد کرد."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "در صورت فعال بودن، Zenmium دانلود و به‌روزرسانی افزونه‌ها را از طریق پراکسی هدایت می‌کند تا حریم خصوصی شما محافظت شود. در صورت غیرفعال بودن، دانلود و به‌روزرسانی افزونه‌ها کار نخواهد کرد."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE",
@@ -166,13 +166,13 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium فهرستی از bangها را دریافت می‌کند که به شما کمک می‌کنند سریع‌تر در اینترنت مرور کنید، مانند !w یا !gh. در صورت غیرفعال بودن، bangها کار نخواهند کرد."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium فهرستی از bangها را دریافت می‌کند که به شما کمک می‌کنند سریع‌تر در اینترنت مرور کنید، مانند !w یا !gh. در صورت غیرفعال بودن، bangها کار نخواهند کرد."
   },
   {
     "name": "IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP_HELIUM",
-    "source": "Please check that Helium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Helium servers.",
-    "message": "لطفاً بررسی کنید که سرویس‌های Helium فعال هستند (از جمله دانلود غلط‌یاب املایی) و مطمئن شوید که فایروال دانلود از سرورهای Helium را مسدود نمی‌کند."
+    "source": "Please check that Zenmium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Zenmium servers.",
+    "message": "لطفاً بررسی کنید که سرویس‌های Zenmium فعال هستند (از جمله دانلود غلط‌یاب املایی) و مطمئن شوید که فایروال دانلود از سرورهای Zenmium را مسدود نمی‌کند."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE",
@@ -181,8 +181,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium فایل‌های واژه‌نامه مورد استفاده برای غلط‌یابی املایی را در صورت درخواست دریافت می‌کند. در صورت غیرفعال بودن، غلط‌یابی املایی کار نخواهد کرد."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium فایل‌های واژه‌نامه مورد استفاده برای غلط‌یابی املایی را در صورت درخواست دریافت می‌کند. در صورت غیرفعال بودن، غلط‌یابی املایی کار نخواهد کرد."
   },
   {
     "name": "IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION",
@@ -196,8 +196,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO_DESCRIPTION",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium فهرست‌های فیلتر جدید را برای uBlock Origin دریافت می‌کند. تمام درخواست‌ها به فهرست‌ها برای محافظت از حریم خصوصی شما از طریق پراکسی انجام می‌شوند. در صورت غیرفعال بودن، فهرست‌های فیلتر پیش‌فرض از حافظه محلی بارگذاری می‌شوند که فقط همراه با Helium به‌روزرسانی می‌شوند. فهرست‌های فیلتر اختیاری بدون پراکسی درخواست می‌شوند."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium فهرست‌های فیلتر جدید را برای uBlock Origin دریافت می‌کند. تمام درخواست‌ها به فهرست‌ها برای محافظت از حریم خصوصی شما از طریق پراکسی انجام می‌شوند. در صورت غیرفعال بودن، فهرست‌های فیلتر پیش‌فرض از حافظه محلی بارگذاری می‌شوند که فقط همراه با Zenmium به‌روزرسانی می‌شوند. فهرست‌های فیلتر اختیاری بدون پراکسی درخواست می‌شوند."
   },
   {
     "name": "IDS_SETTINGS_NEW_TAB_NEXT_TO_ACTIVE_BUTTON",
@@ -211,8 +211,8 @@
   },
   {
     "name": "IDS_COMPONENTS_SVC_STATUS_ERROR_HELIUM_SERVICES",
-    "source": "Component updates are disabled. See Helium services in settings.",
-    "message": "به‌روزرسانی مؤلفه‌ها غیرفعال است. سرویس‌های Helium را در تنظیمات ببینید."
+    "source": "Component updates are disabled. See Zenmium services in settings.",
+    "message": "به‌روزرسانی مؤلفه‌ها غیرفعال است. سرویس‌های Zenmium را در تنظیمات ببینید."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE",
@@ -231,8 +231,8 @@
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_DESC_HELIUM",
-    "source": "When you type in the address bar, Helium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
-    "message": "هنگامی که در نوار نشانی تایپ می‌کنید، Helium آنچه را تایپ می‌کنید به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهاداتی دریافت کند. این قابلیت در حالت ناشناس غیرفعال است."
+    "source": "When you type in the address bar, Zenmium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
+    "message": "هنگامی که در نوار نشانی تایپ می‌کنید، Zenmium آنچه را تایپ می‌کنید به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهاداتی دریافت کند. این قابلیت در حالت ناشناس غیرفعال است."
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_HELIUM",
@@ -256,8 +256,8 @@
   },
   {
     "name": "IDS_POLICY_SOURCE_HOP",
-    "source": "Helium defaults",
-    "message": "پیش‌فرض‌های Helium"
+    "source": "Zenmium defaults",
+    "message": "پیش‌فرض‌های Zenmium"
   },
   {
     "name": "IDS_ACCNAME_APP_MENU",
@@ -266,8 +266,8 @@
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_HELIUM_SERVICES_DISABLED",
-    "source": "Extension downloads are disabled. Enable this feature in Helium services settings and try again.",
-    "message": "دانلود افزونه‌ها غیرفعال است. این قابلیت را در تنظیمات سرویس‌های Helium فعال کنید و دوباره تلاش کنید."
+    "source": "Extension downloads are disabled. Enable this feature in Zenmium services settings and try again.",
+    "message": "دانلود افزونه‌ها غیرفعال است. این قابلیت را در تنظیمات سرویس‌های Zenmium فعال کنید و دوباره تلاش کنید."
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_EXTENSION_DL_DISABLED",
@@ -281,13 +281,13 @@
   },
   {
     "name": "IDS_NEW_TAB_OTR_SUBTITLE_HELIUM",
-    "source": "Helium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
-    "message": "Helium هیچ چیزی از مرور شما در حالت ناشناس ذخیره نمی‌کند، اما دانلودها و نشانک‌ها باقی می‌مانند. مرور شما هیچ ردی روی این دستگاه نمی‌گذارد و سایر کاربران نمی‌توانند فعالیت شما را ببینند."
+    "source": "Zenmium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
+    "message": "Zenmium هیچ چیزی از مرور شما در حالت ناشناس ذخیره نمی‌کند، اما دانلودها و نشانک‌ها باقی می‌مانند. مرور شما هیچ ردی روی این دستگاه نمی‌گذارد و سایر کاربران نمی‌توانند فعالیت شما را ببینند."
   },
   {
     "name": "IDS_EXTENSIONS_INSTALL_LOCATION_HELIUM",
-    "source": "Helium component",
-    "message": "مؤلفه Helium"
+    "source": "Zenmium component",
+    "message": "مؤلفه Zenmium"
   },
   {
     "name": "IDS_SETTINGS_BROWSER_LAYOUT",
@@ -371,8 +371,8 @@
   },
   {
     "name": "IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY",
-    "source": "Helium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
-    "message": "Helium نمی‌تواند به‌عنوان مرورگر پیش‌فرض تنظیم شود، زیرا فایل <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> در هیچ‌یک از مسیرهای زیر یافت نشد: ~/.local/share/applications، /usr/share/applications، /usr/local/share/applications."
+    "source": "Zenmium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
+    "message": "Zenmium نمی‌تواند به‌عنوان مرورگر پیش‌فرض تنظیم شود، زیرا فایل <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> در هیچ‌یک از مسیرهای زیر یافت نشد: ~/.local/share/applications، /usr/share/applications، /usr/local/share/applications."
   },
   {
     "name": "IDS_SETTINGS_CHOOSE_CUSTOM_AVATAR_FILE",
@@ -431,8 +431,8 @@
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_MESSAGE",
-    "source": "Helium needs Full Disk Access to import your Bookmarks from Safari.",
-    "message": "Helium برای وارد کردن نشانک‌های شما از Safari به دسترسی کامل به دیسک نیاز دارد."
+    "source": "Zenmium needs Full Disk Access to import your Bookmarks from Safari.",
+    "message": "Zenmium برای وارد کردن نشانک‌های شما از Safari به دسترسی کامل به دیسک نیاز دارد."
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_LINK",
@@ -686,8 +686,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium به‌طور خودکار وجود به‌روزرسانی‌ها را بررسی و آن‌ها را نصب می‌کند. این شامل به‌روزرسانی‌های مرورگر و مؤلفه‌ها می‌شود. توصیه می‌کنیم این تنظیم را فعال نگه دارید تا مطمئن شوید جدیدترین ویژگی‌ها و به‌روزرسانی‌های امنیتی را دریافت می‌کنید."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium به‌طور خودکار وجود به‌روزرسانی‌ها را بررسی و آن‌ها را نصب می‌کند. این شامل به‌روزرسانی‌های مرورگر و مؤلفه‌ها می‌شود. توصیه می‌کنیم این تنظیم را فعال نگه دارید تا مطمئن شوید جدیدترین ویژگی‌ها و به‌روزرسانی‌های امنیتی را دریافت می‌کنید."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE",
@@ -696,8 +696,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium به‌طور خودکار وجود به‌روزرسانی‌های مؤلفه‌ها را بررسی و آن‌ها را نصب می‌کند. توصیه می‌کنیم این تنظیم را فعال نگه دارید. در Linux، به‌روزرسانی‌های مرورگر توسط مدیر بسته توزیع شما انجام می‌شود. لطفاً دست‌کم هر هفته به‌روزرسانی‌های بسته Helium را بررسی کنید."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium به‌طور خودکار وجود به‌روزرسانی‌های مؤلفه‌ها را بررسی و آن‌ها را نصب می‌کند. توصیه می‌کنیم این تنظیم را فعال نگه دارید. در Linux، به‌روزرسانی‌های مرورگر توسط مدیر بسته توزیع شما انجام می‌شود. لطفاً دست‌کم هر هفته به‌روزرسانی‌های بسته Zenmium را بررسی کنید."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE_OTHER_TABS",
@@ -826,8 +826,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DESCRIPTION",
-    "source": "Choose whether Helium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
-    "message": "انتخاب کنید که آیا Helium می‌تواند برای ارسال گزارش‌های خرابی از شما بپرسد یا آن‌ها را به‌طور خودکار ارسال کند. غیرفعال کردن گزارش‌ها همه گزارش‌های در انتظار را حذف می‌کند."
+    "source": "Choose whether Zenmium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
+    "message": "انتخاب کنید که آیا Zenmium می‌تواند برای ارسال گزارش‌های خرابی از شما بپرسد یا آن‌ها را به‌طور خودکار ارسال کند. غیرفعال کردن گزارش‌ها همه گزارش‌های در انتظار را حذف می‌کند."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DISABLED",
@@ -851,13 +851,13 @@
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_DESCRIPTION",
-    "source": "Helium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
-    "message": "Helium به‌طور غیرمنتظره بسته شد. یک گزارش خرابی می‌تواند به ما کمک کند مشکلی را که با آن مواجه شدید برطرف کنیم و از تکرار آن جلوگیری کنیم."
+    "source": "Zenmium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
+    "message": "Zenmium به‌طور غیرمنتظره بسته شد. یک گزارش خرابی می‌تواند به ما کمک کند مشکلی را که با آن مواجه شدید برطرف کنیم و از تکرار آن جلوگیری کنیم."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_PRIVACY",
-    "source": "A crash report may incidentally include some sensitive data present in Helium's memory at the time of crash.",
-    "message": "یک گزارش خرابی ممکن است به‌طور اتفاقی شامل برخی داده‌های حساس موجود در حافظه Helium در زمان خرابی باشد."
+    "source": "A crash report may incidentally include some sensitive data present in Zenmium's memory at the time of crash.",
+    "message": "یک گزارش خرابی ممکن است به‌طور اتفاقی شامل برخی داده‌های حساس موجود در حافظه Zenmium در زمان خرابی باشد."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_OPTIONAL",
@@ -876,8 +876,8 @@
   },
   {
     "name": "IDS_CRASH_DISABLED_MESSAGE",
-    "source": "Crash reporting is disabled in Helium settings or by policy.",
-    "message": "گزارش خرابی در تنظیمات Helium یا توسط خط‌مشی غیرفعال شده است."
+    "source": "Crash reporting is disabled in Zenmium settings or by policy.",
+    "message": "گزارش خرابی در تنظیمات Zenmium یا توسط خط‌مشی غیرفعال شده است."
   },
   {
     "name": "IDS_CRASH_BUG_LINK_LABEL",
@@ -906,8 +906,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PAGE_TITLE",
-    "source": "Helium Setup",
-    "message": "راه‌اندازی Helium"
+    "source": "Zenmium Setup",
+    "message": "راه‌اندازی Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_BUTTON_USE_DEFAULTS",
@@ -921,18 +921,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TITLE",
-    "source": "Helium Partner",
-    "message": "شریک Helium"
+    "source": "Zenmium Partner",
+    "message": "شریک Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TOOLTIP",
-    "source": "Paying for this service will support the development of Helium.",
-    "message": "پرداخت هزینه این سرویس از توسعه Helium پشتیبانی می‌کند."
+    "source": "Paying for this service will support the development of Zenmium.",
+    "message": "پرداخت هزینه این سرویس از توسعه Zenmium پشتیبانی می‌کند."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_GREETING",
-    "source": "Meet Helium",
-    "message": "با Helium آشنا شوید"
+    "source": "Meet Zenmium",
+    "message": "با Zenmium آشنا شوید"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_FINISH_TITLE",
@@ -941,8 +941,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_TITLE",
-    "source": "Helium services",
-    "message": "سرویس‌های Helium"
+    "source": "Zenmium services",
+    "message": "سرویس‌های Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SUBTITLE",
@@ -951,13 +951,13 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_TITLE",
-    "source": "Allow connecting to Helium services",
-    "message": "اجازه اتصال به سرویس‌های Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "اجازه اتصال به سرویس‌های Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_DESC",
-    "source": "Helium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Helium will not make any web requests.",
-    "message": "سرویس‌های Helium قابلیت‌های اضافی ارائه می‌دهند، مانند: دانلود افزونه‌ها، ‏!bangs بومی، به‌روزرسانی فهرست‌های فیلتر و به‌روزرسانی‌های مرورگر. وقتی غیرفعال باشد، هیچ‌یک از این ویژگی‌ها کار نخواهند کرد، اما Helium هیچ درخواست وبی ارسال نمی‌کند."
+    "source": "Zenmium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Zenmium will not make any web requests.",
+    "message": "سرویس‌های Zenmium قابلیت‌های اضافی ارائه می‌دهند، مانند: دانلود افزونه‌ها، ‏!bangs بومی، به‌روزرسانی فهرست‌های فیلتر و به‌روزرسانی‌های مرورگر. وقتی غیرفعال باشد، هیچ‌یک از این ویژگی‌ها کار نخواهند کرد، اما Zenmium هیچ درخواست وبی ارسال نمی‌کند."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_TITLE",
@@ -966,8 +966,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_DESC",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium فهرستی از bangها را دریافت می‌کند که به شما کمک می‌کنند سریع‌تر در اینترنت مرور کنید، مانند ‏!w یا ‏!gh. وقتی غیرفعال باشد، bangها کار نخواهند کرد."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium فهرستی از bangها را دریافت می‌کند که به شما کمک می‌کنند سریع‌تر در اینترنت مرور کنید، مانند ‏!w یا ‏!gh. وقتی غیرفعال باشد، bangها کار نخواهند کرد."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_TITLE",
@@ -976,8 +976,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_DESC",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "وقتی فعال باشد، Helium دانلود و به‌روزرسانی افزونه‌ها را برای محافظت از حریم خصوصی شما پروکسی می‌کند. وقتی غیرفعال باشد، دانلود و به‌روزرسانی افزونه‌ها کار نخواهد کرد."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "وقتی فعال باشد، Zenmium دانلود و به‌روزرسانی افزونه‌ها را برای محافظت از حریم خصوصی شما پروکسی می‌کند. وقتی غیرفعال باشد، دانلود و به‌روزرسانی افزونه‌ها کار نخواهد کرد."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_TITLE",
@@ -986,8 +986,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_DESC",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium فهرست‌های فیلتر تازه برای uBlock Origin دریافت می‌کند. همه درخواست‌ها به فهرست‌ها برای محافظت از حریم خصوصی شما پروکسی می‌شوند. وقتی غیرفعال باشد، فهرست‌های فیلتر پیش‌فرض از حافظه محلی بارگذاری می‌شوند که فقط همراه با Helium به‌روزرسانی می‌شوند. فهرست‌های فیلتر اختیاری بدون پروکسی درخواست خواهند شد."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium فهرست‌های فیلتر تازه برای uBlock Origin دریافت می‌کند. همه درخواست‌ها به فهرست‌ها برای محافظت از حریم خصوصی شما پروکسی می‌شوند. وقتی غیرفعال باشد، فهرست‌های فیلتر پیش‌فرض از حافظه محلی بارگذاری می‌شوند که فقط همراه با Zenmium به‌روزرسانی می‌شوند. فهرست‌های فیلتر اختیاری بدون پروکسی درخواست خواهند شد."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE",
@@ -996,8 +996,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium به‌طور خودکار به‌روزرسانی‌ها را بررسی و نصب می‌کند. این شامل به‌روزرسانی‌های مرورگر و مؤلفه‌ها می‌شود. توصیه می‌کنیم این تنظیم را فعال نگه دارید تا مطمئن شوید جدیدترین ویژگی‌ها و به‌روزرسانی‌های امنیتی را دریافت می‌کنید."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium به‌طور خودکار به‌روزرسانی‌ها را بررسی و نصب می‌کند. این شامل به‌روزرسانی‌های مرورگر و مؤلفه‌ها می‌شود. توصیه می‌کنیم این تنظیم را فعال نگه دارید تا مطمئن شوید جدیدترین ویژگی‌ها و به‌روزرسانی‌های امنیتی را دریافت می‌کنید."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE_LINUX",
@@ -1006,8 +1006,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC_LINUX",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium به‌طور خودکار به‌روزرسانی‌های مؤلفه‌ها را بررسی و نصب می‌کند. توصیه می‌کنیم این تنظیم را فعال نگه دارید. در لینوکس، به‌روزرسانی‌های مرورگر توسط مدیر بسته توزیع شما انجام می‌شود. لطفاً حداقل هر هفته به‌روزرسانی‌های بسته Helium را بررسی کنید."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium به‌طور خودکار به‌روزرسانی‌های مؤلفه‌ها را بررسی و نصب می‌کند. توصیه می‌کنیم این تنظیم را فعال نگه دارید. در لینوکس، به‌روزرسانی‌های مرورگر توسط مدیر بسته توزیع شما انجام می‌شود. لطفاً حداقل هر هفته به‌روزرسانی‌های بسته Zenmium را بررسی کنید."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_TITLE",
@@ -1016,18 +1016,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_DESC",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium فایل‌های واژه‌نامه مورد استفاده برای غلط‌یابی املایی را در صورت درخواست دریافت می‌کند. وقتی غیرفعال باشد، غلط‌یابی املایی کار نخواهد کرد."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium فایل‌های واژه‌نامه مورد استفاده برای غلط‌یابی املایی را در صورت درخواست دریافت می‌کند. وقتی غیرفعال باشد، غلط‌یابی املایی کار نخواهد کرد."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_TITLE",
-    "source": "Use your own instance of Helium services",
-    "message": "استفاده از نمونه شخصی خود از سرویس‌های Helium"
+    "source": "Use your own instance of Zenmium services",
+    "message": "استفاده از نمونه شخصی خود از سرویس‌های Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_DESC",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Helium settings.",
-    "message": "می‌توانید نمونه شخصی خود از سرویس‌های Helium را میزبانی کنید و به‌جای سرور از پیش میزبانی‌شده در مرورگر خود از آن استفاده کنید. اگر نمونه‌ای دارید، می‌توانید آن را در تنظیمات Helium تنظیم کنید."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Zenmium settings.",
+    "message": "می‌توانید نمونه شخصی خود از سرویس‌های Zenmium را میزبانی کنید و به‌جای سرور از پیش میزبانی‌شده در مرورگر خود از آن استفاده کنید. اگر نمونه‌ای دارید، می‌توانید آن را در تنظیمات Zenmium تنظیم کنید."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_PRIVATE",
@@ -1046,8 +1046,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_CUSTOM",
-    "source": "A custom search engine. Its privacy wasn't verified by Helium.",
-    "message": "یک موتور جستجوی سفارشی. حریم خصوصی آن توسط Helium تأیید نشده است."
+    "source": "A custom search engine. Its privacy wasn't verified by Zenmium.",
+    "message": "یک موتور جستجوی سفارشی. حریم خصوصی آن توسط Zenmium تأیید نشده است."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_ENGINES_BING",
@@ -1061,18 +1061,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_TITLE",
-    "source": "Ready to switch to Helium?",
-    "message": "آماده‌اید به Helium تغییر دهید؟"
+    "source": "Ready to switch to Zenmium?",
+    "message": "آماده‌اید به Zenmium تغییر دهید؟"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES_DESC",
-    "source": "Make Helium my default browser.",
-    "message": "Helium را به مرورگر پیش‌فرض من تبدیل کن."
+    "source": "Make Zenmium my default browser.",
+    "message": "Zenmium را به مرورگر پیش‌فرض من تبدیل کن."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_NO_DESC",
-    "source": "Just trying Helium for now.",
-    "message": "فعلاً فقط Helium را امتحان می‌کنم."
+    "source": "Just trying Zenmium for now.",
+    "message": "فعلاً فقط Zenmium را امتحان می‌کنم."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DATA_IMPORT_TITLE",
@@ -1111,8 +1111,8 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_LINK_DESCRIPTION",
-    "source": "Manage how Helium protects you against fingerprinting",
-    "message": "مدیریت نحوه محافظت Helium از شما در برابر انگشت‌نگاری"
+    "source": "Manage how Zenmium protects you against fingerprinting",
+    "message": "مدیریت نحوه محافظت Zenmium از شما در برابر انگشت‌نگاری"
   },
   {
     "name": "IDS_SETTINGS_NOISE_TOGGLE_DESCRIPTION",
@@ -1121,13 +1121,13 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
-    "message": "وقتی محافظت در برابر انگشت‌نگاری فعال باشد، Helium به برخی از ویژگی‌های مرورگر نویز اضافه می‌کند تا ردیابی و پروفایل‌سازی شما برای سایت‌ها دشوارتر شود. هر سایت در طول جلسه مرور شما اطلاعات تصادفی‌سازی‌شده و یکسانی می‌بیند تا احتمال شناسایی کاهش یابد."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
+    "message": "وقتی محافظت در برابر انگشت‌نگاری فعال باشد، Zenmium به برخی از ویژگی‌های مرورگر نویز اضافه می‌کند تا ردیابی و پروفایل‌سازی شما برای سایت‌ها دشوارتر شود. هر سایت در طول جلسه مرور شما اطلاعات تصادفی‌سازی‌شده و یکسانی می‌بیند تا احتمال شناسایی کاهش یابد."
   },
   {
     "name": "IDS_SETTINGS_NOISE_DISCLAIMER",
-    "source": "Fingerprinting cannot be fully prevented, but Helium's analysis defenses make it harder to recover the original fingerprint.",
-    "message": "انگشت‌نگاری را نمی‌توان به‌طور کامل متوقف کرد، اما دفاع‌های تحلیلی Helium بازیابی انگشت‌نگاری اصلی را دشوارتر می‌کند."
+    "source": "Fingerprinting cannot be fully prevented, but Zenmium's analysis defenses make it harder to recover the original fingerprint.",
+    "message": "انگشت‌نگاری را نمی‌توان به‌طور کامل متوقف کرد، اما دفاع‌های تحلیلی Zenmium بازیابی انگشت‌نگاری اصلی را دشوارتر می‌کند."
   },
   {
     "name": "IDS_SETTINGS_NOISE_CUSTOM_DESCRIPTION",
@@ -1156,8 +1156,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you.",
-    "message": "وقتی محافظت در برابر انگشت‌نگاری فعال باشد، Helium به برخی از ویژگی‌های مرورگر نویز اضافه می‌کند تا ردیابی و پروفایل‌سازی شما برای سایت‌ها دشوارتر شود."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you.",
+    "message": "وقتی محافظت در برابر انگشت‌نگاری فعال باشد، Zenmium به برخی از ویژگی‌های مرورگر نویز اضافه می‌کند تا ردیابی و پروفایل‌سازی شما برای سایت‌ها دشوارتر شود."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_BREAKAGE",
@@ -1166,8 +1166,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_GLOBALLY_DISABLED",
-    "source": "Fingerprinting protection is turned off in Helium settings.",
-    "message": "محافظت در برابر انگشت‌نگاری در تنظیمات Helium خاموش است."
+    "source": "Fingerprinting protection is turned off in Zenmium settings.",
+    "message": "محافظت در برابر انگشت‌نگاری در تنظیمات Zenmium خاموش است."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_SETTINGS_BUTTON",

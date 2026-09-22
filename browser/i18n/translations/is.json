@@ -1,18 +1,18 @@
 [
   {
     "name": "IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Helium fast. Your inactive tabs automatically become active again when you go back to them.",
-    "message": "Helium losar um minni frá óvirkum flipum. Þetta gefur virkum flipum og öðrum forritum meiri tölvuauðlindir og heldur Helium hraðvirku. Óvirkir flipar verða sjálfkrafa virkir aftur þegar þú ferð aftur á þá."
+    "source": "Zenmium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Zenmium fast. Your inactive tabs automatically become active again when you go back to them.",
+    "message": "Zenmium losar um minni frá óvirkum flipum. Þetta gefur virkum flipum og öðrum forritum meiri tölvuauðlindir og heldur Zenmium hraðvirku. Óvirkir flipar verða sjálfkrafa virkir aftur þegar þú ferð aftur á þá."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
-    "message": "Helium sparar rafhlöðuorku með því að takmarka bakgrunnsvinnslu og sjónræn áhrif, svo sem mjúka skrun og rammahraða myndbanda."
+    "source": "Zenmium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
+    "message": "Zenmium sparar rafhlöðuorku með því að takmarka bakgrunnsvinnslu og sjónræn áhrif, svo sem mjúka skrun og rammahraða myndbanda."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY",
-    "source": "Helium preloads pages which makes browsing and searching faster.",
-    "message": "Helium forhleður síður sem gerir vafra- og leitarnotkun hraðari."
+    "source": "Zenmium preloads pages which makes browsing and searching faster.",
+    "message": "Zenmium forhleður síður sem gerir vafra- og leitarnotkun hraðari."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP",
@@ -31,8 +31,8 @@
   },
   {
     "name": "IDS_IMPORTED_FROM_BOOKMARK_FOLDER",
-    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>",
-    "message": "Flutt inn frá <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>"
+    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>",
+    "message": "Flutt inn frá <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>"
   },
   {
     "name": "IDS_EXTENSIONS_IMPORTER_LOCK_TITLE",
@@ -46,18 +46,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES",
-    "source": "Helium services",
-    "message": "Helium þjónustur"
+    "source": "Zenmium services",
+    "message": "Zenmium þjónustur"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_DESCRIPTION",
-    "source": "Manage what Helium services are allowed in your browser",
-    "message": "Stjórnaðu hvaða Helium þjónustur eru leyfðar í vafranum þínum"
+    "source": "Manage what Zenmium services are allowed in your browser",
+    "message": "Stjórnaðu hvaða Zenmium þjónustur eru leyfðar í vafranum þínum"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_TITLE",
-    "source": "Updates to Helium services:",
-    "message": "Uppfærslur á Helium þjónustum:"
+    "source": "Updates to Zenmium services:",
+    "message": "Uppfærslur á Zenmium þjónustum:"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_DESCRIPTION",
@@ -71,23 +71,23 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE",
-    "source": "Allow connecting to Helium services",
-    "message": "Leyfa tengingu við Helium þjónustur"
+    "source": "Allow connecting to Zenmium services",
+    "message": "Leyfa tengingu við Zenmium þjónustur"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
-    "message": "Þegar kveikt er á þessu getur Helium tengst nafnlausum vefþjónustum til að veita viðbótarvirkni. Þegar slökkt er á þessu munu viðbótareiginleikar ekki virka."
+    "source": "When enabled, Zenmium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
+    "message": "Þegar kveikt er á þessu getur Zenmium tengst nafnlausum vefþjónustum til að veita viðbótarvirkni. Þegar slökkt er á þessu munu viðbótareiginleikar ekki virka."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE",
-    "source": "Use your own instance of Helium services",
-    "message": "Nota eigin tilvik af Helium þjónustum"
+    "source": "Use your own instance of Zenmium services",
+    "message": "Nota eigin tilvik af Zenmium þjónustum"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the default one. HTTPS only.",
-    "message": "Þú getur hýst þitt eigið tilvik af Helium þjónustum og notað það í vafranum í stað sjálfgefna tilviksins. Aðeins HTTPS."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the default one. HTTPS only.",
+    "message": "Þú getur hýst þitt eigið tilvik af Zenmium þjónustum og notað það í vafranum í stað sjálfgefna tilviksins. Aðeins HTTPS."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION_WARNING",
@@ -96,18 +96,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_ARIA_LABEL",
-    "source": "Custom origin URL for Helium services",
-    "message": "Sérsniðin upprunavefslóð fyrir Helium þjónustur"
+    "source": "Custom origin URL for Zenmium services",
+    "message": "Sérsniðin upprunavefslóð fyrir Zenmium þjónustur"
   },
   {
     "name": "IDS_APPMENU_TOOLTIP_HELIUM_SERVICES_UPDATE",
-    "source": "Helium services have been updated. Please review the changes.",
-    "message": "Helium þjónustur hafa verið uppfærðar. Vinsamlegast skoðaðu breytingarnar."
+    "source": "Zenmium services have been updated. Please review the changes.",
+    "message": "Zenmium þjónustur hafa verið uppfærðar. Vinsamlegast skoðaðu breytingarnar."
   },
   {
     "name": "IDS_HELIUM_SERVICES_SCHEMA_MENU_ITEM",
-    "source": "Review Helium services updates",
-    "message": "Skoða uppfærslur á Helium þjónustum"
+    "source": "Review Zenmium services updates",
+    "message": "Skoða uppfærslur á Zenmium þjónustum"
   },
   {
     "name": "IDS_APP_MENU_BUTTON_HELIUM_SERVICES_UPDATE",
@@ -116,8 +116,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_TEXT",
-    "source": "Helium services are not available until setup is complete to ensure your privacy and consent.",
-    "message": "Helium þjónustur eru ekki tiltækar fyrr en uppsetning er lokið til að tryggja friðhelgi þína og samþykki."
+    "source": "Zenmium services are not available until setup is complete to ensure your privacy and consent.",
+    "message": "Zenmium þjónustur eru ekki tiltækar fyrr en uppsetning er lokið til að tryggja friðhelgi þína og samþykki."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_BUTTON",
@@ -156,8 +156,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_EXT_PROXY_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "Þegar kveikt er á þessu mun Helium beina niðurhali og uppfærslum viðbóta um milliliðaþjón til að vernda friðhelgi þína. Þegar slökkt er á þessu mun niðurhal og uppfærsla viðbóta ekki virka."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "Þegar kveikt er á þessu mun Zenmium beina niðurhali og uppfærslum viðbóta um milliliðaþjón til að vernda friðhelgi þína. Þegar slökkt er á þessu mun niðurhal og uppfærsla viðbóta ekki virka."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE",
@@ -166,13 +166,13 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium mun sækja lista yfir bangs sem hjálpa þér að vafra hraðar um netið, eins og !w eða !gh. Þegar slökkt er á þessu munu bangs ekki virka."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium mun sækja lista yfir bangs sem hjálpa þér að vafra hraðar um netið, eins og !w eða !gh. Þegar slökkt er á þessu munu bangs ekki virka."
   },
   {
     "name": "IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP_HELIUM",
-    "source": "Please check that Helium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Helium servers.",
-    "message": "Vinsamlegast athugaðu að Helium þjónustur séu virkar (þar á meðal niðurhal á stafsetningarskrám) og gakktu úr skugga um að eldveggurinn loki ekki niðurhali frá Helium þjónum."
+    "source": "Please check that Zenmium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Zenmium servers.",
+    "message": "Vinsamlegast athugaðu að Zenmium þjónustur séu virkar (þar á meðal niðurhal á stafsetningarskrám) og gakktu úr skugga um að eldveggurinn loki ekki niðurhali frá Zenmium þjónum."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE",
@@ -181,8 +181,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium mun sækja orðabókarskrár sem notaðar eru við stafsetningarathugun þegar þess er óskað. Þegar slökkt er á þessu mun stafsetningarathugun ekki virka."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium mun sækja orðabókarskrár sem notaðar eru við stafsetningarathugun þegar þess er óskað. Þegar slökkt er á þessu mun stafsetningarathugun ekki virka."
   },
   {
     "name": "IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION",
@@ -196,8 +196,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO_DESCRIPTION",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium mun sækja nýja síulista fyrir uBlock Origin. Öllum beiðnum um lista er beint um milliliðaþjón til að vernda friðhelgi þína. Þegar slökkt er á þessu verða sjálfgefnir síulistar hlaðnir úr staðbundinni geymslu, sem eru aðeins uppfærðir samhliða Helium. Valfrjálsir síulistar verða sóttir án milliliðunar."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium mun sækja nýja síulista fyrir uBlock Origin. Öllum beiðnum um lista er beint um milliliðaþjón til að vernda friðhelgi þína. Þegar slökkt er á þessu verða sjálfgefnir síulistar hlaðnir úr staðbundinni geymslu, sem eru aðeins uppfærðir samhliða Zenmium. Valfrjálsir síulistar verða sóttir án milliliðunar."
   },
   {
     "name": "IDS_SETTINGS_NEW_TAB_NEXT_TO_ACTIVE_BUTTON",
@@ -211,8 +211,8 @@
   },
   {
     "name": "IDS_COMPONENTS_SVC_STATUS_ERROR_HELIUM_SERVICES",
-    "source": "Component updates are disabled. See Helium services in settings.",
-    "message": "Slökkt er á uppfærslum íhluta. Sjá Helium þjónustur í stillingum."
+    "source": "Component updates are disabled. See Zenmium services in settings.",
+    "message": "Slökkt er á uppfærslum íhluta. Sjá Zenmium þjónustur í stillingum."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE",
@@ -231,8 +231,8 @@
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_DESC_HELIUM",
-    "source": "When you type in the address bar, Helium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
-    "message": "Þegar þú skrifar í veffangastikuna sendir Helium það sem þú skrifar til sjálfgefinnar leitarvélar þinnar til að fá tillögur. Þetta er slökkt á í huliðsstillingu."
+    "source": "When you type in the address bar, Zenmium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
+    "message": "Þegar þú skrifar í veffangastikuna sendir Zenmium það sem þú skrifar til sjálfgefinnar leitarvélar þinnar til að fá tillögur. Þetta er slökkt á í huliðsstillingu."
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_HELIUM",
@@ -256,8 +256,8 @@
   },
   {
     "name": "IDS_POLICY_SOURCE_HOP",
-    "source": "Helium defaults",
-    "message": "Sjálfgefnar stillingar Helium"
+    "source": "Zenmium defaults",
+    "message": "Sjálfgefnar stillingar Zenmium"
   },
   {
     "name": "IDS_ACCNAME_APP_MENU",
@@ -266,8 +266,8 @@
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_HELIUM_SERVICES_DISABLED",
-    "source": "Extension downloads are disabled. Enable this feature in Helium services settings and try again.",
-    "message": "Slökkt er á niðurhali viðbóta. Virkjaðu þennan eiginleika í stillingum Helium þjónusta og reyndu aftur."
+    "source": "Extension downloads are disabled. Enable this feature in Zenmium services settings and try again.",
+    "message": "Slökkt er á niðurhali viðbóta. Virkjaðu þennan eiginleika í stillingum Zenmium þjónusta og reyndu aftur."
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_EXTENSION_DL_DISABLED",
@@ -281,13 +281,13 @@
   },
   {
     "name": "IDS_NEW_TAB_OTR_SUBTITLE_HELIUM",
-    "source": "Helium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
-    "message": "Helium vistar ekkert um vafraferðir þínar í huliðsstillingu, en niðurhal og bókamerki haldast. Vöfrun þín skilur engin ummerki eftir á þessu tæki og aðrir notendur geta ekki séð virkni þína."
+    "source": "Zenmium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
+    "message": "Zenmium vistar ekkert um vafraferðir þínar í huliðsstillingu, en niðurhal og bókamerki haldast. Vöfrun þín skilur engin ummerki eftir á þessu tæki og aðrir notendur geta ekki séð virkni þína."
   },
   {
     "name": "IDS_EXTENSIONS_INSTALL_LOCATION_HELIUM",
-    "source": "Helium component",
-    "message": "Helium íhlutur"
+    "source": "Zenmium component",
+    "message": "Zenmium íhlutur"
   },
   {
     "name": "IDS_SETTINGS_BROWSER_LAYOUT",
@@ -371,8 +371,8 @@
   },
   {
     "name": "IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY",
-    "source": "Helium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
-    "message": "Ekki er hægt að setja Helium sem sjálfgefinn vafra, vegna þess að engin <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> skrá fannst í neinu af: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
+    "source": "Zenmium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
+    "message": "Ekki er hægt að setja Zenmium sem sjálfgefinn vafra, vegna þess að engin <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> skrá fannst í neinu af: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
   },
   {
     "name": "IDS_SETTINGS_CHOOSE_CUSTOM_AVATAR_FILE",
@@ -431,8 +431,8 @@
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_MESSAGE",
-    "source": "Helium needs Full Disk Access to import your Bookmarks from Safari.",
-    "message": "Helium þarf fullan aðgang að diski til að flytja inn bókamerkin þín úr Safari."
+    "source": "Zenmium needs Full Disk Access to import your Bookmarks from Safari.",
+    "message": "Zenmium þarf fullan aðgang að diski til að flytja inn bókamerkin þín úr Safari."
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_LINK",
@@ -686,8 +686,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium mun sjálfkrafa athuga með uppfærslur og setja þær upp. Þetta felur í sér uppfærslur vafra og íhluta. Við mælum með að hafa þessa stillingu virka til að tryggja að þú fáir nýjustu eiginleikana og öryggisuppfærslurnar."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium mun sjálfkrafa athuga með uppfærslur og setja þær upp. Þetta felur í sér uppfærslur vafra og íhluta. Við mælum með að hafa þessa stillingu virka til að tryggja að þú fáir nýjustu eiginleikana og öryggisuppfærslurnar."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE",
@@ -696,8 +696,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium mun sjálfkrafa athuga með uppfærslur íhluta og setja þær upp. Við mælum með að hafa þessa stillingu virka. Á Linux er uppfærslum vafrans sinnt af pakkastjóra dreifingarinnar þinnar. Athugaðu að minnsta kosti vikulega hvort uppfærslur séu til fyrir Helium-pakkann."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium mun sjálfkrafa athuga með uppfærslur íhluta og setja þær upp. Við mælum með að hafa þessa stillingu virka. Á Linux er uppfærslum vafrans sinnt af pakkastjóra dreifingarinnar þinnar. Athugaðu að minnsta kosti vikulega hvort uppfærslur séu til fyrir Zenmium-pakkann."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE_OTHER_TABS",
@@ -826,8 +826,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DESCRIPTION",
-    "source": "Choose whether Helium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
-    "message": "Veldu hvort Helium megi biðja um að senda hruntilkynningar eða senda þær sjálfkrafa. Ef slökkt er á tilkynningum verður öllum tilkynningum í bið eytt."
+    "source": "Choose whether Zenmium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
+    "message": "Veldu hvort Zenmium megi biðja um að senda hruntilkynningar eða senda þær sjálfkrafa. Ef slökkt er á tilkynningum verður öllum tilkynningum í bið eytt."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DISABLED",
@@ -851,13 +851,13 @@
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_DESCRIPTION",
-    "source": "Helium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
-    "message": "Helium lokaðist óvænt. Hruntilkynning gæti hjálpað okkur að laga vandamálið sem þú lentir í og komið í veg fyrir að það gerist aftur."
+    "source": "Zenmium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
+    "message": "Zenmium lokaðist óvænt. Hruntilkynning gæti hjálpað okkur að laga vandamálið sem þú lentir í og komið í veg fyrir að það gerist aftur."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_PRIVACY",
-    "source": "A crash report may incidentally include some sensitive data present in Helium's memory at the time of crash.",
-    "message": "Hruntilkynning kann óvart að innihalda einhver viðkvæm gögn sem voru í minni Helium þegar hrunið átti sér stað."
+    "source": "A crash report may incidentally include some sensitive data present in Zenmium's memory at the time of crash.",
+    "message": "Hruntilkynning kann óvart að innihalda einhver viðkvæm gögn sem voru í minni Zenmium þegar hrunið átti sér stað."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_OPTIONAL",
@@ -876,8 +876,8 @@
   },
   {
     "name": "IDS_CRASH_DISABLED_MESSAGE",
-    "source": "Crash reporting is disabled in Helium settings or by policy.",
-    "message": "Slökkt er á tilkynningum um hrun í stillingum Helium eða með reglu."
+    "source": "Crash reporting is disabled in Zenmium settings or by policy.",
+    "message": "Slökkt er á tilkynningum um hrun í stillingum Zenmium eða með reglu."
   },
   {
     "name": "IDS_CRASH_BUG_LINK_LABEL",
@@ -906,8 +906,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PAGE_TITLE",
-    "source": "Helium Setup",
-    "message": "Uppsetning Helium"
+    "source": "Zenmium Setup",
+    "message": "Uppsetning Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_BUTTON_USE_DEFAULTS",
@@ -921,18 +921,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TITLE",
-    "source": "Helium Partner",
-    "message": "Helium samstarfsaðili"
+    "source": "Zenmium Partner",
+    "message": "Zenmium samstarfsaðili"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TOOLTIP",
-    "source": "Paying for this service will support the development of Helium.",
-    "message": "Að greiða fyrir þessa þjónustu styður þróun Helium."
+    "source": "Paying for this service will support the development of Zenmium.",
+    "message": "Að greiða fyrir þessa þjónustu styður þróun Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_GREETING",
-    "source": "Meet Helium",
-    "message": "Kynntu þér Helium"
+    "source": "Meet Zenmium",
+    "message": "Kynntu þér Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_FINISH_TITLE",
@@ -942,8 +942,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_TITLE",
-    "source": "Helium services",
-    "message": "Þjónustur Helium"
+    "source": "Zenmium services",
+    "message": "Þjónustur Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SUBTITLE",
@@ -952,13 +952,13 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_TITLE",
-    "source": "Allow connecting to Helium services",
-    "message": "Leyfa tengingu við þjónustur Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "Leyfa tengingu við þjónustur Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_DESC",
-    "source": "Helium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Helium will not make any web requests.",
-    "message": "Þjónustur Helium bjóða upp á viðbótarvirkni, svo sem: niðurhal viðbóta, innbyggð !bangs, uppfærslur á síulistum og uppfærslur á vafra. Þegar slökkt er á þessu virkar ekkert af þessum eiginleikum, en Helium sendir engar vefbeiðnir."
+    "source": "Zenmium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Zenmium will not make any web requests.",
+    "message": "Þjónustur Zenmium bjóða upp á viðbótarvirkni, svo sem: niðurhal viðbóta, innbyggð !bangs, uppfærslur á síulistum og uppfærslur á vafra. Þegar slökkt er á þessu virkar ekkert af þessum eiginleikum, en Zenmium sendir engar vefbeiðnir."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_TITLE",
@@ -967,8 +967,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_DESC",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium sækir lista yfir bangs sem hjálpa þér að vafra hraðar um netið, svo sem !w eða !gh. Þegar slökkt er á þessu virka bangs ekki."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium sækir lista yfir bangs sem hjálpa þér að vafra hraðar um netið, svo sem !w eða !gh. Þegar slökkt er á þessu virka bangs ekki."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_TITLE",
@@ -977,8 +977,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_DESC",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "Þegar kveikt er á þessu beinir Helium niðurhali og uppfærslum viðbóta um milliþjón til að vernda persónuvernd þína. Þegar slökkt er á þessu virkar ekki að hlaða niður og uppfæra viðbætur."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "Þegar kveikt er á þessu beinir Zenmium niðurhali og uppfærslum viðbóta um milliþjón til að vernda persónuvernd þína. Þegar slökkt er á þessu virkar ekki að hlaða niður og uppfæra viðbætur."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_TITLE",
@@ -987,8 +987,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_DESC",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium sækir nýja síulista fyrir uBlock Origin. Öllum beiðnum um lista er beint um milliþjón til að vernda persónuvernd þína. Þegar slökkt er á þessu eru sjálfgefnir síulistar hlaðnir úr staðbundinni geymslu, sem eru aðeins uppfærðir samhliða Helium. Valfrjálsir síulistar eru sóttir án milliþjóns."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium sækir nýja síulista fyrir uBlock Origin. Öllum beiðnum um lista er beint um milliþjón til að vernda persónuvernd þína. Þegar slökkt er á þessu eru sjálfgefnir síulistar hlaðnir úr staðbundinni geymslu, sem eru aðeins uppfærðir samhliða Zenmium. Valfrjálsir síulistar eru sóttir án milliþjóns."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE",
@@ -997,8 +997,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium athugar sjálfkrafa með uppfærslur og setur þær upp. Þetta á við um uppfærslur á vafra og einingum. Við mælum með að hafa þessa stillingu virka til að tryggja að þú fáir nýjustu eiginleika og öryggisuppfærslur."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium athugar sjálfkrafa með uppfærslur og setur þær upp. Þetta á við um uppfærslur á vafra og einingum. Við mælum með að hafa þessa stillingu virka til að tryggja að þú fáir nýjustu eiginleika og öryggisuppfærslur."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE_LINUX",
@@ -1007,8 +1007,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC_LINUX",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium athugar sjálfkrafa með uppfærslur á einingum og setur þær upp. Við mælum með að hafa þessa stillingu virka. Á Linux sér pakkastjóri dreifingarinnar þinnar um uppfærslur á vafra. Athugaðu með pakkauppfærslur fyrir Helium að minnsta kosti vikulega."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium athugar sjálfkrafa með uppfærslur á einingum og setur þær upp. Við mælum með að hafa þessa stillingu virka. Á Linux sér pakkastjóri dreifingarinnar þinnar um uppfærslur á vafra. Athugaðu með pakkauppfærslur fyrir Zenmium að minnsta kosti vikulega."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_TITLE",
@@ -1017,18 +1017,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_DESC",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium sækir orðabókaskrár sem notaðar eru við stafsetningarleiðréttingu þegar óskað er eftir því. Þegar slökkt er á þessu virkar stafsetningarleiðrétting ekki."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium sækir orðabókaskrár sem notaðar eru við stafsetningarleiðréttingu þegar óskað er eftir því. Þegar slökkt er á þessu virkar stafsetningarleiðrétting ekki."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_TITLE",
-    "source": "Use your own instance of Helium services",
-    "message": "Nota þitt eigið tilvik af þjónustum Helium"
+    "source": "Use your own instance of Zenmium services",
+    "message": "Nota þitt eigið tilvik af þjónustum Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_DESC",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Helium settings.",
-    "message": "Þú getur hýst þitt eigið tilvik af þjónustum Helium og notað það í vafranum þínum í stað fyrirfram hýsta þjónsins. Ef þú átt slíkt geturðu stillt það í stillingum Helium."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Zenmium settings.",
+    "message": "Þú getur hýst þitt eigið tilvik af þjónustum Zenmium og notað það í vafranum þínum í stað fyrirfram hýsta þjónsins. Ef þú átt slíkt geturðu stillt það í stillingum Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_PRIVATE",
@@ -1047,8 +1047,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_CUSTOM",
-    "source": "A custom search engine. Its privacy wasn't verified by Helium.",
-    "message": "Sérsniðin leitarvél. Persónuvernd hennar var ekki staðfest af Helium."
+    "source": "A custom search engine. Its privacy wasn't verified by Zenmium.",
+    "message": "Sérsniðin leitarvél. Persónuvernd hennar var ekki staðfest af Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_ENGINES_BING",
@@ -1062,19 +1062,19 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_TITLE",
-    "source": "Ready to switch to Helium?",
-    "message": "Tilbúinn að skipta yfir í Helium?",
-    "feminine": "Tilbúin að skipta yfir í Helium?"
+    "source": "Ready to switch to Zenmium?",
+    "message": "Tilbúinn að skipta yfir í Zenmium?",
+    "feminine": "Tilbúin að skipta yfir í Zenmium?"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES_DESC",
-    "source": "Make Helium my default browser.",
-    "message": "Gera Helium að sjálfgefnum vafra mínum."
+    "source": "Make Zenmium my default browser.",
+    "message": "Gera Zenmium að sjálfgefnum vafra mínum."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_NO_DESC",
-    "source": "Just trying Helium for now.",
-    "message": "Bara að prófa Helium í bili."
+    "source": "Just trying Zenmium for now.",
+    "message": "Bara að prófa Zenmium í bili."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DATA_IMPORT_TITLE",
@@ -1113,8 +1113,8 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_LINK_DESCRIPTION",
-    "source": "Manage how Helium protects you against fingerprinting",
-    "message": "Stjórna því hvernig Helium ver þig gegn fingrafaragreiningu"
+    "source": "Manage how Zenmium protects you against fingerprinting",
+    "message": "Stjórna því hvernig Zenmium ver þig gegn fingrafaragreiningu"
   },
   {
     "name": "IDS_SETTINGS_NOISE_TOGGLE_DESCRIPTION",
@@ -1123,13 +1123,13 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
-    "message": "Þegar vörn gegn fingrafaragreiningu er virk bætir Helium suði við tiltekna eiginleika vafrans til að gera vefsvæðum erfiðara að rekja þig og gera af þér persónusnið. Hvert vefsvæði sér samræmdar slembnar upplýsingar á meðan vafralotu þinni stendur til að draga úr líkum á uppgötvun."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
+    "message": "Þegar vörn gegn fingrafaragreiningu er virk bætir Zenmium suði við tiltekna eiginleika vafrans til að gera vefsvæðum erfiðara að rekja þig og gera af þér persónusnið. Hvert vefsvæði sér samræmdar slembnar upplýsingar á meðan vafralotu þinni stendur til að draga úr líkum á uppgötvun."
   },
   {
     "name": "IDS_SETTINGS_NOISE_DISCLAIMER",
-    "source": "Fingerprinting cannot be fully prevented, but Helium's analysis defenses make it harder to recover the original fingerprint.",
-    "message": "Ekki er hægt að koma alveg í veg fyrir fingrafaragreiningu, en greiningarvarnir Helium gera erfiðara að endurheimta upprunalega fingrafarið."
+    "source": "Fingerprinting cannot be fully prevented, but Zenmium's analysis defenses make it harder to recover the original fingerprint.",
+    "message": "Ekki er hægt að koma alveg í veg fyrir fingrafaragreiningu, en greiningarvarnir Zenmium gera erfiðara að endurheimta upprunalega fingrafarið."
   },
   {
     "name": "IDS_SETTINGS_NOISE_CUSTOM_DESCRIPTION",
@@ -1158,8 +1158,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you.",
-    "message": "Þegar vörn gegn fingrafaragreiningu er virk bætir Helium suði við tiltekna eiginleika vafrans til að gera vefsvæðum erfiðara að rekja þig og gera af þér persónusnið."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you.",
+    "message": "Þegar vörn gegn fingrafaragreiningu er virk bætir Zenmium suði við tiltekna eiginleika vafrans til að gera vefsvæðum erfiðara að rekja þig og gera af þér persónusnið."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_BREAKAGE",
@@ -1168,8 +1168,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_GLOBALLY_DISABLED",
-    "source": "Fingerprinting protection is turned off in Helium settings.",
-    "message": "Slökkt er á vörn gegn fingrafaragreiningu í stillingum Helium."
+    "source": "Fingerprinting protection is turned off in Zenmium settings.",
+    "message": "Slökkt er á vörn gegn fingrafaragreiningu í stillingum Zenmium."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_SETTINGS_BUTTON",

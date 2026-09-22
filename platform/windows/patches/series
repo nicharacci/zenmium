@@ -31,3 +31,8 @@ helium/windows/updater/build-wiring.patch
 helium/windows/updater/register.patch
 helium/windows/updater/helper.patch
 helium/windows/updater/update-notifications.patch
+
+# zenmium
+# See browser/patches/zenmium/SERIES.md for conventions; these entries apply
+# after every upstream patch above.
+zenmium/identity-windows.patch

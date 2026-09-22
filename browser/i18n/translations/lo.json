@@ -1,18 +1,18 @@
 [
   {
     "name": "IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Helium fast. Your inactive tabs automatically become active again when you go back to them.",
-    "message": "Helium ປົດປ່ອຍໜ່ວຍຄວາມຈຳຈາກແຖບທີ່ບໍ່ໄດ້ໃຊ້ງານ. ນີ້ຈະໃຫ້ແຖບທີ່ໃຊ້ງານຢູ່ ແລະ ແອັບອື່ນໆມີຊັບພະຍາກອນຄອມພິວເຕີຫຼາຍຂຶ້ນ ແລະ ເຮັດໃຫ້ Helium ໄວ. ແຖບທີ່ບໍ່ໄດ້ໃຊ້ງານຂອງທ່ານຈະກັບມາໃຊ້ງານອີກຄັ້ງໂດຍອັດຕະໂນມັດເມື່ອທ່ານກັບໄປຫາພວກມັນ."
+    "source": "Zenmium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Zenmium fast. Your inactive tabs automatically become active again when you go back to them.",
+    "message": "Zenmium ປົດປ່ອຍໜ່ວຍຄວາມຈຳຈາກແຖບທີ່ບໍ່ໄດ້ໃຊ້ງານ. ນີ້ຈະໃຫ້ແຖບທີ່ໃຊ້ງານຢູ່ ແລະ ແອັບອື່ນໆມີຊັບພະຍາກອນຄອມພິວເຕີຫຼາຍຂຶ້ນ ແລະ ເຮັດໃຫ້ Zenmium ໄວ. ແຖບທີ່ບໍ່ໄດ້ໃຊ້ງານຂອງທ່ານຈະກັບມາໃຊ້ງານອີກຄັ້ງໂດຍອັດຕະໂນມັດເມື່ອທ່ານກັບໄປຫາພວກມັນ."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
-    "message": "Helium ປະຢັດພະລັງງານແບັດເຕີຣີໂດຍການຈຳກັດກິດຈະກຳພື້ນຫຼັງ ແລະ ເອັບເຟັກທາງສາຍຕາ ເຊັ່ນ: ການເລື່ອນລື່ນ ແລະ ອັດຕາເຟຣມວິດີໂອ."
+    "source": "Zenmium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
+    "message": "Zenmium ປະຢັດພະລັງງານແບັດເຕີຣີໂດຍການຈຳກັດກິດຈະກຳພື້ນຫຼັງ ແລະ ເອັບເຟັກທາງສາຍຕາ ເຊັ່ນ: ການເລື່ອນລື່ນ ແລະ ອັດຕາເຟຣມວິດີໂອ."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY",
-    "source": "Helium preloads pages which makes browsing and searching faster.",
-    "message": "Helium ໂຫລດໜ້າລ່ວງໜ້າ ເຊິ່ງເຮັດໃຫ້ການທ່ອງເວັບ ແລະ ການຊອກຫາໄວຂຶ້ນ."
+    "source": "Zenmium preloads pages which makes browsing and searching faster.",
+    "message": "Zenmium ໂຫລດໜ້າລ່ວງໜ້າ ເຊິ່ງເຮັດໃຫ້ການທ່ອງເວັບ ແລະ ການຊອກຫາໄວຂຶ້ນ."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP",
@@ -31,8 +31,8 @@
   },
   {
     "name": "IDS_IMPORTED_FROM_BOOKMARK_FOLDER",
-    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>",
-    "message": "ນຳເຂົ້າຈາກ <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>"
+    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>",
+    "message": "ນຳເຂົ້າຈາກ <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>"
   },
   {
     "name": "IDS_EXTENSIONS_IMPORTER_LOCK_TITLE",
@@ -46,18 +46,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES",
-    "source": "Helium services",
-    "message": "ບໍລິການ Helium"
+    "source": "Zenmium services",
+    "message": "ບໍລິການ Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_DESCRIPTION",
-    "source": "Manage what Helium services are allowed in your browser",
-    "message": "ຈັດການບໍລິການ Helium ທີ່ອະນຸຍາດໃນບຣາວເຊີຂອງທ່ານ"
+    "source": "Manage what Zenmium services are allowed in your browser",
+    "message": "ຈັດການບໍລິການ Zenmium ທີ່ອະນຸຍາດໃນບຣາວເຊີຂອງທ່ານ"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_TITLE",
-    "source": "Updates to Helium services:",
-    "message": "ການອັບເດດບໍລິການ Helium:"
+    "source": "Updates to Zenmium services:",
+    "message": "ການອັບເດດບໍລິການ Zenmium:"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_DESCRIPTION",
@@ -71,23 +71,23 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE",
-    "source": "Allow connecting to Helium services",
-    "message": "ອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ກັບບໍລິການ Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "ອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ກັບບໍລິການ Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
-    "message": "ເມື່ອເປີດໃຊ້ງານ, Helium ຈະສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເວັບທີ່ບໍ່ລະບຸຕົວຕົນເພື່ອໃຫ້ຟັງຊັນເພີ່ມເຕີມ. ເມື່ອປິດ, ຟີເຈີເພີ່ມເຕີມຈະໃຊ້ບໍ່ໄດ້."
+    "source": "When enabled, Zenmium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
+    "message": "ເມື່ອເປີດໃຊ້ງານ, Zenmium ຈະສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເວັບທີ່ບໍ່ລະບຸຕົວຕົນເພື່ອໃຫ້ຟັງຊັນເພີ່ມເຕີມ. ເມື່ອປິດ, ຟີເຈີເພີ່ມເຕີມຈະໃຊ້ບໍ່ໄດ້."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE",
-    "source": "Use your own instance of Helium services",
-    "message": "ໃຊ້ອິນສະແຕນບໍລິການ Helium ຂອງທ່ານເອງ"
+    "source": "Use your own instance of Zenmium services",
+    "message": "ໃຊ້ອິນສະແຕນບໍລິການ Zenmium ຂອງທ່ານເອງ"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the default one. HTTPS only.",
-    "message": "ທ່ານສາມາດໂຮສອິນສະແຕນບໍລິການ Helium ຂອງທ່ານເອງ ແລະ ໃຊ້ມັນໃນບຣາວເຊີຂອງທ່ານແທນຄ່າເລີ່ມຕົ້ນ. HTTPS ເທົ່ານັ້ນ."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the default one. HTTPS only.",
+    "message": "ທ່ານສາມາດໂຮສອິນສະແຕນບໍລິການ Zenmium ຂອງທ່ານເອງ ແລະ ໃຊ້ມັນໃນບຣາວເຊີຂອງທ່ານແທນຄ່າເລີ່ມຕົ້ນ. HTTPS ເທົ່ານັ້ນ."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION_WARNING",
@@ -96,18 +96,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_ARIA_LABEL",
-    "source": "Custom origin URL for Helium services",
-    "message": "URL ຕົ້ນທາງແບບກຳນົດເອງສຳລັບບໍລິການ Helium"
+    "source": "Custom origin URL for Zenmium services",
+    "message": "URL ຕົ້ນທາງແບບກຳນົດເອງສຳລັບບໍລິການ Zenmium"
   },
   {
     "name": "IDS_APPMENU_TOOLTIP_HELIUM_SERVICES_UPDATE",
-    "source": "Helium services have been updated. Please review the changes.",
-    "message": "ບໍລິການ Helium ໄດ້ຖືກອັບເດດແລ້ວ. ກະລຸນາກວດສອບການປ່ຽນແປງ."
+    "source": "Zenmium services have been updated. Please review the changes.",
+    "message": "ບໍລິການ Zenmium ໄດ້ຖືກອັບເດດແລ້ວ. ກະລຸນາກວດສອບການປ່ຽນແປງ."
   },
   {
     "name": "IDS_HELIUM_SERVICES_SCHEMA_MENU_ITEM",
-    "source": "Review Helium services updates",
-    "message": "ກວດສອບການອັບເດດບໍລິການ Helium"
+    "source": "Review Zenmium services updates",
+    "message": "ກວດສອບການອັບເດດບໍລິການ Zenmium"
   },
   {
     "name": "IDS_APP_MENU_BUTTON_HELIUM_SERVICES_UPDATE",
@@ -116,8 +116,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_TEXT",
-    "source": "Helium services are not available until setup is complete to ensure your privacy and consent.",
-    "message": "ບໍລິການ Helium ຈະບໍ່ສາມາດໃຊ້ໄດ້ຈົນກວ່າການຕັ້ງຄ່າຈະສຳເລັດ ເພື່ອຮັບປະກັນຄວາມເປັນສ່ວນຕົວ ແລະ ການຍິນຍອມຂອງທ່ານ."
+    "source": "Zenmium services are not available until setup is complete to ensure your privacy and consent.",
+    "message": "ບໍລິການ Zenmium ຈະບໍ່ສາມາດໃຊ້ໄດ້ຈົນກວ່າການຕັ້ງຄ່າຈະສຳເລັດ ເພື່ອຮັບປະກັນຄວາມເປັນສ່ວນຕົວ ແລະ ການຍິນຍອມຂອງທ່ານ."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_BUTTON",
@@ -156,8 +156,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_EXT_PROXY_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "ເມື່ອເປີດໃຊ້ງານ, Helium ຈະພຣັອກຊີການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດ, ການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍຈະໃຊ້ບໍ່ໄດ້."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "ເມື່ອເປີດໃຊ້ງານ, Zenmium ຈະພຣັອກຊີການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດ, ການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍຈະໃຊ້ບໍ່ໄດ້."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE",
@@ -166,13 +166,13 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium ຈະດຶງລາຍການ bangs ທີ່ຊ່ວຍໃຫ້ທ່ານທ່ອງອິນເຕີເນັດໄວຂຶ້ນ ເຊັ່ນ !w ຫຼື !gh. ເມື່ອປິດ, bangs ຈະໃຊ້ບໍ່ໄດ້."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium ຈະດຶງລາຍການ bangs ທີ່ຊ່ວຍໃຫ້ທ່ານທ່ອງອິນເຕີເນັດໄວຂຶ້ນ ເຊັ່ນ !w ຫຼື !gh. ເມື່ອປິດ, bangs ຈະໃຊ້ບໍ່ໄດ້."
   },
   {
     "name": "IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP_HELIUM",
-    "source": "Please check that Helium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Helium servers.",
-    "message": "ກະລຸນາກວດສອບວ່າບໍລິການ Helium ເປີດໃຊ້ງານຢູ່ (ລວມທັງການດາວໂຫລດການກວດການສະກົດ) ແລະ ໃຫ້ແນ່ໃຈວ່າໄຟວໍບໍ່ໄດ້ບລັອກການດາວໂຫລດຈາກເຊີບເວີ Helium."
+    "source": "Please check that Zenmium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Zenmium servers.",
+    "message": "ກະລຸນາກວດສອບວ່າບໍລິການ Zenmium ເປີດໃຊ້ງານຢູ່ (ລວມທັງການດາວໂຫລດການກວດການສະກົດ) ແລະ ໃຫ້ແນ່ໃຈວ່າໄຟວໍບໍ່ໄດ້ບລັອກການດາວໂຫລດຈາກເຊີບເວີ Zenmium."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE",
@@ -181,8 +181,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium ຈະດຶງໄຟລ໌ວັດຈະນານຸກົມທີ່ໃຊ້ສຳລັບການກວດການສະກົດເມື່ອມີການຮ້ອງຂໍ. ເມື່ອປິດ, ການກວດການສະກົດຈະໃຊ້ບໍ່ໄດ້."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium ຈະດຶງໄຟລ໌ວັດຈະນານຸກົມທີ່ໃຊ້ສຳລັບການກວດການສະກົດເມື່ອມີການຮ້ອງຂໍ. ເມື່ອປິດ, ການກວດການສະກົດຈະໃຊ້ບໍ່ໄດ້."
   },
   {
     "name": "IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION",
@@ -196,8 +196,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO_DESCRIPTION",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium ຈະດຶງລາຍການຕົວກອງໃໝ່ສຳລັບ uBlock Origin. ການຮ້ອງຂໍລາຍການທັງໝົດຈະຖືກພຣັອກຊີເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດ, ລາຍການຕົວກອງເລີ່ມຕົ້ນຈະຖືກໂຫລດຈາກບ່ອນຈັດເກັບທ້ອງຖິ່ນ ເຊິ່ງຈະອັບເດດພ້ອມກັບ Helium ເທົ່ານັ້ນ. ລາຍການຕົວກອງເສີມຈະຖືກຮ້ອງຂໍໂດຍບໍ່ຜ່ານພຣັອກຊີ."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium ຈະດຶງລາຍການຕົວກອງໃໝ່ສຳລັບ uBlock Origin. ການຮ້ອງຂໍລາຍການທັງໝົດຈະຖືກພຣັອກຊີເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດ, ລາຍການຕົວກອງເລີ່ມຕົ້ນຈະຖືກໂຫລດຈາກບ່ອນຈັດເກັບທ້ອງຖິ່ນ ເຊິ່ງຈະອັບເດດພ້ອມກັບ Zenmium ເທົ່ານັ້ນ. ລາຍການຕົວກອງເສີມຈະຖືກຮ້ອງຂໍໂດຍບໍ່ຜ່ານພຣັອກຊີ."
   },
   {
     "name": "IDS_SETTINGS_NEW_TAB_NEXT_TO_ACTIVE_BUTTON",
@@ -211,8 +211,8 @@
   },
   {
     "name": "IDS_COMPONENTS_SVC_STATUS_ERROR_HELIUM_SERVICES",
-    "source": "Component updates are disabled. See Helium services in settings.",
-    "message": "ການອັບເດດອົງປະກອບຖືກປິດ. ເບິ່ງບໍລິການ Helium ໃນການຕັ້ງຄ່າ."
+    "source": "Component updates are disabled. See Zenmium services in settings.",
+    "message": "ການອັບເດດອົງປະກອບຖືກປິດ. ເບິ່ງບໍລິການ Zenmium ໃນການຕັ້ງຄ່າ."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE",
@@ -231,8 +231,8 @@
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_DESC_HELIUM",
-    "source": "When you type in the address bar, Helium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
-    "message": "ເມື່ອທ່ານພິມໃນແຖບທີ່ຢູ່, Helium ຈະສົ່ງສິ່ງທີ່ທ່ານພິມໄປຫາເຄື່ອງມືຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບຄຳແນະນຳ. ນີ້ຈະປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ."
+    "source": "When you type in the address bar, Zenmium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
+    "message": "ເມື່ອທ່ານພິມໃນແຖບທີ່ຢູ່, Zenmium ຈະສົ່ງສິ່ງທີ່ທ່ານພິມໄປຫາເຄື່ອງມືຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບຄຳແນະນຳ. ນີ້ຈະປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ."
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_HELIUM",
@@ -256,8 +256,8 @@
   },
   {
     "name": "IDS_POLICY_SOURCE_HOP",
-    "source": "Helium defaults",
-    "message": "ຄ່າເລີ່ມຕົ້ນ Helium"
+    "source": "Zenmium defaults",
+    "message": "ຄ່າເລີ່ມຕົ້ນ Zenmium"
   },
   {
     "name": "IDS_ACCNAME_APP_MENU",
@@ -266,8 +266,8 @@
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_HELIUM_SERVICES_DISABLED",
-    "source": "Extension downloads are disabled. Enable this feature in Helium services settings and try again.",
-    "message": "ການດາວໂຫລດສ່ວນຂະຫຍາຍຖືກປິດ. ເປີດໃຊ້ຟີເຈີນີ້ໃນການຕັ້ງຄ່າບໍລິການ Helium ແລ້ວລອງອີກຄັ້ງ."
+    "source": "Extension downloads are disabled. Enable this feature in Zenmium services settings and try again.",
+    "message": "ການດາວໂຫລດສ່ວນຂະຫຍາຍຖືກປິດ. ເປີດໃຊ້ຟີເຈີນີ້ໃນການຕັ້ງຄ່າບໍລິການ Zenmium ແລ້ວລອງອີກຄັ້ງ."
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_EXTENSION_DL_DISABLED",
@@ -281,13 +281,13 @@
   },
   {
     "name": "IDS_NEW_TAB_OTR_SUBTITLE_HELIUM",
-    "source": "Helium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
-    "message": "Helium ຈະບໍ່ບັນທຶກຫຍັງກ່ຽວກັບການທ່ອງເວັບຂອງທ່ານໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ແຕ່ການດາວໂຫລດ ແລະ ບຸກມາກຈະຍັງຄົງຢູ່. ການທ່ອງເວັບຂອງທ່ານຈະບໍ່ທິ້ງຮ່ອງຮອຍໃດໆໃນອຸປະກອນນີ້, ແລະ ຜູ້ໃຊ້ຄົນອື່ນຈະບໍ່ສາມາດເຫັນກິດຈະກຳຂອງທ່ານ."
+    "source": "Zenmium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
+    "message": "Zenmium ຈະບໍ່ບັນທຶກຫຍັງກ່ຽວກັບການທ່ອງເວັບຂອງທ່ານໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ແຕ່ການດາວໂຫລດ ແລະ ບຸກມາກຈະຍັງຄົງຢູ່. ການທ່ອງເວັບຂອງທ່ານຈະບໍ່ທິ້ງຮ່ອງຮອຍໃດໆໃນອຸປະກອນນີ້, ແລະ ຜູ້ໃຊ້ຄົນອື່ນຈະບໍ່ສາມາດເຫັນກິດຈະກຳຂອງທ່ານ."
   },
   {
     "name": "IDS_EXTENSIONS_INSTALL_LOCATION_HELIUM",
-    "source": "Helium component",
-    "message": "ອົງປະກອບ Helium"
+    "source": "Zenmium component",
+    "message": "ອົງປະກອບ Zenmium"
   },
   {
     "name": "IDS_SETTINGS_BROWSER_LAYOUT",
@@ -371,8 +371,8 @@
   },
   {
     "name": "IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY",
-    "source": "Helium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
-    "message": "ບໍ່ສາມາດຕັ້ງ Helium ເປັນຄ່າເລີ່ມຕົ້ນໄດ້, ເພາະວ່າບໍ່ພົບໄຟລ໌ <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> ໃນໂຟນເດີໃດໆຕໍ່ໄປນີ້: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
+    "source": "Zenmium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
+    "message": "ບໍ່ສາມາດຕັ້ງ Zenmium ເປັນຄ່າເລີ່ມຕົ້ນໄດ້, ເພາະວ່າບໍ່ພົບໄຟລ໌ <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> ໃນໂຟນເດີໃດໆຕໍ່ໄປນີ້: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
   },
   {
     "name": "IDS_SETTINGS_CHOOSE_CUSTOM_AVATAR_FILE",
@@ -431,8 +431,8 @@
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_MESSAGE",
-    "source": "Helium needs Full Disk Access to import your Bookmarks from Safari.",
-    "message": "Helium ຕ້ອງການສິດເຂົ້າເຖິງດິສກ໌ແບບເຕັມເພື່ອນຳເຂົ້າບຸກມາກຂອງທ່ານຈາກ Safari."
+    "source": "Zenmium needs Full Disk Access to import your Bookmarks from Safari.",
+    "message": "Zenmium ຕ້ອງການສິດເຂົ້າເຖິງດິສກ໌ແບບເຕັມເພື່ອນຳເຂົ້າບຸກມາກຂອງທ່ານຈາກ Safari."
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_LINK",
@@ -686,8 +686,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium ຈະກວດຫາອັບເດດແລະຕິດຕັ້ງໃຫ້ອັດຕະໂນມັດ. ນີ້ລວມມີອັບເດດເບຣາວເຊີແລະອົງປະກອບ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້ ເພື່ອໃຫ້ທ່ານໄດ້ຮັບຟີເຈີຫຼ້າສຸດແລະອັບເດດຄວາມປອດໄພ."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium ຈະກວດຫາອັບເດດແລະຕິດຕັ້ງໃຫ້ອັດຕະໂນມັດ. ນີ້ລວມມີອັບເດດເບຣາວເຊີແລະອົງປະກອບ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້ ເພື່ອໃຫ້ທ່ານໄດ້ຮັບຟີເຈີຫຼ້າສຸດແລະອັບເດດຄວາມປອດໄພ."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE",
@@ -696,8 +696,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium ຈະກວດຫາອັບເດດອົງປະກອບແລະຕິດຕັ້ງໃຫ້ອັດຕະໂນມັດ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້. ໃນ Linux, ອັບເດດເບຣາວເຊີຈະຖືກຈັດການໂດຍຕົວຈັດການແພັກເກດຂອງ distro ຂອງທ່ານ. ກະລຸນາກວດຫາອັບເດດແພັກເກດ Helium ຢ່າງໜ້ອຍທຸກອາທິດ."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium ຈະກວດຫາອັບເດດອົງປະກອບແລະຕິດຕັ້ງໃຫ້ອັດຕະໂນມັດ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້. ໃນ Linux, ອັບເດດເບຣາວເຊີຈະຖືກຈັດການໂດຍຕົວຈັດການແພັກເກດຂອງ distro ຂອງທ່ານ. ກະລຸນາກວດຫາອັບເດດແພັກເກດ Zenmium ຢ່າງໜ້ອຍທຸກອາທິດ."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE_OTHER_TABS",
@@ -826,8 +826,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DESCRIPTION",
-    "source": "Choose whether Helium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
-    "message": "ເລືອກວ່າ Helium ສາມາດຖາມເພື່ອສົ່ງລາຍງານການຂັດຂ້ອງ ຫຼື ສົ່ງພວກມັນໂດຍອັດຕະໂນມັດ. ການປິດການລາຍງານຈະລຶບລາຍງານທີ່ຄ້າງຢູ່ທັງໝົດ."
+    "source": "Choose whether Zenmium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
+    "message": "ເລືອກວ່າ Zenmium ສາມາດຖາມເພື່ອສົ່ງລາຍງານການຂັດຂ້ອງ ຫຼື ສົ່ງພວກມັນໂດຍອັດຕະໂນມັດ. ການປິດການລາຍງານຈະລຶບລາຍງານທີ່ຄ້າງຢູ່ທັງໝົດ."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DISABLED",
@@ -851,13 +851,13 @@
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_DESCRIPTION",
-    "source": "Helium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
-    "message": "Helium ປິດຢ່າງບໍ່ຄາດຄິດ. ລາຍງານການຂັດຂ້ອງອາດຊ່ວຍພວກເຮົາແກ້ໄຂບັນຫາທີ່ທ່ານພົບ ແລະ ປ້ອງກັນບໍ່ໃຫ້ມັນເກີດຂຶ້ນອີກ."
+    "source": "Zenmium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
+    "message": "Zenmium ປິດຢ່າງບໍ່ຄາດຄິດ. ລາຍງານການຂັດຂ້ອງອາດຊ່ວຍພວກເຮົາແກ້ໄຂບັນຫາທີ່ທ່ານພົບ ແລະ ປ້ອງກັນບໍ່ໃຫ້ມັນເກີດຂຶ້ນອີກ."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_PRIVACY",
-    "source": "A crash report may incidentally include some sensitive data present in Helium's memory at the time of crash.",
-    "message": "ລາຍງານການຂັດຂ້ອງອາດຮວມເອົາຂໍ້ມູນທີ່ລະອຽດອ່ອນບາງຢ່າງທີ່ຢູ່ໃນໜ່ວຍຄວາມຈຳຂອງ Helium ໃນເວລາທີ່ເກີດການຂັດຂ້ອງໂດຍບັງເອີນ."
+    "source": "A crash report may incidentally include some sensitive data present in Zenmium's memory at the time of crash.",
+    "message": "ລາຍງານການຂັດຂ້ອງອາດຮວມເອົາຂໍ້ມູນທີ່ລະອຽດອ່ອນບາງຢ່າງທີ່ຢູ່ໃນໜ່ວຍຄວາມຈຳຂອງ Zenmium ໃນເວລາທີ່ເກີດການຂັດຂ້ອງໂດຍບັງເອີນ."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_OPTIONAL",
@@ -876,8 +876,8 @@
   },
   {
     "name": "IDS_CRASH_DISABLED_MESSAGE",
-    "source": "Crash reporting is disabled in Helium settings or by policy.",
-    "message": "ການລາຍງານການຂັດຂ້ອງຖືກປິດການໃຊ້ງານໃນການຕັ້ງຄ່າ Helium ຫຼື ໂດຍນະໂຍບາຍ."
+    "source": "Crash reporting is disabled in Zenmium settings or by policy.",
+    "message": "ການລາຍງານການຂັດຂ້ອງຖືກປິດການໃຊ້ງານໃນການຕັ້ງຄ່າ Zenmium ຫຼື ໂດຍນະໂຍບາຍ."
   },
   {
     "name": "IDS_CRASH_BUG_LINK_LABEL",
@@ -906,8 +906,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PAGE_TITLE",
-    "source": "Helium Setup",
-    "message": "ການຕັ້ງຄ່າ Helium"
+    "source": "Zenmium Setup",
+    "message": "ການຕັ້ງຄ່າ Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_BUTTON_USE_DEFAULTS",
@@ -921,18 +921,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TITLE",
-    "source": "Helium Partner",
-    "message": "ຄູ່ຮ່ວມງານ Helium"
+    "source": "Zenmium Partner",
+    "message": "ຄູ່ຮ່ວມງານ Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TOOLTIP",
-    "source": "Paying for this service will support the development of Helium.",
-    "message": "ການຈ່າຍເງິນສຳລັບບໍລິການນີ້ຈະສະໜັບສະໜູນ ການພັດທະນາຂອງ Helium."
+    "source": "Paying for this service will support the development of Zenmium.",
+    "message": "ການຈ່າຍເງິນສຳລັບບໍລິການນີ້ຈະສະໜັບສະໜູນ ການພັດທະນາຂອງ Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_GREETING",
-    "source": "Meet Helium",
-    "message": "ຮູ້ຈັກ Helium"
+    "source": "Meet Zenmium",
+    "message": "ຮູ້ຈັກ Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_FINISH_TITLE",
@@ -941,8 +941,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_TITLE",
-    "source": "Helium services",
-    "message": "ບໍລິການ Helium"
+    "source": "Zenmium services",
+    "message": "ບໍລິການ Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SUBTITLE",
@@ -951,13 +951,13 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_TITLE",
-    "source": "Allow connecting to Helium services",
-    "message": "ອະນຸຍາດການເຊື່ອມຕໍ່ກັບບໍລິການ Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "ອະນຸຍາດການເຊື່ອມຕໍ່ກັບບໍລິການ Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_DESC",
-    "source": "Helium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Helium will not make any web requests.",
-    "message": "ບໍລິການ Helium ໃຫ້ຟັງຊັນເພີ່ມເຕີມ, ເຊັ່ນ: ການດາວໂຫລດສ່ວນຂະຫຍາຍ, !bangs ໃນຕົວ, ການອັບເດດລາຍການຕົວກອງ, ແລະ ການອັບເດດບຣາວເຊີ. ເມື່ອປິດການໃຊ້ງານ, ບໍ່ມີຄຸນສົມບັດເຫຼົ່ານີ້ຈະເຮັດວຽກ, ແຕ່ Helium ຈະບໍ່ສົ່ງຄຳຮ້ອງຂໍເວັບໃດໆ."
+    "source": "Zenmium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Zenmium will not make any web requests.",
+    "message": "ບໍລິການ Zenmium ໃຫ້ຟັງຊັນເພີ່ມເຕີມ, ເຊັ່ນ: ການດາວໂຫລດສ່ວນຂະຫຍາຍ, !bangs ໃນຕົວ, ການອັບເດດລາຍການຕົວກອງ, ແລະ ການອັບເດດບຣາວເຊີ. ເມື່ອປິດການໃຊ້ງານ, ບໍ່ມີຄຸນສົມບັດເຫຼົ່ານີ້ຈະເຮັດວຽກ, ແຕ່ Zenmium ຈະບໍ່ສົ່ງຄຳຮ້ອງຂໍເວັບໃດໆ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_TITLE",
@@ -966,8 +966,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_DESC",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Helium ຈະດຶງລາຍການ bangs ທີ່ຊ່ວຍໃຫ້ທ່ານທ່ອງອິນເຕີເນັດໄວຂຶ້ນ, ເຊັ່ນ !w ຫຼື !gh. ເມື່ອປິດການໃຊ້ງານ, bangs ຈະບໍ່ເຮັດວຽກ."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Zenmium ຈະດຶງລາຍການ bangs ທີ່ຊ່ວຍໃຫ້ທ່ານທ່ອງອິນເຕີເນັດໄວຂຶ້ນ, ເຊັ່ນ !w ຫຼື !gh. ເມື່ອປິດການໃຊ້ງານ, bangs ຈະບໍ່ເຮັດວຽກ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_TITLE",
@@ -976,8 +976,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_DESC",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "ເມື່ອເປີດການໃຊ້ງານ, Helium ຈະໃຊ້ພຣັອກຊີສຳລັບການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດການໃຊ້ງານ, ການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍຈະບໍ່ເຮັດວຽກ."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "ເມື່ອເປີດການໃຊ້ງານ, Zenmium ຈະໃຊ້ພຣັອກຊີສຳລັບການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດການໃຊ້ງານ, ການດາວໂຫລດ ແລະ ອັບເດດສ່ວນຂະຫຍາຍຈະບໍ່ເຮັດວຽກ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_TITLE",
@@ -986,8 +986,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_DESC",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Helium ຈະດຶງລາຍການຕົວກອງໃໝ່ສຳລັບ uBlock Origin. ຄຳຮ້ອງຂໍທັງໝົດໄປຫາລາຍການແມ່ນຖືກໃຊ້ຜ່ານພຣັອກຊີເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດການໃຊ້ງານ, ລາຍການຕົວກອງເລີ່ມຕົ້ນຈະຖືກໂຫລດຈາກບ່ອນເກັບຮັກສາໃນເຄື່ອງ, ຊຶ່ງຈະຖືກອັບເດດພ້ອມກັບ Helium ເທົ່ານັ້ນ. ລາຍການຕົວກອງທາງເລືອກຈະຖືກຮ້ອງຂໍໂດຍບໍ່ຜ່ານພຣັອກຊີ."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Zenmium ຈະດຶງລາຍການຕົວກອງໃໝ່ສຳລັບ uBlock Origin. ຄຳຮ້ອງຂໍທັງໝົດໄປຫາລາຍການແມ່ນຖືກໃຊ້ຜ່ານພຣັອກຊີເພື່ອປົກປ້ອງຄວາມເປັນສ່ວນຕົວຂອງທ່ານ. ເມື່ອປິດການໃຊ້ງານ, ລາຍການຕົວກອງເລີ່ມຕົ້ນຈະຖືກໂຫລດຈາກບ່ອນເກັບຮັກສາໃນເຄື່ອງ, ຊຶ່ງຈະຖືກອັບເດດພ້ອມກັບ Zenmium ເທົ່ານັ້ນ. ລາຍການຕົວກອງທາງເລືອກຈະຖືກຮ້ອງຂໍໂດຍບໍ່ຜ່ານພຣັອກຊີ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE",
@@ -996,8 +996,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Helium ຈະກວດຫາການອັບເດດ ແລະ ຕິດຕັ້ງພວກມັນໂດຍອັດຕະໂນມັດ. ນີ້ລວມເຖິງການອັບເດດບຣາວເຊີ ແລະ ອົງປະກອບ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້ເພື່ອຮັບປະກັນວ່າທ່ານໄດ້ຮັບຄຸນສົມບັດ ແລະ ການອັບເດດຄວາມປອດໄພຫຼ້າສຸດ."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Zenmium ຈະກວດຫາການອັບເດດ ແລະ ຕິດຕັ້ງພວກມັນໂດຍອັດຕະໂນມັດ. ນີ້ລວມເຖິງການອັບເດດບຣາວເຊີ ແລະ ອົງປະກອບ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້ເພື່ອຮັບປະກັນວ່າທ່ານໄດ້ຮັບຄຸນສົມບັດ ແລະ ການອັບເດດຄວາມປອດໄພຫຼ້າສຸດ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE_LINUX",
@@ -1006,8 +1006,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC_LINUX",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Helium ຈະກວດຫາການອັບເດດອົງປະກອບ ແລະ ຕິດຕັ້ງພວກມັນໂດຍອັດຕະໂນມັດ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້. ໃນ Linux, ການອັບເດດບຣາວເຊີແມ່ນຈັດການໂດຍຕົວຈັດການແພັກເກັດຂອງດິສໂທຣຂອງທ່ານ. ກະລຸນາກວດຫາການອັບເດດແພັກເກັດ Helium ຢ່າງໜ້ອຍທຸກອາທິດ."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Zenmium ຈະກວດຫາການອັບເດດອົງປະກອບ ແລະ ຕິດຕັ້ງພວກມັນໂດຍອັດຕະໂນມັດ. ພວກເຮົາແນະນຳໃຫ້ເປີດການຕັ້ງຄ່ານີ້ໄວ້. ໃນ Linux, ການອັບເດດບຣາວເຊີແມ່ນຈັດການໂດຍຕົວຈັດການແພັກເກັດຂອງດິສໂທຣຂອງທ່ານ. ກະລຸນາກວດຫາການອັບເດດແພັກເກັດ Zenmium ຢ່າງໜ້ອຍທຸກອາທິດ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_TITLE",
@@ -1016,18 +1016,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_DESC",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Helium ຈະດຶງໄຟລ໌ວັດຈະນານຸກົມທີ່ໃຊ້ສຳລັບການກວດຄຳສະກົດເມື່ອຮ້ອງຂໍ. ເມື່ອປິດການໃຊ້ງານ, ການກວດຄຳສະກົດຈະບໍ່ເຮັດວຽກ."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Zenmium ຈະດຶງໄຟລ໌ວັດຈະນານຸກົມທີ່ໃຊ້ສຳລັບການກວດຄຳສະກົດເມື່ອຮ້ອງຂໍ. ເມື່ອປິດການໃຊ້ງານ, ການກວດຄຳສະກົດຈະບໍ່ເຮັດວຽກ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_TITLE",
-    "source": "Use your own instance of Helium services",
-    "message": "ໃຊ້ອິນສະແຕນຂອງບໍລິການ Helium ຂອງທ່ານເອງ"
+    "source": "Use your own instance of Zenmium services",
+    "message": "ໃຊ້ອິນສະແຕນຂອງບໍລິການ Zenmium ຂອງທ່ານເອງ"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_DESC",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Helium settings.",
-    "message": "ທ່ານສາມາດໂຮສອິນສະແຕນຂອງບໍລິການ Helium ຂອງທ່ານເອງ ແລະ ໃຊ້ມັນໃນບຣາວເຊີຂອງທ່ານແທນເຊີບເວີທີ່ໂຮສໄວ້ລ່ວງໜ້າ. ຖ້າທ່ານມີ, ທ່ານສາມາດຕັ້ງມັນໃນການຕັ້ງຄ່າ Helium."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Zenmium settings.",
+    "message": "ທ່ານສາມາດໂຮສອິນສະແຕນຂອງບໍລິການ Zenmium ຂອງທ່ານເອງ ແລະ ໃຊ້ມັນໃນບຣາວເຊີຂອງທ່ານແທນເຊີບເວີທີ່ໂຮສໄວ້ລ່ວງໜ້າ. ຖ້າທ່ານມີ, ທ່ານສາມາດຕັ້ງມັນໃນການຕັ້ງຄ່າ Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_PRIVATE",
@@ -1046,8 +1046,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_CUSTOM",
-    "source": "A custom search engine. Its privacy wasn't verified by Helium.",
-    "message": "ເຄື່ອງມືຊອກຫາແບບກຳນົດເອງ. ຄວາມເປັນສ່ວນຕົວຂອງມັນ ບໍ່ໄດ້ຖືກກວດສອບໂດຍ Helium."
+    "source": "A custom search engine. Its privacy wasn't verified by Zenmium.",
+    "message": "ເຄື່ອງມືຊອກຫາແບບກຳນົດເອງ. ຄວາມເປັນສ່ວນຕົວຂອງມັນ ບໍ່ໄດ້ຖືກກວດສອບໂດຍ Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_ENGINES_BING",
@@ -1061,18 +1061,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_TITLE",
-    "source": "Ready to switch to Helium?",
-    "message": "ພ້ອມປ່ຽນໄປໃຊ້ Helium ແລ້ວບໍ?"
+    "source": "Ready to switch to Zenmium?",
+    "message": "ພ້ອມປ່ຽນໄປໃຊ້ Zenmium ແລ້ວບໍ?"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES_DESC",
-    "source": "Make Helium my default browser.",
-    "message": "ຕັ້ງ Helium ເປັນບຣາວເຊີເລີ່ມຕົ້ນຂອງຂ້ອຍ."
+    "source": "Make Zenmium my default browser.",
+    "message": "ຕັ້ງ Zenmium ເປັນບຣາວເຊີເລີ່ມຕົ້ນຂອງຂ້ອຍ."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_NO_DESC",
-    "source": "Just trying Helium for now.",
-    "message": "ພຽງແຕ່ລອງໃຊ້ Helium ໃນຕອນນີ້."
+    "source": "Just trying Zenmium for now.",
+    "message": "ພຽງແຕ່ລອງໃຊ້ Zenmium ໃນຕອນນີ້."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DATA_IMPORT_TITLE",
@@ -1111,8 +1111,8 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_LINK_DESCRIPTION",
-    "source": "Manage how Helium protects you against fingerprinting",
-    "message": "ຈັດການວິທີທີ່ Helium ປົກປ້ອງທ່ານຈາກການເກັບລາຍນິ້ວມືດິຈິຕອນ"
+    "source": "Manage how Zenmium protects you against fingerprinting",
+    "message": "ຈັດການວິທີທີ່ Zenmium ປົກປ້ອງທ່ານຈາກການເກັບລາຍນິ້ວມືດິຈິຕອນ"
   },
   {
     "name": "IDS_SETTINGS_NOISE_TOGGLE_DESCRIPTION",
@@ -1121,13 +1121,13 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
-    "message": "ເມື່ອເປີດໃຊ້ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນ, Helium ຈະເພີ່ມສັນຍານລົບກວນໃສ່ຄຸນສົມບັດບາງຢ່າງຂອງບຣາວເຊີ ເພື່ອເຮັດໃຫ້ເວັບໄຊຕິດຕາມ ແລະ ສ້າງໂປຣໄຟລ໌ຂອງທ່ານໄດ້ຍາກຂຶ້ນ. ແຕ່ລະເວັບໄຊຈະເຫັນຂໍ້ມູນແບບສຸ່ມທີ່ຄົງທີ່ໃນລະຫວ່າງເຊດຊັນການທ່ອງເວັບຂອງທ່ານ ເພື່ອຫຼຸດໂອກາດໃນການຖືກກວດພົບ."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
+    "message": "ເມື່ອເປີດໃຊ້ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນ, Zenmium ຈະເພີ່ມສັນຍານລົບກວນໃສ່ຄຸນສົມບັດບາງຢ່າງຂອງບຣາວເຊີ ເພື່ອເຮັດໃຫ້ເວັບໄຊຕິດຕາມ ແລະ ສ້າງໂປຣໄຟລ໌ຂອງທ່ານໄດ້ຍາກຂຶ້ນ. ແຕ່ລະເວັບໄຊຈະເຫັນຂໍ້ມູນແບບສຸ່ມທີ່ຄົງທີ່ໃນລະຫວ່າງເຊດຊັນການທ່ອງເວັບຂອງທ່ານ ເພື່ອຫຼຸດໂອກາດໃນການຖືກກວດພົບ."
   },
   {
     "name": "IDS_SETTINGS_NOISE_DISCLAIMER",
-    "source": "Fingerprinting cannot be fully prevented, but Helium's analysis defenses make it harder to recover the original fingerprint.",
-    "message": "ການເກັບລາຍນິ້ວມືດິຈິຕອນບໍ່ສາມາດປ້ອງກັນໄດ້ຢ່າງສົມບູນ, ແຕ່ການປ້ອງກັນດ້ານການວິເຄາະຂອງ Helium ເຮັດໃຫ້ການກູ້ຄືນລາຍນິ້ວມືດິຈິຕອນຕົ້ນສະບັບຍາກຂຶ້ນ."
+    "source": "Fingerprinting cannot be fully prevented, but Zenmium's analysis defenses make it harder to recover the original fingerprint.",
+    "message": "ການເກັບລາຍນິ້ວມືດິຈິຕອນບໍ່ສາມາດປ້ອງກັນໄດ້ຢ່າງສົມບູນ, ແຕ່ການປ້ອງກັນດ້ານການວິເຄາະຂອງ Zenmium ເຮັດໃຫ້ການກູ້ຄືນລາຍນິ້ວມືດິຈິຕອນຕົ້ນສະບັບຍາກຂຶ້ນ."
   },
   {
     "name": "IDS_SETTINGS_NOISE_CUSTOM_DESCRIPTION",
@@ -1156,8 +1156,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you.",
-    "message": "ເມື່ອເປີດໃຊ້ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນ, Helium ຈະເພີ່ມສັນຍານລົບກວນໃສ່ຄຸນສົມບັດບາງຢ່າງຂອງບຣາວເຊີ ເພື່ອເຮັດໃຫ້ເວັບໄຊຕິດຕາມ ແລະ ສ້າງໂປຣໄຟລ໌ຂອງທ່ານໄດ້ຍາກຂຶ້ນ."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you.",
+    "message": "ເມື່ອເປີດໃຊ້ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນ, Zenmium ຈະເພີ່ມສັນຍານລົບກວນໃສ່ຄຸນສົມບັດບາງຢ່າງຂອງບຣາວເຊີ ເພື່ອເຮັດໃຫ້ເວັບໄຊຕິດຕາມ ແລະ ສ້າງໂປຣໄຟລ໌ຂອງທ່ານໄດ້ຍາກຂຶ້ນ."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_BREAKAGE",
@@ -1166,8 +1166,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_GLOBALLY_DISABLED",
-    "source": "Fingerprinting protection is turned off in Helium settings.",
-    "message": "ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນຖືກປິດຢູ່ໃນການຕັ້ງຄ່າ Helium."
+    "source": "Fingerprinting protection is turned off in Zenmium settings.",
+    "message": "ການປ້ອງກັນການເກັບລາຍນິ້ວມືດິຈິຕອນຖືກປິດຢູ່ໃນການຕັ້ງຄ່າ Zenmium."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_SETTINGS_BUTTON",

@@ -1,13 +1,13 @@
 #!/bin/bash -eux
 
 _root_dir="$(dirname "$(greadlink -f "$0")")"
-_app="out/Default/Helium.app"
-_packaging="out/Default/Helium Packaging"
+_app="out/Default/Zenmium.app"
+_packaging="out/Default/Zenmium Packaging"
 
 if [ -n "${MACOS_CERTIFICATE_NAME:-}" ]; then
   if [ -n "${PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_PATH:-}" ]; then
     # Chromium embeds this profile from its packaging inputs during signing.
-    cp "$PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_PATH" "$_packaging/Helium.provisionprofile"
+    cp "$PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_PATH" "$_packaging/Zenmium.provisionprofile"
   fi
 
   CREDENTIAL_ARGS=(store-credentials notarytool-profile)
@@ -30,7 +30,7 @@ if [ -n "${MACOS_CERTIFICATE_NAME:-}" ]; then
     --disable-packaging --notarize \
     "${NOTARY_ARGS[@]}"
 
-  _app="out/Default/signed/stable/Helium.app"
+  _app="out/Default/signed/stable/Zenmium.app"
 else
   echo "warn: MACOS_CERTIFICATE_NAME is missing; skipping notarization" >&2
   codesign --force --deep --sign - "$_app"
@@ -40,14 +40,14 @@ if [ -z "${OUT_DMG_PATH:-}" ]; then
   _chromium_version=$(cat "$_root_dir/helium-chromium/chromium_version.txt")
   _helium_revision=$(cat "$_root_dir/helium-chromium/revision.txt")
   _platform_revision=$(cat "$_root_dir/revision.txt")
-  OUT_DMG_PATH="$_root_dir/build/helium_${_chromium_version}-${_helium_revision}.${_platform_revision}_macos.dmg"
+  OUT_DMG_PATH="$_root_dir/build/zenmium_${_chromium_version}-${_helium_revision}.${_platform_revision}_macos.dmg"
 fi
 
 # Package the app
 chrome/installer/mac/pkg-dmg \
   --sourcefile --source "$_app" \
   --target "$OUT_DMG_PATH" \
-  --volname Helium --format ULMO \
+  --volname Zenmium --format ULMO \
   --icon "$_app/Contents/Resources/app.icns" \
   --symlink /Applications:/Applications \
   --mkdir .background \
@@ -58,6 +58,6 @@ chrome/installer/mac/pkg-dmg \
 if [ -n "${MACOS_CERTIFICATE_NAME:-}" ]; then
   codesign \
     --sign "$MACOS_CERTIFICATE_NAME" \
-    --identifier net.imput.helium --force \
+    --identifier com.zenmium.desktop --force \
     "$OUT_DMG_PATH"
 fi

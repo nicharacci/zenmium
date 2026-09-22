@@ -1,18 +1,18 @@
 [
   {
     "name": "IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Helium fast. Your inactive tabs automatically become active again when you go back to them.",
-    "message": "Το Helium ελευθερώνει μνήμη από ανενεργές καρτέλες. Αυτό δίνει στις ενεργές καρτέλες και σε άλλες εφαρμογές περισσότερους πόρους υπολογιστή και διατηρεί το Helium γρήγορο. Οι ανενεργές καρτέλες σας γίνονται αυτόματα ενεργές ξανά όταν επιστρέψετε σε αυτές."
+    "source": "Zenmium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Zenmium fast. Your inactive tabs automatically become active again when you go back to them.",
+    "message": "Το Zenmium ελευθερώνει μνήμη από ανενεργές καρτέλες. Αυτό δίνει στις ενεργές καρτέλες και σε άλλες εφαρμογές περισσότερους πόρους υπολογιστή και διατηρεί το Zenmium γρήγορο. Οι ανενεργές καρτέλες σας γίνονται αυτόματα ενεργές ξανά όταν επιστρέψετε σε αυτές."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION",
-    "source": "Helium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
-    "message": "Το Helium εξοικονομεί ενέργεια μπαταρίας περιορίζοντας τη δραστηριότητα στο παρασκήνιο και τα οπτικά εφέ, όπως την ομαλή κύλιση και τους ρυθμούς καρέ βίντεο."
+    "source": "Zenmium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.",
+    "message": "Το Zenmium εξοικονομεί ενέργεια μπαταρίας περιορίζοντας τη δραστηριότητα στο παρασκήνιο και τα οπτικά εφέ, όπως την ομαλή κύλιση και τους ρυθμούς καρέ βίντεο."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY",
-    "source": "Helium preloads pages which makes browsing and searching faster.",
-    "message": "Το Helium προφορτώνει σελίδες, κάτι που κάνει την περιήγηση και την αναζήτηση πιο γρήγορες."
+    "source": "Zenmium preloads pages which makes browsing and searching faster.",
+    "message": "Το Zenmium προφορτώνει σελίδες, κάτι που κάνει την περιήγηση και την αναζήτηση πιο γρήγορες."
   },
   {
     "name": "IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP",
@@ -31,8 +31,8 @@
   },
   {
     "name": "IDS_IMPORTED_FROM_BOOKMARK_FOLDER",
-    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>",
-    "message": "Εισαγωγή από <ph name=\"BROWSER_NAME\">$1<ex>Helium</ex></ph>"
+    "source": "Imported from <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>",
+    "message": "Εισαγωγή από <ph name=\"BROWSER_NAME\">$1<ex>Zenmium</ex></ph>"
   },
   {
     "name": "IDS_EXTENSIONS_IMPORTER_LOCK_TITLE",
@@ -46,18 +46,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES",
-    "source": "Helium services",
-    "message": "Υπηρεσίες Helium"
+    "source": "Zenmium services",
+    "message": "Υπηρεσίες Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_DESCRIPTION",
-    "source": "Manage what Helium services are allowed in your browser",
-    "message": "Διαχειριστείτε ποιες υπηρεσίες Helium επιτρέπονται στο πρόγραμμα περιήγησής σας"
+    "source": "Manage what Zenmium services are allowed in your browser",
+    "message": "Διαχειριστείτε ποιες υπηρεσίες Zenmium επιτρέπονται στο πρόγραμμα περιήγησής σας"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_TITLE",
-    "source": "Updates to Helium services:",
-    "message": "Ενημερώσεις στις υπηρεσίες Helium:"
+    "source": "Updates to Zenmium services:",
+    "message": "Ενημερώσεις στις υπηρεσίες Zenmium:"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SCHEMA_NOTICE_DESCRIPTION",
@@ -71,23 +71,23 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE",
-    "source": "Allow connecting to Helium services",
-    "message": "Να επιτρέπεται η σύνδεση σε υπηρεσίες Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "Να επιτρέπεται η σύνδεση σε υπηρεσίες Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
-    "message": "Όταν είναι ενεργοποιημένο, το Helium θα μπορεί να συνδέεται σε υπηρεσίες web που δεν καταγράφουν πληροφορίες σχετικά με εσάς, για παροχή πρόσθετης λειτουργικότητας. Όταν είναι απενεργοποιημένο, οι πρόσθετες λειτουργίες δεν θα λειτουργούν."
+    "source": "When enabled, Zenmium will be able to connect to anonymous web services to provide additional functionality. When disabled, additional features will not work.",
+    "message": "Όταν είναι ενεργοποιημένο, το Zenmium θα μπορεί να συνδέεται σε υπηρεσίες web που δεν καταγράφουν πληροφορίες σχετικά με εσάς, για παροχή πρόσθετης λειτουργικότητας. Όταν είναι απενεργοποιημένο, οι πρόσθετες λειτουργίες δεν θα λειτουργούν."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE",
-    "source": "Use your own instance of Helium services",
-    "message": "Χρησιμοποιήστε τη δική σας παρουσία υπηρεσιών Helium"
+    "source": "Use your own instance of Zenmium services",
+    "message": "Χρησιμοποιήστε τη δική σας παρουσία υπηρεσιών Zenmium"
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the default one. HTTPS only.",
-    "message": "Μπορείτε να φιλοξενήσετε τη δική σας παρουσία υπηρεσιών Helium και να τη χρησιμοποιήσετε στο πρόγραμμα περιήγησής σας αντί της προεπιλεγμένης. Μόνο HTTPS."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the default one. HTTPS only.",
+    "message": "Μπορείτε να φιλοξενήσετε τη δική σας παρουσία υπηρεσιών Zenmium και να τη χρησιμοποιήσετε στο πρόγραμμα περιήγησής σας αντί της προεπιλεγμένης. Μόνο HTTPS."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_DESCRIPTION_WARNING",
@@ -96,18 +96,18 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_OVERRIDE_ARIA_LABEL",
-    "source": "Custom origin URL for Helium services",
-    "message": "Προσαρμοσμένο URL προέλευσης για τις υπηρεσίες Helium"
+    "source": "Custom origin URL for Zenmium services",
+    "message": "Προσαρμοσμένο URL προέλευσης για τις υπηρεσίες Zenmium"
   },
   {
     "name": "IDS_APPMENU_TOOLTIP_HELIUM_SERVICES_UPDATE",
-    "source": "Helium services have been updated. Please review the changes.",
-    "message": "Οι υπηρεσίες Helium ενημερώθηκαν. Ελέγξτε τις αλλαγές."
+    "source": "Zenmium services have been updated. Please review the changes.",
+    "message": "Οι υπηρεσίες Zenmium ενημερώθηκαν. Ελέγξτε τις αλλαγές."
   },
   {
     "name": "IDS_HELIUM_SERVICES_SCHEMA_MENU_ITEM",
-    "source": "Review Helium services updates",
-    "message": "Έλεγχος ενημερώσεων υπηρεσιών Helium"
+    "source": "Review Zenmium services updates",
+    "message": "Έλεγχος ενημερώσεων υπηρεσιών Zenmium"
   },
   {
     "name": "IDS_APP_MENU_BUTTON_HELIUM_SERVICES_UPDATE",
@@ -116,8 +116,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_TEXT",
-    "source": "Helium services are not available until setup is complete to ensure your privacy and consent.",
-    "message": "Οι υπηρεσίες Helium δεν είναι διαθέσιμες μέχρι να ολοκληρωθεί η εγκατάσταση για τη διασφάλιση του απορρήτου και της συγκατάθεσής σας."
+    "source": "Zenmium services are not available until setup is complete to ensure your privacy and consent.",
+    "message": "Οι υπηρεσίες Zenmium δεν είναι διαθέσιμες μέχρι να ολοκληρωθεί η εγκατάσταση για τη διασφάλιση του απορρήτου και της συγκατάθεσής σας."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SETUP_PENDING_BUTTON",
@@ -156,8 +156,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_EXT_PROXY_TOGGLE_DESCRIPTION",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "Όταν είναι ενεργοποιημένο, το Helium θα διαμεσολαβεί τις λήψεις και ενημερώσεις επεκτάσεων για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, η λήψη και ενημέρωση επεκτάσεων δεν θα λειτουργεί."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "Όταν είναι ενεργοποιημένο, το Zenmium θα διαμεσολαβεί τις λήψεις και ενημερώσεις επεκτάσεων για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, η λήψη και ενημέρωση επεκτάσεων δεν θα λειτουργεί."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE",
@@ -166,13 +166,13 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_BANGS_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Το Helium θα λάβει μια λίστα bangs που σας βοηθούν να περιηγηθείτε στο Διαδίκτυο γρηγορότερα, όπως !w ή !gh. Όταν είναι απενεργοποιημένο, τα bangs δεν θα λειτουργούν."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Το Zenmium θα λάβει μια λίστα bangs που σας βοηθούν να περιηγηθείτε στο Διαδίκτυο γρηγορότερα, όπως !w ή !gh. Όταν είναι απενεργοποιημένο, τα bangs δεν θα λειτουργούν."
   },
   {
     "name": "IDS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_FAILED_HELP_HELIUM",
-    "source": "Please check that Helium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Helium servers.",
-    "message": "Ελέγξτε ότι οι υπηρεσίες Helium είναι ενεργοποιημένες (συμπεριλαμβανομένων των λήψεων ορθογραφικού ελέγχου) και βεβαιωθείτε ότι το τείχος προστασίας δεν αποκλείει λήψεις από τους διακομιστές Helium."
+    "source": "Please check that Zenmium services are enabled (including spell check downloads) and make sure that the firewall is not blocking downloads from Zenmium servers.",
+    "message": "Ελέγξτε ότι οι υπηρεσίες Zenmium είναι ενεργοποιημένες (συμπεριλαμβανομένων των λήψεων ορθογραφικού ελέγχου) και βεβαιωθείτε ότι το τείχος προστασίας δεν αποκλείει λήψεις από τους διακομιστές Zenmium."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE",
@@ -181,8 +181,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_SPELLCHECK_TOGGLE_DESCRIPTION",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Το Helium θα λάβει αρχεία λεξικού που χρησιμοποιούνται για ορθογραφικό έλεγχο όταν ζητηθεί. Όταν είναι απενεργοποιημένο, ο ορθογραφικός έλεγχος δεν θα λειτουργεί."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Το Zenmium θα λάβει αρχεία λεξικού που χρησιμοποιούνται για ορθογραφικό έλεγχο όταν ζητηθεί. Όταν είναι απενεργοποιημένο, ο ορθογραφικός έλεγχος δεν θα λειτουργεί."
   },
   {
     "name": "IDS_SETTINGS_ABOUT_PAGE_BROWSER_VERSION",
@@ -196,8 +196,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UBO_DESCRIPTION",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Το Helium θα λάβει ενημερωμένες λίστες φίλτρων για το uBlock Origin. Όλα τα αιτήματα λιστών διαμεσολαβούνται για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, οι προεπιλεγμένες λίστες φίλτρων θα φορτώνονται από τον τοπικό αποθηκευτικό χώρο, οι οποίες ενημερώνονται μόνο μαζί με το Helium. Οι προαιρετικές λίστες φίλτρων θα ζητούνται χωρίς διαμεσολάβηση."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Το Zenmium θα λάβει ενημερωμένες λίστες φίλτρων για το uBlock Origin. Όλα τα αιτήματα λιστών διαμεσολαβούνται για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, οι προεπιλεγμένες λίστες φίλτρων θα φορτώνονται από τον τοπικό αποθηκευτικό χώρο, οι οποίες ενημερώνονται μόνο μαζί με το Zenmium. Οι προαιρετικές λίστες φίλτρων θα ζητούνται χωρίς διαμεσολάβηση."
   },
   {
     "name": "IDS_SETTINGS_NEW_TAB_NEXT_TO_ACTIVE_BUTTON",
@@ -211,8 +211,8 @@
   },
   {
     "name": "IDS_COMPONENTS_SVC_STATUS_ERROR_HELIUM_SERVICES",
-    "source": "Component updates are disabled. See Helium services in settings.",
-    "message": "Οι ενημερώσεις στοιχείων είναι απενεργοποιημένες. Δείτε τις υπηρεσίες Helium στις ρυθμίσεις."
+    "source": "Component updates are disabled. See Zenmium services in settings.",
+    "message": "Οι ενημερώσεις στοιχείων είναι απενεργοποιημένες. Δείτε τις υπηρεσίες Zenmium στις ρυθμίσεις."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE",
@@ -231,8 +231,8 @@
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_DESC_HELIUM",
-    "source": "When you type in the address bar, Helium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
-    "message": "Όταν πληκτρολογείτε στη γραμμή διευθύνσεων, το Helium στέλνει αυτό που πληκτρολογείτε στην προεπιλεγμένη μηχανή αναζήτησής σας για λήψη προτάσεων. Αυτό είναι απενεργοποιημένο στη λειτουργία Ανώνυμης περιήγησης."
+    "source": "When you type in the address bar, Zenmium sends what you type to your default search engine to get suggestions. This is off in Incognito.",
+    "message": "Όταν πληκτρολογείτε στη γραμμή διευθύνσεων, το Zenmium στέλνει αυτό που πληκτρολογείτε στην προεπιλεγμένη μηχανή αναζήτησής σας για λήψη προτάσεων. Αυτό είναι απενεργοποιημένο στη λειτουργία Ανώνυμης περιήγησης."
   },
   {
     "name": "IDS_SETTINGS_SUGGEST_PREF_HELIUM",
@@ -256,8 +256,8 @@
   },
   {
     "name": "IDS_POLICY_SOURCE_HOP",
-    "source": "Helium defaults",
-    "message": "Προεπιλογές Helium"
+    "source": "Zenmium defaults",
+    "message": "Προεπιλογές Zenmium"
   },
   {
     "name": "IDS_ACCNAME_APP_MENU",
@@ -266,8 +266,8 @@
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_HELIUM_SERVICES_DISABLED",
-    "source": "Extension downloads are disabled. Enable this feature in Helium services settings and try again.",
-    "message": "Οι λήψεις επεκτάσεων είναι απενεργοποιημένες. Ενεργοποιήστε αυτήν τη λειτουργία στις ρυθμίσεις υπηρεσιών Helium και δοκιμάστε ξανά."
+    "source": "Extension downloads are disabled. Enable this feature in Zenmium services settings and try again.",
+    "message": "Οι λήψεις επεκτάσεων είναι απενεργοποιημένες. Ενεργοποιήστε αυτήν τη λειτουργία στις ρυθμίσεις υπηρεσιών Zenmium και δοκιμάστε ξανά."
   },
   {
     "name": "IDS_DOWNLOAD_BUBBLE_INTERRUPTED_EXTENSION_DL_DISABLED",
@@ -281,13 +281,13 @@
   },
   {
     "name": "IDS_NEW_TAB_OTR_SUBTITLE_HELIUM",
-    "source": "Helium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
-    "message": "Το Helium δεν θα αποθηκεύσει τίποτα από την περιήγησή σας σε Ανώνυμη λειτουργία, αλλά οι λήψεις και οι σελιδοδείκτες θα διατηρηθούν. Η περιήγησή σας δεν θα αφήσει ίχνη σε αυτήν τη συσκευή και άλλοι χρήστες δεν θα μπορούν να δουν τη δραστηριότητά σας."
+    "source": "Zenmium will not save anything about your browsing in Incognito, but downloads and bookmarks will stick around. Your browsing won't leave any traces on this device, and other users won't be able to see your activity.",
+    "message": "Το Zenmium δεν θα αποθηκεύσει τίποτα από την περιήγησή σας σε Ανώνυμη λειτουργία, αλλά οι λήψεις και οι σελιδοδείκτες θα διατηρηθούν. Η περιήγησή σας δεν θα αφήσει ίχνη σε αυτήν τη συσκευή και άλλοι χρήστες δεν θα μπορούν να δουν τη δραστηριότητά σας."
   },
   {
     "name": "IDS_EXTENSIONS_INSTALL_LOCATION_HELIUM",
-    "source": "Helium component",
-    "message": "Στοιχείο Helium"
+    "source": "Zenmium component",
+    "message": "Στοιχείο Zenmium"
   },
   {
     "name": "IDS_SETTINGS_BROWSER_LAYOUT",
@@ -371,8 +371,8 @@
   },
   {
     "name": "IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY",
-    "source": "Helium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
-    "message": "Το Helium δεν μπορεί να οριστεί ως προεπιλογή, επειδή δεν βρέθηκε αρχείο <ph name=\"DESKTOP_FILENAME\">$1<ex>helium.desktop</ex></ph> σε κανένα από τα: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
+    "source": "Zenmium cannot be set as default, because no <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> file was found in any of: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications.",
+    "message": "Το Zenmium δεν μπορεί να οριστεί ως προεπιλογή, επειδή δεν βρέθηκε αρχείο <ph name=\"DESKTOP_FILENAME\">$1<ex>zenmium.desktop</ex></ph> σε κανένα από τα: ~/.local/share/applications, /usr/share/applications, /usr/local/share/applications."
   },
   {
     "name": "IDS_SETTINGS_CHOOSE_CUSTOM_AVATAR_FILE",
@@ -431,8 +431,8 @@
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_MESSAGE",
-    "source": "Helium needs Full Disk Access to import your Bookmarks from Safari.",
-    "message": "Το Helium χρειάζεται πλήρη πρόσβαση στον δίσκο για να εισαγάγει τους σελιδοδείκτες σας από το Safari."
+    "source": "Zenmium needs Full Disk Access to import your Bookmarks from Safari.",
+    "message": "Το Zenmium χρειάζεται πλήρη πρόσβαση στον δίσκο για να εισαγάγει τους σελιδοδείκτες σας από το Safari."
   },
   {
     "name": "IDS_IMPORT_FULL_DISK_ACCESS_DIALOG_LINK",
@@ -686,8 +686,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Το Helium θα ελέγχει αυτόματα για ενημερώσεις και θα τις εγκαθιστά. Αυτό περιλαμβάνει ενημερώσεις του προγράμματος περιήγησης και στοιχείων. Συνιστούμε να διατηρείτε αυτή τη ρύθμιση ενεργοποιημένη, ώστε να λαμβάνετε τις πιο πρόσφατες λειτουργίες και ενημερώσεις ασφαλείας."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Το Zenmium θα ελέγχει αυτόματα για ενημερώσεις και θα τις εγκαθιστά. Αυτό περιλαμβάνει ενημερώσεις του προγράμματος περιήγησης και στοιχείων. Συνιστούμε να διατηρείτε αυτή τη ρύθμιση ενεργοποιημένη, ώστε να λαμβάνετε τις πιο πρόσφατες λειτουργίες και ενημερώσεις ασφαλείας."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE",
@@ -696,8 +696,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_SERVICES_UPDATE_DESCRIPTION",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Το Helium θα ελέγχει αυτόματα για ενημερώσεις στοιχείων και θα τις εγκαθιστά. Συνιστούμε να διατηρείτε αυτή τη ρύθμιση ενεργοποιημένη. Στο Linux, οι ενημερώσεις του προγράμματος περιήγησης διαχειρίζονται από τη διαχείριση πακέτων της διανομής σας. Ελέγχετε για ενημερώσεις πακέτου του Helium τουλάχιστον κάθε εβδομάδα."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Το Zenmium θα ελέγχει αυτόματα για ενημερώσεις στοιχείων και θα τις εγκαθιστά. Συνιστούμε να διατηρείτε αυτή τη ρύθμιση ενεργοποιημένη. Στο Linux, οι ενημερώσεις του προγράμματος περιήγησης διαχειρίζονται από τη διαχείριση πακέτων της διανομής σας. Ελέγχετε για ενημερώσεις πακέτου του Zenmium τουλάχιστον κάθε εβδομάδα."
   },
   {
     "name": "IDS_TAB_CXMENU_HIBERNATE_OTHER_TABS",
@@ -826,8 +826,8 @@
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DESCRIPTION",
-    "source": "Choose whether Helium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
-    "message": "Επιλέξτε αν το Helium μπορεί να ζητά την αποστολή αναφορών σφαλμάτων ή να τις στέλνει αυτόματα. Η απενεργοποίηση των αναφορών θα διαγράψει όλες τις εκκρεμείς αναφορές."
+    "source": "Choose whether Zenmium can ask to send crash reports or send them automatically. Disabling reports will delete all pending reports.",
+    "message": "Επιλέξτε αν το Zenmium μπορεί να ζητά την αποστολή αναφορών σφαλμάτων ή να τις στέλνει αυτόματα. Η απενεργοποίηση των αναφορών θα διαγράψει όλες τις εκκρεμείς αναφορές."
   },
   {
     "name": "IDS_SETTINGS_HELIUM_CRASH_REPORTING_DISABLED",
@@ -851,13 +851,13 @@
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_DESCRIPTION",
-    "source": "Helium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
-    "message": "Το Helium έκλεισε απροσδόκητα. Μια αναφορά σφάλματος θα μπορούσε να μας βοηθήσει να διορθώσουμε το πρόβλημα που αντιμετωπίσατε και να αποτρέψουμε την επανεμφάνισή του."
+    "source": "Zenmium closed unexpectedly. A crash report could help us fix the issue you ran into and prevent it from happening again.",
+    "message": "Το Zenmium έκλεισε απροσδόκητα. Μια αναφορά σφάλματος θα μπορούσε να μας βοηθήσει να διορθώσουμε το πρόβλημα που αντιμετωπίσατε και να αποτρέψουμε την επανεμφάνισή του."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_PRIVACY",
-    "source": "A crash report may incidentally include some sensitive data present in Helium's memory at the time of crash.",
-    "message": "Μια αναφορά σφάλματος ενδέχεται να περιλαμβάνει κατά λάθος ορισμένα ευαίσθητα δεδομένα που βρίσκονταν στη μνήμη του Helium τη στιγμή της διακοπής λειτουργίας."
+    "source": "A crash report may incidentally include some sensitive data present in Zenmium's memory at the time of crash.",
+    "message": "Μια αναφορά σφάλματος ενδέχεται να περιλαμβάνει κατά λάθος ορισμένα ευαίσθητα δεδομένα που βρίσκονταν στη μνήμη του Zenmium τη στιγμή της διακοπής λειτουργίας."
   },
   {
     "name": "IDS_HELIUM_CRASH_REPORTING_DIALOG_OPTIONAL",
@@ -876,8 +876,8 @@
   },
   {
     "name": "IDS_CRASH_DISABLED_MESSAGE",
-    "source": "Crash reporting is disabled in Helium settings or by policy.",
-    "message": "Η αναφορά σφαλμάτων είναι απενεργοποιημένη στις ρυθμίσεις του Helium ή από πολιτική."
+    "source": "Crash reporting is disabled in Zenmium settings or by policy.",
+    "message": "Η αναφορά σφαλμάτων είναι απενεργοποιημένη στις ρυθμίσεις του Zenmium ή από πολιτική."
   },
   {
     "name": "IDS_CRASH_BUG_LINK_LABEL",
@@ -906,8 +906,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PAGE_TITLE",
-    "source": "Helium Setup",
-    "message": "Ρύθμιση Helium"
+    "source": "Zenmium Setup",
+    "message": "Ρύθμιση Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_BUTTON_USE_DEFAULTS",
@@ -921,18 +921,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TITLE",
-    "source": "Helium Partner",
-    "message": "Συνεργάτης Helium"
+    "source": "Zenmium Partner",
+    "message": "Συνεργάτης Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_PARTNER_TOOLTIP",
-    "source": "Paying for this service will support the development of Helium.",
-    "message": "Η πληρωμή για αυτήν την υπηρεσία θα υποστηρίξει την ανάπτυξη του Helium."
+    "source": "Paying for this service will support the development of Zenmium.",
+    "message": "Η πληρωμή για αυτήν την υπηρεσία θα υποστηρίξει την ανάπτυξη του Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_WELCOME_GREETING",
-    "source": "Meet Helium",
-    "message": "Γνωρίστε το Helium"
+    "source": "Meet Zenmium",
+    "message": "Γνωρίστε το Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_FINISH_TITLE",
@@ -942,8 +942,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_TITLE",
-    "source": "Helium services",
-    "message": "Υπηρεσίες Helium"
+    "source": "Zenmium services",
+    "message": "Υπηρεσίες Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SUBTITLE",
@@ -952,13 +952,13 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_TITLE",
-    "source": "Allow connecting to Helium services",
-    "message": "Να επιτρέπεται η σύνδεση στις υπηρεσίες Helium"
+    "source": "Allow connecting to Zenmium services",
+    "message": "Να επιτρέπεται η σύνδεση στις υπηρεσίες Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_CONNECTION_DESC",
-    "source": "Helium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Helium will not make any web requests.",
-    "message": "Οι υπηρεσίες Helium παρέχουν πρόσθετες λειτουργίες, όπως: λήψεις επεκτάσεων, εγγενή !bangs, ενημερώσεις λιστών φίλτρων και ενημερώσεις προγράμματος περιήγησης. Όταν είναι απενεργοποιημένες, καμία από αυτές τις λειτουργίες δεν θα λειτουργεί, αλλά το Helium δεν θα κάνει κανένα αίτημα ιστού."
+    "source": "Zenmium services provide additional functionality, such as: extension downloads, native !bangs, filter list updates, and browser updates. When disabled, none of these features will work, but Zenmium will not make any web requests.",
+    "message": "Οι υπηρεσίες Zenmium παρέχουν πρόσθετες λειτουργίες, όπως: λήψεις επεκτάσεων, εγγενή !bangs, ενημερώσεις λιστών φίλτρων και ενημερώσεις προγράμματος περιήγησης. Όταν είναι απενεργοποιημένες, καμία από αυτές τις λειτουργίες δεν θα λειτουργεί, αλλά το Zenmium δεν θα κάνει κανένα αίτημα ιστού."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_TITLE",
@@ -967,8 +967,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_BANGS_DESC",
-    "source": "Helium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
-    "message": "Το Helium θα ανακτήσει μια λίστα από bangs που σας βοηθούν να περιηγείστε στο Διαδίκτυο πιο γρήγορα, όπως !w ή !gh. Όταν είναι απενεργοποιημένη, τα bangs δεν θα λειτουργούν."
+    "source": "Zenmium will fetch a list of bangs that help you browse the Internet faster, such as !w or !gh. When disabled, bangs will not work.",
+    "message": "Το Zenmium θα ανακτήσει μια λίστα από bangs που σας βοηθούν να περιηγείστε στο Διαδίκτυο πιο γρήγορα, όπως !w ή !gh. Όταν είναι απενεργοποιημένη, τα bangs δεν θα λειτουργούν."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_TITLE",
@@ -977,8 +977,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_EXTENSIONS_DESC",
-    "source": "When enabled, Helium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
-    "message": "Όταν είναι ενεργοποιημένο, το Helium θα δρομολογεί τις λήψεις και τις ενημερώσεις επεκτάσεων μέσω διακομιστή μεσολάβησης για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, η λήψη και η ενημέρωση επεκτάσεων δεν θα λειτουργεί."
+    "source": "When enabled, Zenmium will proxy extension downloads and updates to protect your privacy. When disabled, downloading and updating extensions will not work.",
+    "message": "Όταν είναι ενεργοποιημένο, το Zenmium θα δρομολογεί τις λήψεις και τις ενημερώσεις επεκτάσεων μέσω διακομιστή μεσολάβησης για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένο, η λήψη και η ενημέρωση επεκτάσεων δεν θα λειτουργεί."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_TITLE",
@@ -987,8 +987,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_UBLOCK_DESC",
-    "source": "Helium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Helium. Optional filter lists will be requested without proxying.",
-    "message": "Το Helium θα ανακτήσει νέες λίστες φίλτρων για το uBlock Origin. Όλα τα αιτήματα προς τις λίστες δρομολογούνται μέσω διακομιστή μεσολάβησης για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένη, οι προεπιλεγμένες λίστες φίλτρων θα φορτώνονται από τον τοπικό χώρο αποθήκευσης και ενημερώνονται μόνο μαζί με το Helium. Οι προαιρετικές λίστες φίλτρων θα ζητούνται χωρίς διακομιστή μεσολάβησης."
+    "source": "Zenmium will fetch fresh filter lists for uBlock Origin. All requests to lists are proxied to protect your privacy. When disabled, default filter lists will be loaded from local storage, which are only updated along with Zenmium. Optional filter lists will be requested without proxying.",
+    "message": "Το Zenmium θα ανακτήσει νέες λίστες φίλτρων για το uBlock Origin. Όλα τα αιτήματα προς τις λίστες δρομολογούνται μέσω διακομιστή μεσολάβησης για την προστασία του απορρήτου σας. Όταν είναι απενεργοποιημένη, οι προεπιλεγμένες λίστες φίλτρων θα φορτώνονται από τον τοπικό χώρο αποθήκευσης και ενημερώνονται μόνο μαζί με το Zenmium. Οι προαιρετικές λίστες φίλτρων θα ζητούνται χωρίς διακομιστή μεσολάβησης."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE",
@@ -997,8 +997,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC",
-    "source": "Helium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
-    "message": "Το Helium θα ελέγχει αυτόματα για ενημερώσεις και θα τις εγκαθιστά. Αυτό περιλαμβάνει ενημερώσεις του προγράμματος περιήγησης και των στοιχείων. Συνιστούμε να διατηρήσετε αυτήν τη ρύθμιση ενεργοποιημένη ώστε να λαμβάνετε τις πιο πρόσφατες λειτουργίες και ενημερώσεις ασφαλείας."
+    "source": "Zenmium will automatically check for updates and install them. This includes browser and component updates. We recommend keeping this setting enabled to ensure you get the latest features and security updates.",
+    "message": "Το Zenmium θα ελέγχει αυτόματα για ενημερώσεις και θα τις εγκαθιστά. Αυτό περιλαμβάνει ενημερώσεις του προγράμματος περιήγησης και των στοιχείων. Συνιστούμε να διατηρήσετε αυτήν τη ρύθμιση ενεργοποιημένη ώστε να λαμβάνετε τις πιο πρόσφατες λειτουργίες και ενημερώσεις ασφαλείας."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_TITLE_LINUX",
@@ -1007,8 +1007,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_AUTOUPDATES_DESC_LINUX",
-    "source": "Helium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Helium package updates at least every week.",
-    "message": "Το Helium θα ελέγχει αυτόματα για ενημερώσεις στοιχείων και θα τις εγκαθιστά. Συνιστούμε να διατηρήσετε αυτήν τη ρύθμιση ενεργοποιημένη. Στο Linux, οι ενημερώσεις του προγράμματος περιήγησης διαχειρίζονται από τον διαχειριστή πακέτων της διανομής σας. Ελέγχετε για ενημερώσεις του πακέτου Helium τουλάχιστον κάθε εβδομάδα."
+    "source": "Zenmium will automatically check for component updates and install them. We recommend keeping this setting enabled. On Linux, browser updates are handled by your distro's package manager. Please check for Zenmium package updates at least every week.",
+    "message": "Το Zenmium θα ελέγχει αυτόματα για ενημερώσεις στοιχείων και θα τις εγκαθιστά. Συνιστούμε να διατηρήσετε αυτήν τη ρύθμιση ενεργοποιημένη. Στο Linux, οι ενημερώσεις του προγράμματος περιήγησης διαχειρίζονται από τον διαχειριστή πακέτων της διανομής σας. Ελέγχετε για ενημερώσεις του πακέτου Zenmium τουλάχιστον κάθε εβδομάδα."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_TITLE",
@@ -1017,18 +1017,18 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_SPELLCHECK_DESC",
-    "source": "Helium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
-    "message": "Το Helium θα ανακτά αρχεία λεξικού που χρησιμοποιούνται για τον ορθογραφικό έλεγχο όταν ζητηθεί. Όταν είναι απενεργοποιημένο, ο ορθογραφικός έλεγχος δεν θα λειτουργεί."
+    "source": "Zenmium will fetch dictionary files used for spell checking when requested. When disabled, spell checking will not work.",
+    "message": "Το Zenmium θα ανακτά αρχεία λεξικού που χρησιμοποιούνται για τον ορθογραφικό έλεγχο όταν ζητηθεί. Όταν είναι απενεργοποιημένο, ο ορθογραφικός έλεγχος δεν θα λειτουργεί."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_TITLE",
-    "source": "Use your own instance of Helium services",
-    "message": "Χρήση της δικής σας παρουσίας των υπηρεσιών Helium"
+    "source": "Use your own instance of Zenmium services",
+    "message": "Χρήση της δικής σας παρουσίας των υπηρεσιών Zenmium"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SERVICES_INSTANCE_DESC",
-    "source": "You can host your own instance of Helium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Helium settings.",
-    "message": "Μπορείτε να φιλοξενήσετε τη δική σας παρουσία των υπηρεσιών Helium και να τη χρησιμοποιήσετε στο πρόγραμμα περιήγησής σας αντί για τον προ-φιλοξενούμενο διακομιστή. Αν έχετε μία, μπορείτε να την ορίσετε στις ρυθμίσεις του Helium."
+    "source": "You can host your own instance of Zenmium services and use it in your browser instead of the pre-hosted server. If you have one, you can set it in Zenmium settings.",
+    "message": "Μπορείτε να φιλοξενήσετε τη δική σας παρουσία των υπηρεσιών Zenmium και να τη χρησιμοποιήσετε στο πρόγραμμα περιήγησής σας αντί για τον προ-φιλοξενούμενο διακομιστή. Αν έχετε μία, μπορείτε να την ορίσετε στις ρυθμίσεις του Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_PRIVATE",
@@ -1047,8 +1047,8 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_CATEGORIES_CUSTOM",
-    "source": "A custom search engine. Its privacy wasn't verified by Helium.",
-    "message": "Μια προσαρμοσμένη μηχανή αναζήτησης. Το απόρρητό της δεν επαληθεύτηκε από το Helium."
+    "source": "A custom search engine. Its privacy wasn't verified by Zenmium.",
+    "message": "Μια προσαρμοσμένη μηχανή αναζήτησης. Το απόρρητό της δεν επαληθεύτηκε από το Zenmium."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_SEARCH_ENGINES_BING",
@@ -1062,19 +1062,19 @@
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_TITLE",
-    "source": "Ready to switch to Helium?",
-    "message": "Έτοιμοι να μεταβείτε στο Helium;",
-    "feminine": "Έτοιμες να μεταβείτε στο Helium;"
+    "source": "Ready to switch to Zenmium?",
+    "message": "Έτοιμοι να μεταβείτε στο Zenmium;",
+    "feminine": "Έτοιμες να μεταβείτε στο Zenmium;"
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_YES_DESC",
-    "source": "Make Helium my default browser.",
-    "message": "Ορισμός του Helium ως προεπιλεγμένου προγράμματος περιήγησης."
+    "source": "Make Zenmium my default browser.",
+    "message": "Ορισμός του Zenmium ως προεπιλεγμένου προγράμματος περιήγησης."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DEFAULT_BROWSER_NO_DESC",
-    "source": "Just trying Helium for now.",
-    "message": "Απλώς δοκιμάζω το Helium προς το παρόν."
+    "source": "Just trying Zenmium for now.",
+    "message": "Απλώς δοκιμάζω το Zenmium προς το παρόν."
   },
   {
     "name": "IDS_HELIUM_ONBOARDING_DATA_IMPORT_TITLE",
@@ -1113,8 +1113,8 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_LINK_DESCRIPTION",
-    "source": "Manage how Helium protects you against fingerprinting",
-    "message": "Διαχειριστείτε τον τρόπο με τον οποίο το Helium σάς προστατεύει από τη λήψη ψηφιακού αποτυπώματος"
+    "source": "Manage how Zenmium protects you against fingerprinting",
+    "message": "Διαχειριστείτε τον τρόπο με τον οποίο το Zenmium σάς προστατεύει από τη λήψη ψηφιακού αποτυπώματος"
   },
   {
     "name": "IDS_SETTINGS_NOISE_TOGGLE_DESCRIPTION",
@@ -1123,13 +1123,13 @@
   },
   {
     "name": "IDS_SETTINGS_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
-    "message": "Όταν η προστασία από ψηφιακό αποτύπωμα είναι ενεργοποιημένη, το Helium προσθέτει θόρυβο σε ορισμένες λειτουργίες του προγράμματος περιήγησης, ώστε να δυσκολέψει τους ιστότοπους να σας παρακολουθούν και να δημιουργούν το προφίλ σας. Κάθε ιστότοπος βλέπει συνεπείς τυχαιοποιημένες πληροφορίες κατά τη διάρκεια της περιόδου περιήγησής σας, ώστε να μειώνονται οι πιθανότητες εντοπισμού."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you. Each site sees consistent randomized information during your browsing session to reduce the chances of detection.",
+    "message": "Όταν η προστασία από ψηφιακό αποτύπωμα είναι ενεργοποιημένη, το Zenmium προσθέτει θόρυβο σε ορισμένες λειτουργίες του προγράμματος περιήγησης, ώστε να δυσκολέψει τους ιστότοπους να σας παρακολουθούν και να δημιουργούν το προφίλ σας. Κάθε ιστότοπος βλέπει συνεπείς τυχαιοποιημένες πληροφορίες κατά τη διάρκεια της περιόδου περιήγησής σας, ώστε να μειώνονται οι πιθανότητες εντοπισμού."
   },
   {
     "name": "IDS_SETTINGS_NOISE_DISCLAIMER",
-    "source": "Fingerprinting cannot be fully prevented, but Helium's analysis defenses make it harder to recover the original fingerprint.",
-    "message": "Η λήψη ψηφιακού αποτυπώματος δεν μπορεί να αποτραπεί πλήρως, αλλά οι άμυνες ανάλυσης του Helium δυσκολεύουν την ανάκτηση του αρχικού αποτυπώματος."
+    "source": "Fingerprinting cannot be fully prevented, but Zenmium's analysis defenses make it harder to recover the original fingerprint.",
+    "message": "Η λήψη ψηφιακού αποτυπώματος δεν μπορεί να αποτραπεί πλήρως, αλλά οι άμυνες ανάλυσης του Zenmium δυσκολεύουν την ανάκτηση του αρχικού αποτυπώματος."
   },
   {
     "name": "IDS_SETTINGS_NOISE_CUSTOM_DESCRIPTION",
@@ -1158,8 +1158,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_DESCRIPTION",
-    "source": "When fingerprinting protection is enabled, Helium adds noise to certain browser features to make it harder for sites to track and profile you.",
-    "message": "Όταν η προστασία από ψηφιακό αποτύπωμα είναι ενεργοποιημένη, το Helium προσθέτει θόρυβο σε ορισμένες λειτουργίες του προγράμματος περιήγησης, ώστε να δυσκολέψει τους ιστότοπους να σας παρακολουθούν και να δημιουργούν το προφίλ σας."
+    "source": "When fingerprinting protection is enabled, Zenmium adds noise to certain browser features to make it harder for sites to track and profile you.",
+    "message": "Όταν η προστασία από ψηφιακό αποτύπωμα είναι ενεργοποιημένη, το Zenmium προσθέτει θόρυβο σε ορισμένες λειτουργίες του προγράμματος περιήγησης, ώστε να δυσκολέψει τους ιστότοπους να σας παρακολουθούν και να δημιουργούν το προφίλ σας."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_BREAKAGE",
@@ -1168,8 +1168,8 @@
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_GLOBALLY_DISABLED",
-    "source": "Fingerprinting protection is turned off in Helium settings.",
-    "message": "Η προστασία από ψηφιακό αποτύπωμα είναι απενεργοποιημένη στις ρυθμίσεις του Helium."
+    "source": "Fingerprinting protection is turned off in Zenmium settings.",
+    "message": "Η προστασία από ψηφιακό αποτύπωμα είναι απενεργοποιημένη στις ρυθμίσεις του Zenmium."
   },
   {
     "name": "IDS_PAGE_INFO_HELIUM_NOISE_SETTINGS_BUTTON",

@@ -1,0 +1,120 @@
+name: browser-windows
+
+on:
+  push:
+    paths:
+      - 'browser/**'
+      - 'platform/windows/**'
+      - '.github/workflows/browser-windows.yml'
+  pull_request:
+    paths:
+      - 'browser/**'
+      - 'platform/windows/**'
+      - '.github/workflows/browser-windows.yml'
+  workflow_dispatch:
+
+# Cap one build attempt per push batch: a newer push supersedes the in-flight build.
+concurrency:
+  group: browser-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    name: Build Zenmium (Windows, x64)
+    runs-on: windows-2025
+    timeout-minutes: 330
+    env:
+      HELIUM_JOB_STARTED_AT: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Materialize helium-chromium if the symlink did not survive checkout
+        shell: pwsh
+        run: |
+          $link = "platform\windows\helium-chromium"
+          if (!(Test-Path "$link\patches\series")) {
+            if (Test-Path $link) { Remove-Item $link -Force -Recurse }
+            robocopy "browser" $link /MIR /NFL /NDL /NJH /NJS | Out-Null
+          }
+          if (!(Test-Path "$link\patches\series")) { throw "helium-chromium not materialized" }
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Windows SDK 10.0.28000.0
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK install failed: $($installer.ExitCode)" }
+
+      - name: Python deps
+        run: pip install httplib2==0.22.0 requests pillow
+
+      - name: Fetch Chromium sources
+        run: |
+          $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"
+          cd platform\windows
+          python helium-chromium\utils\clone.py -o build\src -p win64
+
+      - name: Dry-run every series patch (browser + platform)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="/c/Program Files/Git/usr/bin:$PATH"
+          cd platform/windows
+          check_series() {
+            local pdir="$1"
+            grep -vE '^\s*(#|$)' "$pdir/series" | while read -r rel; do
+              echo "checking $pdir/$rel"
+              patch -p1 --ignore-whitespace --dry-run --fuzz=0 \
+                -i "$pdir/$rel" -d build/src --no-backup-if-mismatch > /dev/null \
+                || { echo "FAILED: $pdir/$rel"; exit 1; }
+            done
+          }
+          check_series helium-chromium/patches
+          check_series patches
+
+      - name: Fetch deps, apply patches, build
+        run: |
+          $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"
+          cd platform\windows
+          $env:HELIUM_JOB_STARTED_AT = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+          python build.py --ci $env:HELIUM_JOB_STARTED_AT
+
+      - name: Package (NSIS installer, mini-installer, portable zip)
+        run: |
+          $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"
+          cd platform\windows
+          python package.py
+
+      - name: Smoke check packaged binaries
+        run: |
+          cd platform\windows
+          $zip = Get-Item build\zenmium_*-windows.zip | Select-Object -First 1
+          Expand-Archive $zip.FullName -DestinationPath "$env:RUNNER_TEMP\zenmium_pkg" -Force
+          $exe = "$env:RUNNER_TEMP\zenmium_pkg\Zenmium-bin\chrome.exe"
+          if (!(Test-Path $exe)) { throw "Zenmium-bin\chrome.exe missing from package" }
+          $vi = (Get-Item $exe).VersionInfo
+          $vi | Format-List ProductName, FileVersion
+          if ($vi.ProductName -notmatch 'Zenmium') { throw "ProductName is not Zenmium" }
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenmium_windows_x64
+          path: |
+            platform/windows/build/zenmium_*-installer.exe
+            platform/windows/build/zenmium_*-mini-installer.exe
+            platform/windows/build/zenmium_*-windows.zip
+          if-no-files-found: error

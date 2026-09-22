@@ -1,0 +1,103 @@
+# S005 - Helium base (T1 foundation)
+
+## Outcome
+
+Zenmium rebases onto a vendored clone of Helium: the shared browser tree in
+`browser/` and the per-OS build harnesses in `platform/macos` and
+`platform/windows`. Zenmium identity ships as overlay patches under
+`patches/zenmium/` plus direct script edits; upstream trees stay byte-identical
+under their `helium/` namespaces so future rebases are mechanical.
+
+## Upstream pins
+
+| Tree | Upstream | Tag | Resolved commit |
+| --- | --- | --- | --- |
+| `browser/` | `imputnet/helium` | `0.17.2` (Chromium 153.0.8010.52, helium rev 2) | `8c19f4c6d624e31293bca13e655f2fe542ba6fdb` |
+| `platform/macos/` | `imputnet/helium-macos` | `0.17.2.2` | `359e3c5711a7c727499948bc9413aedabe3295ae` |
+| `platform/windows/` | `imputnet/helium-windows` | `0.17.2.2` | `a3a181707825c2c5117a96655cbc09a35beebe4a` |
+
+Each tree carries its own `PROVENANCE.md`. The upstream `helium-chromium`
+submodule in the platform repos is replaced by a `helium-chromium` symlink to
+`../../browser`; CI materializes the directory if the link does not survive
+checkout. Upstream `.gitmodules`, `.github/`, `docs/`, and license files were
+kept as provenance; upstream `AGENTS.md`/`CLAUDE.md` (an agent contribution
+ban aimed at imputnet PRs) was intentionally not vendored and that divergence
+is recorded in `browser/PROVENANCE.md`.
+
+## Zenmium identity map
+
+Identity is `com.zenmium.desktop` / `Zenmium` end to end.
+
+- `browser/patches/zenmium/identity-branding.patch` - BRANDING file
+  (`PRODUCT_*=Zenmium`, `MAC_BUNDLE_ID=com.zenmium.desktop`, upstream
+  `MAC_TEAM_ID` cleared) and crash reporter `product_name`.
+- `browser/patches/zenmium/identity-protocol.patch` - `helium://` display
+  scheme becomes `zenmium://` (url_constants, url_fixer, omnibox builtin
+  provider, tab_search). Internal `kHeliumUIScheme` identifier keeps its
+  name; only the value changes.
+- `browser/patches/zenmium/identity-icons.patch` - `chrome-product` WebUI
+  glyph: helium mark to Zenmium disc placeholder.
+- `platform/macos/patches/zenmium/identity-macos.patch` - product dir
+  `com.zenmium.desktop`, keychain `Zenmium Safe Storage`.
+- `platform/windows/patches/zenmium/identity-windows.patch` - install modes
+  (company `zenmium`, product `Zenmium`, ZenmiumHTM/ZenmiumPDF ProgIDs,
+  `zenmium` launch scheme), fresh product GUIDs (Zenmium owns
+  `5F013A80-...`, `A4618E41-...`, `009FFECD-...`, `F7EFD333-...`), archive
+  names `zenmium.7z`/`zenmium.packed.7z`/`Zenmium-bin`, `SOFTWARE\Policies\Zenmium`,
+  `zenmium_installer.log`.
+- Direct edits (scripts, not patch targets): `sign_and_package_app.sh`,
+  `dev.sh`, `resources/dmg.json`, `devutils/generate_dmg_dsstore.sh`,
+  `installer/helium.nsi` -> `installer/zenmium.nsi`, `package.py`.
+- String layer: `utils/name_substitution*` regexes extended so
+  Chrom(e|ium)/Helium and `chrome://`/`helium://` become Zenmium/`zenmium://`
+  in .grd/.xtb; `i18n/` JSONs rewritten across all 81 locales.
+- Icons: everything under `browser/resources/branding/`, `resources/favicons/`,
+  `platform/macos/resources/` (`app.icns`, `Assets.car`, `legacy*.png`,
+  `dmg_background.png`, `AppIcon.icon`) derived from
+  `docs/zenmium/brand/zenmium-canonical.png` and the approved desktop icns.
+  `product_logo.svg`, `*.icon`, and the `chrome-product` glyph are geometric
+  placeholders, not the true vector mark (design review owns that).
+
+## Patch conventions
+
+`patches/series` is the sprint's shared file. Zenmium entries queue at the end
+inside a `# zenmium` block, one file per domain, alphabetical, and are
+recorded in `browser/patches/zenmium/SERIES.md`. Zenmium patches describe the
+*post-helium* tree. Internal plumbing names (`HELIUM_*` version fields,
+`helium.services` pref keys, `helium-chromium` path, `___helium_*` functions,
+upstream copyright headers) stay; only user-visible values change.
+
+## Build lanes
+
+- `.github/workflows/browser-macos.yml` - `macos-15-xlarge`, clone via
+  `retrieve_and_unpack_resource.sh -g`, `patch --dry-run --fuzz=0` gate on
+  every series entry (browser then platform), toolchain fetch, real apply,
+  substitutions, `gn gen` (ci args), `chrome/installer/mac`, ad-hoc
+  `sign_and_package_app.sh`, DMG artifact `zenmium_macos_<arch>`, launch
+  smoke (`--version`, `CFBundleIdentifier == com.zenmium.desktop`).
+- `.github/workflows/browser-windows.yml` - `windows-2025`, SDK
+  10.0.28000.0, `clone.py -o build\src -p win64`, same dry-run gate,
+  `build.py --ci` (skips refetch, 5.5h budget), `package.py` (NSIS
+  `zenmium_<ver>_x64-installer.exe`, mini-installer, portable zip), smoke
+  check on `Zenmium-bin\chrome.exe` product name.
+- Both workflows are `paths:`-scoped to `browser/**`, their platform tree, and
+  themselves; `concurrency` cancels superseded runs, capping one build
+  attempt per push batch. `desktop.yml`, `macos-release.yml`, and
+  `windows-release.yml` are untouched.
+
+## Deliberately not done (track boundaries)
+
+- Service endpoints (`services.helium.imput.net`, `crash.helium.computer`,
+  `updates.helium.computer`, Sparkle/WinSparkle wiring) - T4 scope; untouched.
+- `helium/hop/` and `onboarding-page.patch` still build - removal/rewire is T2.
+- Real code signing + notarization - deferred to the release gate; CI ships
+  ad-hoc.
+- Upstream staged/resume CI choreography - T1 ships a single-job lane;
+  revisit if a full build overruns the job limit.
+
+## Remaining risk
+
+Patch context lines were verified against upstream patch output (the
+post-helium tree), not against a real Chromium checkout - that tree only
+exists after the ~100 GB source fetch, so first proof is the dry-run gate in
+CI itself.

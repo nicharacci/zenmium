@@ -361,3 +361,12 @@ helium/ui/show-tabs-from-non-account-backends.patch
 helium/ui/compact-debugger-warning.patch
 helium/ui/progress-bar.patch
 helium/ui/exclusive-access-bubble.patch
+
+# zenmium
+# Zenmium-owned identity and product patches. Each entry is one file per
+# domain, alphabetical within the block; record intent in
+# patches/zenmium/SERIES.md before adding an entry here. Later sprint
+# tracks append their own files in this block; unification owns the merge.
+zenmium/identity-branding.patch
+zenmium/identity-icons.patch
+zenmium/identity-protocol.patch
