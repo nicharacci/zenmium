@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..1111111
 --- /dev/null
 +++ b/third_party/zenmium_internal/README.chromium
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,14 @@
 +Name: Zenmium internal-products component extension
 +Short Name: zenmium_internal
 +URL: https://github.com/nicharacci/zenmium
@@ -23,7 +23,7 @@ new file mode 100644
 index 0000000..2222222
 --- /dev/null
 +++ b/third_party/zenmium_internal/BUILD.gn
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,46 @@
 +import("//ui/webui/resources/tools/generate_grd.gni")
 +import("//tools/grit/grit_rule.gni")
 +
@@ -114,7 +114,7 @@ new file mode 100644
 index 0000000..4444444
 --- /dev/null
 +++ b/third_party/zenmium_internal/extension_ids.h
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,19 @@
 +// Zenmium component extension identity. The ID is pinned by the
 +// manifest "key" field in browser/resources/zenmium/internal/manifest.json;
 +// keep them in lockstep.
@@ -173,7 +173,7 @@ index 0000000..7777777
        "$root_gen_dir/ui/webui/resources/webui_resources.pak",
      ]
  
-@@ -180,6 +181,7 @@ template("chrome_extra_paks") {
+@@ -180,7 +181,8 @@ template("chrome_extra_paks") {
        "//third_party/blink/public:devtools_inspector_resources",
        "//third_party/blink/public:resources",
        "//third_party/blink/public/strings:permission_element_generated_strings",

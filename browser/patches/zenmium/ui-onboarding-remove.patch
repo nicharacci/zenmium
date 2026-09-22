@@ -750,7 +750,7 @@
          <template is="dom-if" if="[[changes_.length]]">
            <div id="changelog-notice">
              <div id="changelog-title">$i18n{heliumSchemaUpdatedTitle}</div>
-@@ -111,7 +111,6 @@
+@@ -111,8 +111,7 @@
              </settings-toggle-button>
          </cr-collapse>
      </div>

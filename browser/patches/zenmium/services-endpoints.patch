@@ -32,7 +32,7 @@
 
 --- a/components/helium_services/helium_services_helpers.cc
 +++ b/components/helium_services/helium_services_helpers.cc
-@@ -30,7 +30,7 @@
+@@ -30,8 +30,8 @@
  #define UPDATES_SUPPORTED
  #endif
  
@@ -45,7 +45,7 @@
 
 --- a/components/crash/core/app/crash_reporter_client.cc
 +++ b/components/crash/core/app/crash_reporter_client.cc
-@@ -160,7 +160,7 @@
+@@ -160,8 +160,8 @@
    }
  #endif
  
@@ -58,7 +58,7 @@
 
 --- a/chrome/browser/extensions/updater/chrome_extension_downloader_factory.cc
 +++ b/chrome/browser/extensions/updater/chrome_extension_downloader_factory.cc
-@@ -55,7 +55,7 @@
+@@ -55,6 +55,6 @@
      manifest_query_params += "&testrequest=1";
    }
    downloader->set_manifest_query_params(manifest_query_params);
