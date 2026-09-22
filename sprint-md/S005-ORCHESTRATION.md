@@ -84,6 +84,15 @@ Linear is not configured on this control plane (verified — no Linear MCP; the 
 
 Dedicated unification pass owned by the orchestrator session (TP acceptance): merge `patches/series`, resolve any flag/endpoint collisions, run the full validation set (`git apply --check` on the complete series, both CI builds, paired-client smoke, endpoint sweep), then update `PROJECT-STATE.md` and write the S005 receipt to `docs/zenmium/`.
 
+## Dispatch receipts — Wave 1 (2026-09-22)
+
+| Track | Environment | Session | Branch | Checkpoint ref | Status |
+| --- | --- | --- | --- | --- | --- |
+| T1 | Devin Cloud sandbox, repo-attached | `5c8ac5096afe4bcc9aa1fb43b8b416d3` ([app.devin.ai](https://app.devin.ai/sessions/5c8ac5096afe4bcc9aa1fb43b8b416d3)) | `2026-09-22` | `refs/sprints/S005/T1/P1` | dispatched |
+| T4 | Devin Cloud sandbox, repo-attached | `466cb483b12a4229b57a1cfdb274d343` ([app.devin.ai](https://app.devin.ai/sessions/466cb483b12a4229b57a1cfdb274d343)) | `2026-09-22` | `refs/sprints/S005/T4/P1` | dispatched (deploy half gated on Fly auth) |
+
+Wave 2 (T2, T3) holds until T1's checkpoint lands — both depend on the vendored tree existing. Sprint preservation ref `refs/sprints/S005/P1` marks the frozen plan commit on `2026-09-22`.
+
 ## Memory flush note
 
 S005 planned 2026-09-22: Zenmium rebases from Electron-embedded Chromium to a cloned Helium base in the same repo; 4 tracks + unification; local disk measured 1.1 GB so all implementation is Cloud/CI; services self-hosted on Fly as `zenmium-services`; greeting animation killed; Electron lane frozen with dirty-tree custody preserved.
