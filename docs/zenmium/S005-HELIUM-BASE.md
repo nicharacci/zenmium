@@ -85,6 +85,18 @@ upstream copyright headers) stay; only user-visible values change.
   attempt per push batch. `desktop.yml`, `macos-release.yml`, and
   `windows-release.yml` are untouched.
 
+## Local verification surface
+
+Any local launch or UI verification of a Zenmium build runs on the side
+monitor, never the primary display. Primary is the MSI G27C5 (TP's working
+screen); the test surface is the DELL P2422H portrait display (non-primary).
+Place verification windows on the non-primary display via
+`screen.getAllDisplays()` and present them inactive (`showInactive()`) —
+never `show()`/focus(). `desktop/scripts/verify-side-monitor.mjs` is the
+detector: exit 0 means the Dell is present, exit 2 means do not open
+windows. If the side monitor is absent, record the proof gap instead of
+opening anything on main.
+
 ## Deliberately not done (track boundaries)
 
 - Service endpoints (`services.helium.imput.net`, `crash.helium.computer`,
