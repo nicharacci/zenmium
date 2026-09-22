@@ -3,5 +3,7 @@
 # appcast-<arch>.xml under APPCAST_PUBLIC_DIR hourly, and serve.ts serves that
 # directory. Fly [processes] groups land on separate machines with separate
 # filesystems, so the two must share one process to share /srv/appcasts.
+# A fresh sparkler_srv volume may not carry the image's subdirs.
+mkdir -p /srv/assets /srv/appcasts
 deno run -A main.ts &
 exec deno run -A serve.ts
