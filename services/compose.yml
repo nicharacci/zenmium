@@ -1,0 +1,69 @@
+services:
+  nginx:
+    init: true
+    read_only: true
+    build:
+      context: ./svc
+      dockerfile: ./nginx/Dockerfile
+      args:
+        SERVICES_HOSTNAME: ${SERVICES_HOSTNAME}
+    volumes:
+      - ./private/acme-tmp:/var/tmp/acme.sh:ro
+      - ./private/certs:/certs:ro
+      - type: tmpfs
+        target: /tmp
+        tmpfs: { size: 5.12e+8 }
+    shm_size: 512mb
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+      - 443:443/udp
+    restart: unless-stopped
+
+  ubo_proxy:
+    container_name: ubo_proxy
+    read_only: true
+    build: ./svc/ubo
+    restart: unless-stopped
+    environment:
+      - UBO_PROXY_BASE_URL=${UBO_PROXY_BASE_URL}
+      - UBO_USE_ORIGINAL_UBLOCK_ASSETS=${UBO_USE_ORIGINAL_UBLOCK_ASSETS:-0}
+      - UBO_ASSETS_JSON_URL=${UBO_ASSETS_JSON_URL:-}
+      - UBO_ASSETS_JSON_SHA256=${UBO_ASSETS_JSON_SHA256:-}
+  ext_proxy:
+    container_name: ext_proxy
+    read_only: true
+    build: ./svc/extension-proxy
+    restart: unless-stopped
+    environment:
+      - HMAC_SECRET=${HMAC_SECRET}
+      - PROXY_BASE_URL=${PROXY_BASE_URL}
+
+  ext_proxy_2:
+    container_name: ext_proxy_backup
+    read_only: true
+    build: ./svc/extension-proxy
+    restart: unless-stopped
+    environment:
+      - HMAC_SECRET=${HMAC_SECRET}
+      - PROXY_BASE_URL=${PROXY_BASE_URL}
+
+  acme.sh:
+    image: "neilpang/acme.sh@sha256:6960358a673694fc18d895f812585ca73f973ed278c2750c7b3f74485f493485"
+    volumes:
+      - acme.sh:/acme.sh
+      - ./private/certs:/certs
+      - ./private/acme-tmp:/webroot
+    command: daemon
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  acme.sh: {}
+
+# Helium services are designed to run on a full-stack network.
+# If you need to disable this, make a compose.override.yml file.
+networks:
+  default:
+    enable_ipv6: true

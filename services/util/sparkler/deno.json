@@ -1,0 +1,12 @@
+{
+    "license": "AGPL-3.0",
+    "tasks": {
+        "dev": "deno run --watch main.ts"
+    },
+    "fmt": {
+        "indentWidth": 4,
+        "singleQuote": true,
+        "lineWidth": 100,
+        "trailingCommas": "onlyMultiLine"
+    }
+}

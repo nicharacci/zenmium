@@ -1,0 +1,12 @@
+<tr<% if (it.foldId) { %> data-stack-fold-row="<%= it.foldId %>" hidden<% } %>>
+  <td class="idx mono"><%= it.frame.index %></td>
+  <td class="mono">
+    <% if (it.frame.fn) { %>
+    <%~ include('cpp-name', { name: it.frame.fn, collapseCppName: it.collapseCppName }) %>
+    <% } else { %>
+    <span class="muted"><%= it.frame.addr %></span>
+    <% } %>
+  </td>
+  <td class="mono muted"><%= it.frame.loc %></td>
+  <td class="muted"><%= it.frame.mod %></td>
+</tr>
