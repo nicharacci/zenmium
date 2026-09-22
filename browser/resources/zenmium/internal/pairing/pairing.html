@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pairing request — Zenmium</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="pairing.css">
+</head>
+<body>
+  <main class="pair card">
+    <header class="pair-head">
+      <img src="../icons/shield-check.svg" class="icon" alt="">
+      <h1>Pairing request</h1>
+    </header>
+
+    <p class="pair-lede">
+      <strong id="label">This product</strong> wants to control this browser.
+      Granting shares the capabilities below until the grant expires or you revoke it.
+    </p>
+
+    <section class="pair-caps" aria-label="Requested capabilities">
+      <h2>Capabilities</h2>
+      <ul id="caps"></ul>
+    </section>
+
+    <section class="pair-meta">
+      <div class="row"><span>Expires</span><strong id="ttl">—</strong></div>
+      <div class="row"><span>Workspace</span><strong>This profile</strong></div>
+    </section>
+
+    <p class="pair-note">
+      Credentials, tokens, and password fields are never sent to a paired product.
+      Revoke any time from Settings → Internal products.
+    </p>
+
+    <footer class="pair-actions">
+      <button id="deny" class="btn secondary">Deny</button>
+      <button id="approve" class="btn">Approve pairing</button>
+    </footer>
+  </main>
+  <script type="module" src="pairing.js"></script>
+</body>
+</html>

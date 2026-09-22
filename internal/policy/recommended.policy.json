@@ -1,0 +1,22 @@
+{
+  "$comment": "Zenmium recommended managed policy, applied by platform installers (T4/packaging consumes this file). macOS: /Library/Managed Preferences/com.zenmium.desktop.plist; Windows: HKLM\\SOFTWARE\\Policies\\Zenmium. These values express the protected-zone laws as machine-enforceable policy.",
+
+  "RemoteDebuggingAllowed": false,
+
+  "DeveloperToolsAvailability": 1,
+
+  "ExtensionSettings": {
+    "koaiegnjnlbfgibjpjdcbnjejnihgfoa": {
+      "installation_mode": "normal_installed",
+      "override_update_url": false,
+      "toolbar_state": "force_shown"
+    },
+    "aeblfdkhhhdcdjpifhhbdiojplfjncoa": {
+      "installation_mode": "allowed",
+      "override_update_url": false
+    },
+    "*": {
+      "installation_mode": "allowed"
+    }
+  }
+}

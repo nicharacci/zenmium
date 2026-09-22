@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Zenmium Internal",
+  "version": "1.0.0",
+  "description": "Zenmium internal browser-control contract and agent rail (component extension).",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzSjq+MGX9q7mUJRTZN794A2dNP2kJ6anZPB/a/xrzh5cXE0rcR5/FFw0zHOojaAyurHrnhnks37erDhjAnbFQdNTphwdP8az5DYYdhFiuqnQ6TIzveLrFEmp4wtms/GFHjFg5IfM57r7hk49CxbUNqp5tNOKF1uj2pvj+IwLyl2cNyPvFHzqzwXnjQ856cvhM/tf9GAM6SHOtvcbCnPKuQVVTv51UElSpzUf2mfKrktiKB00Ptw14cu9atnBvD1nhQ4zATn+WVuLrYyYikXqlILy3AAnR2CTmXw8nIN5H4VfrXbDcUgVp4E/g+OlkbHjzMFcH5VdcMPH43ZJQsH2TwIDAQAB",
+
+  "permissions": [
+    "nativeMessaging",
+    "scripting",
+    "tabs",
+    "downloads",
+    "storage",
+    "sidePanel",
+    "alarms"
+  ],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "side_panel": {
+    "default_path": "dock/dock.html"
+  },
+
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+
+  "web_accessible_resources": []
+}

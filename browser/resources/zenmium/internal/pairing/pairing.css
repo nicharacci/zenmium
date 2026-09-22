@@ -1,0 +1,94 @@
+/* Pairing consent surface — flat, Inter, Phosphor, 44px targets. */
+
+.pair {
+  margin: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pair-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pair-head .icon { color: var(--primary); width: 22px; height: 22px; }
+.pair-head h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pair-lede { margin: 0; color: var(--foreground); line-height: 1.5; }
+.pair-lede strong { font-weight: 600; }
+
+.pair-caps h2 {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  margin: 0 0 8px;
+}
+.pair-caps ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pair-caps li {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pair-caps li .icon { width: 14px; height: 14px; }
+.pair-caps li.danger {
+  background: color-mix(in oklch, var(--destructive) 10%, var(--background));
+  border-color: color-mix(in oklch, var(--destructive) 40%, var(--border));
+  color: var(--destructive);
+}
+
+.pair-meta {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pair-meta .row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.pair-meta .row span { color: var(--muted-foreground); }
+
+.pair-note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.pair-actions {
+  display: flex;
+  gap: 10px;
+}
+.pair-actions .btn { flex: 1; }
+
+/* window open animation — decelerating, reduced-motion instant */
+.pair { animation: pop var(--motion-med) var(--motion-ease); }
+@keyframes pop {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}

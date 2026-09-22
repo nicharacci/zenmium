@@ -1,0 +1,9 @@
+{
+  "name": "io.zenmium.control",
+  "description": "Zenmium internal control channel (component extension <-> daemon)",
+  "path": "__HOST_BIN_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://koaiegnjnlbfgibjpjdcbnjejnihgfoa/"
+  ]
+}

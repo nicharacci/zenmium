@@ -1,0 +1,16 @@
+S005-T3 checklist
+[x] Read brief + orchestration + Electron contract + helium seams + T4 endpoints
+[x] internal/go.mod + control/ (codes, types, redact, store, service) — v1 contract port
+[x] internal/bridge/ (loopback HTTP + MCP JSON-RPC, zenmium_* tools)
+[x] internal/relay/ (nm framing, host, daemon unix socket, protocol)
+[x] internal/agent/ (opencode kernel + chat manager + approvals)
+[x] internal/secstore/ (keychain/DPAPI secure store)
+[x] internal/cmd/ zenmiumd + zenmium-control-host + zenmiumctl
+[x] internal/manifests/ + policy/ + config/endpoints.json (T4 names) + scripts/
+[x] internal/CONTROL-CONTRACT.md (parity table)
+[x] internal/docs/WORKSPACE-MAP.md + ONEPASSWORD-LANE.md + README.md
+[x] go build ./... + go vet + parity unit tests green (12/12)
+[x] browser/resources/zenmium/internal/ extension (manifest, background, dom-control, dock, pairing, tokens, icons)
+[x] browser/patches/zenmium/internal-component-extension.patch + SERIES.md entry + helium_resources.txt block
+[x] Patch context audit vs helium patch output; synthetic-tree git apply PASS
+[x] Commit S005 - Helium base / T3; report SHAs

@@ -28,12 +28,21 @@ patch's `-` context lines describe the *post-helium* tree.
 | `identity-branding.patch` | identity | BRANDING file (PRODUCT_*=Zenmium, MAC_BUNDLE_ID=com.zenmium.desktop, clears upstream MAC_TEAM_ID) and crash reporter product_name |
 | `identity-icons.patch` | identity | chrome-product WebUI glyph: Helium mark path -> Zenmium disc placeholder (canonical raster is the source of truth; true vector mark is a design review item) |
 | `identity-protocol.patch` | identity | helium:// display scheme -> zenmium:// (url_constants, url_fixer, builtin_provider omnibox, tab_search) |
+<<<<<<< HEAD
 | `services-endpoints.patch` | services | imput/helium service hosts -> Solvys Fly lane (kHeliumDefaultOrigin + settings placeholder -> zenmium-services.fly.dev, kUpdateBaseUrl -> zenmium-updates.fly.dev, crash URL -> zenmium-svc-crash.fly.dev, set_ping_enabled_domain -> zenmium-services.fly.dev); swap *.fly.dev for the final hostname at the TP DNS gate |
 | `ui-frame-liquid-glass.patch` | chrome UI | liquid-glass frame on Helium's native-materials seam: kHeliumNativeFrameMaterials enabled by default (feature + pref); flat-tint law via overlay alphas (neutral 0.2->0.12, theme tint 0.55/0.8->0.88/0.9) so the macOS vibrancy layer sits behind a near-flat tint; Windows/Linux frames are theme-token driven (no API seam), documented in S005-HELIUM-BASE |
 | `ui-onboarding-remove.patch` | chrome UI | removes helium-onboarding end to end: deletes chrome/browser/ui/webui/onboarding/* (4 files), unwires chrome://setup (url constants, WebUI config, source_set, resource ids, paks, generated_resources part, gritdeps), restores upstream startup/favicon/incognito/search-engines checks, drops the services-page setup-pending surface + strings + allowlist entry; keeps kHeliumDidOnboarding + kHeliumServicesConsented registered (default true) and reverts ShouldAccessServices to `return enabled` so services run with no consent ceremony |
 | `ui-sidebar-zenmium-defaults.patch` | chrome UI | Zenmium chrome defaults: helium.browser.layout -> kVertical (sidebar is the shipping layout); Zenmium compact mode on at startup via kHeliumZenMode=true + ZenModeSidebarPinned=false + ZenModeTopChromePinned=true (floating sidebar, pinned toolbar, edge-reveal); reduced-motion preserved (zen-mode reveal uses RichAnimationDuration) |
 | `ui-sidebar-zenmium-geometry.patch` | chrome UI | ZEN_SIDEBAR_SPEC geometry: expanded strip 200->230px, collapsed rail 42->60px (48px content + 2x6 padding), tab/pinned row height 30->36, min tab width 30->48, content card gutter kSplitViewContentInset 3->8, card corner radius GetGenericFrameRadius 8->10 |
 | `ui-theme-zenmium-tokens.patch` | chrome UI | Zenmium canon into the Chromium color pipeline: Primary ramp -> workspace green (#6ee7a8 anchored at Primary80), Neutral + NeutralVariant ramp overrides appended for both color modes (charcoal dark, warm-neutral light), kGoogleBlue* ramp + cr_shared_vars.css/app.css accent vars + theme-picker baseline swatches -> green; internal names stay upstream (--helium-blue, google-blue-*) |
+||||||| parent of ac81c09 (S005 - Helium base / T3)
+=======
+| `internal-component-extension.patch` | internal-products | bundles `resources/zenmium/internal/` as the `zenmium_internal` component extension (third_party/zenmium_internal BUILD.gn + grit pipeline, resource_ids.spec base 12800, chrome_paks.gni, component_loader AddZenmiumInternal, allowlist ID+IDR, resource manager map) — queued for series; actual series line lands at unification per T3 boundary |
+
+## T3 queued entries (not yet in patches/series — unification owns the merge)
+
+- `zenmium/internal-component-extension.patch` — after `zenmium/identity-protocol.patch`, inside the `# zenmium` block, alphabetical.
+>>>>>>> ac81c09 (S005 - Helium base / T3)
 
 ## Track notes
 
@@ -49,3 +58,11 @@ patch's `-` context lines describe the *post-helium* tree.
   crash.helium.computer, updates.helium.computer) are untouched in T1. If a
   patch here ever needs an endpoint before T4 lands, use the
   `*.zenmium.internal` placeholder convention, never imputnet hosts.
+- T3 (internal products): `resources/helium_resources.txt` gained a
+  `# zenmium` block mapping `zenmium/internal/` files into
+  `third_party/zenmium_internal/` — required by
+  `internal-component-extension.patch`. T4's staged endpoint names
+  (`zenmium-services.fly.dev`, `zenmium-updates.fly.dev`,
+  `zenmium-svc-crash.fly.dev`) are consumed in `internal/config/endpoints.json`,
+  not in any browser patch; the placeholder convention above is superseded
+  for control-plane wiring.

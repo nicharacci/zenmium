@@ -1,0 +1,276 @@
+diff --git a/third_party/zenmium_internal/README.chromium b/third_party/zenmium_internal/README.chromium
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/third_party/zenmium_internal/README.chromium
+@@ -0,0 +1,10 @@
++Name: Zenmium internal-products component extension
++Short Name: zenmium_internal
++URL: https://github.com/nicharacci/zenmium
++Version: 1
++License: Proprietary
++License File: NOT_SHIPPED
++Security Critical: no
++Shipped: yes
++
++Zenmium's bundled component extension: the browser-control executor
++(dom-control), the native-messaging relay client, the pairing consent
++surface, and the agent rail dock. Sources live outside the Chromium
++tree at browser/resources/zenmium/internal/ in the Zenmium repository
++and are copied here by the resource pipeline before GN runs.
+diff --git a/third_party/zenmium_internal/BUILD.gn b/third_party/zenmium_internal/BUILD.gn
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/third_party/zenmium_internal/BUILD.gn
+@@ -0,0 +1,44 @@
++import("//ui/webui/resources/tools/generate_grd.gni")
++import("//tools/grit/grit_rule.gni")
++
++file_list = "$target_gen_dir/files.json"
++generated_grd = "$target_gen_dir/zenmium_internal_resources.grd"
++
++action("generate_file_list") {
++    script = "generate_file_list.py"
++    args = [
++        rebase_path("."),
++        rebase_path(file_list),
++    ]
++    inputs = [
++        "manifest.json",
++        "generate_file_list.py",
++    ]
++    outputs = [ file_list ]
++}
++
++generate_grd("zenmium_internal_grd") {
++    out_grd = generated_grd
++
++    grd_prefix = "zenmium_internal"
++    resource_path_prefix = "zenmium_internal"
++
++    manifest_files = [ file_list ]
++    deps = [":generate_file_list"]
++}
++
++grit("zenmium_internal") {
++    source = generated_grd
++
++    enable_input_discovery_for_gn_analyze = false
++    use_brotli = true
++
++    output_dir = "$target_gen_dir/resources"
++
++    outputs = [
++        "grit/zenmium_internal_resources.h",
++        "grit/zenmium_internal_resources_map.cc",
++        "grit/zenmium_internal_resources_map.h",
++        "zenmium_internal_resources.pak"
++    ]
++}
+diff --git a/third_party/zenmium_internal/generate_file_list.py b/third_party/zenmium_internal/generate_file_list.py
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/third_party/zenmium_internal/generate_file_list.py
+@@ -0,0 +1,33 @@
++#!/usr/bin/env python3
++# Emits the grit file manifest (files.json) for the zenmium_internal
++# component extension: every file under the extension root except GN
++# build inputs and metadata.
++import json
++import os
++import sys
++
++EXCLUDE = {
++    "BUILD.gn",
++    "README.chromium",
++    "generate_file_list.py",
++    "extension_ids.h",
++    "files.json",
++}
++
++
++def main():
++    root, out = sys.argv[1], sys.argv[2]
++    files = []
++    for dirpath, _dirnames, filenames in os.walk(root):
++        for name in filenames:
++            rel = os.path.relpath(os.path.join(dirpath, name), root)
++            rel = rel.replace(os.sep, "/")
++            if rel not in EXCLUDE:
++                files.append(rel)
++    files.sort()
++    with open(out, "w") as f:
++        json.dump(files, f, indent=2)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/third_party/zenmium_internal/extension_ids.h b/third_party/zenmium_internal/extension_ids.h
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/third_party/zenmium_internal/extension_ids.h
+@@ -0,0 +1,17 @@
++// Zenmium component extension identity. The ID is pinned by the
++// manifest "key" field in browser/resources/zenmium/internal/manifest.json;
++// keep them in lockstep.
++
++#ifndef THIRD_PARTY_ZENMIUM_INTERNAL_EXTENSION_IDS_H_
++#define THIRD_PARTY_ZENMIUM_INTERNAL_EXTENSION_IDS_H_
++
++namespace zenmium {
++
++inline constexpr char kZenmiumInternalComponentId[] =
++    "koaiegnjnlbfgibjpjdcbnjejnihgfoa";
++
++inline constexpr char kZenmiumInternalComponentIdHashed[] =
++    // SHA1(kZenmiumInternalComponentId)
++    "4769276B65EFF96EE023D383D83BE1260B3CA154";
++
++}  // namespace zenmium
++
++#endif  // THIRD_PARTY_ZENMIUM_INTERNAL_EXTENSION_IDS_H_
+diff --git a/tools/gritsettings/resource_ids.spec b/tools/gritsettings/resource_ids.spec
+index 0000000..5555555
+--- a/tools/gritsettings/resource_ids.spec
++++ b/tools/gritsettings/resource_ids.spec
+@@ -241,6 +241,10 @@
+     "META": {"sizes": {"includes": [1000],}},
+     "includes": [2860],
+   },
++  "<(SHARED_INTERMEDIATE_DIR)/third_party/zenmium_internal/zenmium_internal_resources.grd": {
++    "META": {"sizes": {"includes": [200]}},
++    "includes": [12800],
++  },
+ 
+   # Everything else (except Chrome OS and devtools which are large enough
+   # to get their own SRCDIR) gets lumped into a single file, with IDs
+diff --git a/chrome/browser/extensions/BUILD.gn b/chrome/browser/extensions/BUILD.gn
+index 0000000..6666666
+--- a/chrome/browser/extensions/BUILD.gn
++++ b/chrome/browser/extensions/BUILD.gn
+@@ -632,6 +632,7 @@ source_set("extensions") {
+     "//storage/browser",
+     "//third_party/ublock",
+     "//third_party/zlib/google:zip",
++    "//third_party/zenmium_internal",
+     "//ui/base/accelerators/global_accelerator_listener",
+     "//ui/base/unowned_user_data",
+     "//ui/gl",
+diff --git a/chrome/chrome_paks.gni b/chrome/chrome_paks.gni
+index 0000000..7777777
+--- a/chrome/chrome_paks.gni
++++ b/chrome/chrome_paks.gni
+@@ -149,6 +149,7 @@ template("chrome_extra_paks") {
+       "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
+       "$root_gen_dir/third_party/ublock/resources/ublock_resources.pak",
++      "$root_gen_dir/third_party/zenmium_internal/resources/zenmium_internal_resources.pak",
+       "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
+       "$root_gen_dir/ui/webui/resources/webui_resources.pak",
+     ]
+ 
+@@ -180,6 +181,7 @@ template("chrome_extra_paks") {
+       "//third_party/blink/public:devtools_inspector_resources",
+       "//third_party/blink/public:resources",
+       "//third_party/blink/public/strings:permission_element_generated_strings",
+       "//third_party/ublock",
++      "//third_party/zenmium_internal",
+       "//ui/resources:ui_lottie_resources_grd",
+       "//ui/webui/resources",
+ 
+diff --git a/chrome/browser/extensions/chrome_component_extension_resource_manager.cc b/chrome/browser/extensions/chrome_component_extension_resource_manager.cc
+index 0000000..8888888
+--- a/chrome/browser/extensions/chrome_component_extension_resource_manager.cc
++++ b/chrome/browser/extensions/chrome_component_extension_resource_manager.cc
+@@ -36,6 +36,7 @@
+ #include "pdf/buildflags.h"
+ #include "ui/base/resource/resource_bundle.h"
+ #include "third_party/ublock/resources/grit/ublock_resources_map.h"
++#include "third_party/zenmium_internal/resources/grit/zenmium_internal_resources_map.h"
+ 
+ #if BUILDFLAG(IS_CHROMEOS)
+ #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
+@@ -119,5 +120,6 @@ ChromeComponentExtensionResourceManager:
+   }
+   AddComponentResourceEntries(kUblockResources);
+ 
++  AddComponentResourceEntries(kZenmiumInternalResources);
+ #if !BUILDFLAG(IS_ANDROID)
+   if (base::FeatureList::IsEnabled(features::kIndigo)) {
+diff --git a/chrome/browser/extensions/component_loader.h b/chrome/browser/extensions/component_loader.h
+index 0000000..9999999
+--- a/chrome/browser/extensions/component_loader.h
++++ b/chrome/browser/extensions/component_loader.h
+@@ -224,6 +224,7 @@ class ComponentLoader : public KeyedServ
+                                  const std::string& description_string);
+   void AddWebStoreApp();
+   void AddUBlock();
++  void AddZenmiumInternal();
+ 
+ #if BUILDFLAG(IS_CHROMEOS)
+   void AddChromeApp();
+diff --git a/chrome/browser/extensions/component_loader.cc b/chrome/browser/extensions/component_loader.cc
+index 0000000..aaaaaaa
+--- a/chrome/browser/extensions/component_loader.cc
++++ b/chrome/browser/extensions/component_loader.cc
+@@ -66,6 +66,7 @@
+ #include "ui/base/resource/resource_bundle.h"
+ #include "third_party/ublock/resources/grit/ublock_resources.h"
+ 
++#include "third_party/zenmium_internal/resources/grit/zenmium_internal_resources.h"
+ #if BUILDFLAG(IS_CHROMEOS)
+ #include "ash/constants/ash_extension_constants.h"
+ #include "ash/clipboard/clipboard_history_controller.h"
+@@ -480,6 +481,11 @@ void ComponentLoader::AddUBlock() {
+   }
+ }
+ 
++void ComponentLoader::AddZenmiumInternal() {
++  Add(IDR_ZENMIUM_INTERNAL_MANIFEST_JSON,
++      base::FilePath(FILE_PATH_LITERAL("zenmium_internal")));
++}
++
+ #if BUILDFLAG(IS_CHROMEOS)
+ void ComponentLoader::AddChromeApp() {
+   AddWithNameAndDescription(
+@@ -557,6 +563,7 @@ void ComponentLoader::AddDefaultComponen
+   if (!skip_session_components) {
+     AddWebStoreApp();
+     AddUBlock();
++    AddZenmiumInternal();
+ #if BUILDFLAG(IS_CHROMEOS)
+     AddChromeApp();
+ #endif  // BUILDFLAG(IS_CHROMEOS)
+diff --git a/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc b/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
+index 0000000..bbbbbbb
+--- a/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
++++ b/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
+@@ -21,8 +21,10 @@
+ #include "components/helium_services/extension_ids.h"
+ #include "extensions/buildflags/buildflags.h"
+ #include "extensions/common/constants.h"
+ #include "printing/buildflags/buildflags.h"
+ #include "third_party/ublock/resources/grit/ublock_resources.h"
++#include "third_party/zenmium_internal/extension_ids.h"
++#include "third_party/zenmium_internal/resources/grit/zenmium_internal_resources.h"
+ 
+ #if BUILDFLAG(IS_CHROMEOS)
+ #include "ash/constants/ash_extension_constants.h"
+@@ -44,6 +46,7 @@ bool IsComponentExtensionAllowlisted(con
+       extension_misc::kPdfExtensionId,
+       helium::kUBlockOriginComponentId,
++      zenmium::kZenmiumInternalComponentId,
+ #if BUILDFLAG(IS_CHROMEOS)
+       extension_misc::kAssessmentAssistantExtensionId,
+       extension_misc::kAccessibilityCommonExtensionId,
+ #endif
+@@ -107,6 +110,7 @@ bool IsComponentExtensionAllowlisted(int
+     case IDR_WEBSTORE_MANIFEST:
+     case IDR_UBLOCK_MANIFEST_JSON:
+ 
++    case IDR_ZENMIUM_INTERNAL_MANIFEST_JSON:
+ #if BUILDFLAG(IS_CHROMEOS)
+     // Separate ChromeOS list, as it is quite large.
+     case IDR_ACCESSIBILITY_COMMON_MANIFEST:

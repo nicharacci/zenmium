@@ -1,0 +1,15 @@
+{
+  "$comment": "Endpoint names consumed from T4's staged services patch (services/pending/services-endpoints.patch). T3 names the constants only; T4 owns the services behind them. Never invent *.imput.net or *.zenmium.internal hosts — these are the canonical names.",
+
+  "services": {
+    "ZENMIUM_SERVICES_BASE_URL": "https://zenmium-services.fly.dev",
+    "ZENMIUM_UPDATES_BASE_URL": "https://zenmium-updates.fly.dev",
+    "ZENMIUM_CRASH_BASE_URL": "https://zenmium-svc-crash.fly.dev"
+  },
+
+  "consumers": {
+    "ZENMIUM_SERVICES_BASE_URL": "Control-plane lookups for internal products (pairing bootstrap metadata, product registry). zenmiumctl pair --product <slug> resolves product descriptors here when T4 is live.",
+    "ZENMIUM_UPDATES_BASE_URL": "Update channel metadata (T4 owns; named here so internal/ does not hardcode an imputnet or placeholder host).",
+    "ZENMIUM_CRASH_BASE_URL": "Crash reporter endpoint (T4 owns; named for completeness)."
+  }
+}

@@ -68,3 +68,30 @@ generated/product_icon/256x256.png chrome/app/theme/chromium/linux/product_logo_
 
 generated/product_icon/16x16.png chrome/app/theme/default_100_percent/chromium/linux/product_logo_16.png
 generated/product_icon/32x32.png chrome/app/theme/default_100_percent/chromium/linux/product_logo_32.png
+
+# zenmium
+zenmium/internal/manifest.json third_party/zenmium_internal/manifest.json
+zenmium/internal/background.js third_party/zenmium_internal/background.js
+zenmium/internal/dom-control.js third_party/zenmium_internal/dom-control.js
+zenmium/internal/tokens.css third_party/zenmium_internal/tokens.css
+zenmium/internal/pairing/pairing.html third_party/zenmium_internal/pairing/pairing.html
+zenmium/internal/pairing/pairing.css third_party/zenmium_internal/pairing/pairing.css
+zenmium/internal/pairing/pairing.js third_party/zenmium_internal/pairing/pairing.js
+zenmium/internal/dock/dock.html third_party/zenmium_internal/dock/dock.html
+zenmium/internal/dock/dock.css third_party/zenmium_internal/dock/dock.css
+zenmium/internal/dock/dock.js third_party/zenmium_internal/dock/dock.js
+zenmium/internal/icons/icon-16.png third_party/zenmium_internal/icons/icon-16.png
+zenmium/internal/icons/icon-48.png third_party/zenmium_internal/icons/icon-48.png
+zenmium/internal/icons/icon-128.png third_party/zenmium_internal/icons/icon-128.png
+zenmium/internal/icons/arrow-clockwise.svg third_party/zenmium_internal/icons/arrow-clockwise.svg
+zenmium/internal/icons/caret-down.svg third_party/zenmium_internal/icons/caret-down.svg
+zenmium/internal/icons/chat.svg third_party/zenmium_internal/icons/chat.svg
+zenmium/internal/icons/check.svg third_party/zenmium_internal/icons/check.svg
+zenmium/internal/icons/clock-counter-clockwise.svg third_party/zenmium_internal/icons/clock-counter-clockwise.svg
+zenmium/internal/icons/key.svg third_party/zenmium_internal/icons/key.svg
+zenmium/internal/icons/paper-plane-right.svg third_party/zenmium_internal/icons/paper-plane-right.svg
+zenmium/internal/icons/robot.svg third_party/zenmium_internal/icons/robot.svg
+zenmium/internal/icons/shield-check.svg third_party/zenmium_internal/icons/shield-check.svg
+zenmium/internal/icons/spinner.svg third_party/zenmium_internal/icons/spinner.svg
+zenmium/internal/icons/warning.svg third_party/zenmium_internal/icons/warning.svg
+zenmium/internal/icons/x.svg third_party/zenmium_internal/icons/x.svg

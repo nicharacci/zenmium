@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zenmium Assistant</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="dock.css">
+</head>
+<body>
+  <main class="dock">
+    <header class="dock-head">
+      <img src="../icons/robot.svg" class="icon" alt="">
+      <h1>Assistant</h1>
+      <span id="status" class="status" role="status">offline</span>
+    </header>
+
+    <div id="stream" class="stream" aria-live="polite"></div>
+
+    <div id="approval-host"></div>
+
+    <footer class="composer">
+      <textarea id="input" rows="1" placeholder="Ask Zenmium…" aria-label="Message"></textarea>
+      <button id="send" class="btn" aria-label="Send">
+        <img src="../icons/paper-plane-right.svg" class="icon" alt="">
+      </button>
+    </footer>
+  </main>
+  <script type="module" src="dock.js"></script>
+</body>
+</html>
