@@ -5,27 +5,25 @@
 app = "zenmium-updates"
 primary_region = "iad"
 
-[build]
-  context = "../../.."
-  dockerfile = "deploy/fly/updates/Dockerfile"
-
 [processes]
-  web = "deno run -A serve.ts"
-  worker = "deno run -A main.ts"
+  app = "sh /app/run.sh"
 
 [env]
   APPCAST_PUBLIC_DIR = "/srv/appcasts"
   ASSETS_DIR = "/srv/assets"
-  # Repo whose releases sparkler turns into appcast entries (T3 output).
-  # GITHUB_REPO = "nicharacci/zenmium-macos"   # set when the releases repo exists
+  # Repo whose releases sparkler turns into appcast entries. Placeholder points
+  # at the upstream public repo so the feed produces a real appcast; flip to the
+  # T3 releases repo (e.g. nicharacci/zenmium-macos) when it exists.
+  GITHUB_REPO = "imputnet/helium-macos"
   # ED_PRIVATE_KEY: base64 Ed25519 private key for appcast signatures (secret).
-  # GITHUB_ACCESS_TOKEN: optional, raises API rate limits (secret).
+  # GITHUB_ACCESS_TOKEN: optional but required in practice; the unauthed
+  # 60/hr API rate limit is shared across the Fly egress IP (secret).
   # SERVE_ASSETS_LOCALLY = "yes"  # also mirror release binaries under /assets/
 
 [[services]]
   protocol = "tcp"
   internal_port = 8080
-  processes = ["web"]
+  processes = ["app"]
 
   [[services.ports]]
     port = 80
@@ -47,5 +45,14 @@ primary_region = "iad"
     protocol = "http"
 
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
+  # shared-cpu-1x caps at 2GB and OOMed mid-appcast; sparkler signs every
+  # release's DMG concurrently (Promise.all over releases)
+  size = "shared-cpu-2x"
+  memory = "4gb"
+
+[[mounts]]
+  source = "sparkler_srv"
+  destination = "/srv"
+  # Persists the downloaded-asset cache and generated appcasts across
+  # deploys/restarts; without it every boot re-downloads the whole
+  # GITHUB_REPO release history (several GB).

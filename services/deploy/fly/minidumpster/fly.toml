@@ -6,9 +6,6 @@
 app = "zenmium-svc-crash"
 primary_region = "iad"
 
-[build]
-  context = "../../../svc/minidumpster"
-
 [env]
   PORT = "8080"
   DATA_DIR = "/data"

@@ -4,8 +4,10 @@
 app = "zenmium-svc-ubo"
 primary_region = "iad"
 
-[build]
-  context = "../../../svc/ubo"
+# deno serve defaults to IPv4 0.0.0.0; Fly's private mesh is IPv6-only, so
+# override CMD to bind dual-stack without editing the vendored deno.json.
+[processes]
+  app = "deno serve --allow-env=UBO_* --allow-net --cached-only --host [::] main.ts"
 
 [env]
   # Public base URL used to rewrite every list's contentURL in assets.json.

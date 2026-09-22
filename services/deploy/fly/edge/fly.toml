@@ -1,13 +1,9 @@
 # zenmium-services: public nginx edge for Solvys services (S005/T4).
 # Fly edge terminates TLS; the machine serves plain HTTP on :8080 internally.
-# Deploy from the services/ directory root (build context is ../.. relative paths).
+# Deploy from the services/ directory root (build context is cwd-relative).
 
 app = "zenmium-services"
 primary_region = "iad"
-
-[build]
-  context = "../../.."
-  dockerfile = "deploy/fly/edge/Dockerfile"
 
 [env]
   # Public hostname for this app. Default works on the Fly-assigned hostname;

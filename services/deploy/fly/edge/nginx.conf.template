@@ -43,15 +43,15 @@ http {
     # Fly private-network DNS. .internal names are AAAA-only, so IPv6 lookups
     # must stay enabled; resolver + variable proxy_pass re-resolves per request
     # (machine IPs under an app change across that app's redeploys).
-    resolver fdaa::3 valid=10s;
+    resolver [fdaa::3] valid=10s;
     resolver_timeout 5s;
-
-    set $ext_upstream http://${EXT_UPSTREAM};
-    set $ubo_upstream http://${UBO_UPSTREAM};
 
     server {
         listen [::]:8080 ipv6only=off;
         server_name ${SERVICES_HOSTNAME};
+
+        set $ext_upstream http://${EXT_UPSTREAM};
+        set $ubo_upstream http://${UBO_UPSTREAM};
 
         add_header Strict-Transport-Security "max-age=63072000" always;
 
@@ -83,16 +83,20 @@ http {
             sub_filter_once off;
         }
 
+        # variable proxy_pass passes the original URI unchanged, so strip the
+        # location prefix explicitly to match the upstream mappings
         location /ext/ {
-            proxy_pass $ext_upstream/;
+            rewrite ^/ext(/.*)$ $1 break;
+            proxy_pass $ext_upstream;
         }
 
         location /com {
-            proxy_pass $ext_upstream/com;
+            proxy_pass $ext_upstream;
         }
 
         location /ubo/ {
-            proxy_pass $ubo_upstream/;
+            rewrite ^/ubo(/.*)$ $1 break;
+            proxy_pass $ubo_upstream;
             proxy_pass_request_body off;
         }
     }

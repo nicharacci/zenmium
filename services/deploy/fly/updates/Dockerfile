@@ -11,7 +11,8 @@ WORKDIR /app
 
 COPY util/sparkler/ ./
 COPY deploy/fly/updates/serve.ts ./serve.ts
+COPY deploy/fly/updates/run.sh ./run.sh
 RUN deno cache main.ts serve.ts
 
-# fly.toml runs each process by name; this CMD is only a fallback.
-CMD ["deno", "run", "-A", "serve.ts"]
+# fly.toml runs `sh /app/run.sh`; this CMD is only a fallback.
+CMD ["sh", "/app/run.sh"]

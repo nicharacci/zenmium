@@ -39,16 +39,16 @@ fly -a zenmium-svc-cup2  secrets set CUP2_PRIVATE_KEY_PKCS8_B64=<base64 pkcs8 ec
 
 Non-secret config that still needs a decision (edit `[env]` in each fly.toml or use `fly -a <app> secrets set` for ad-hoc override): `GITHUB_REPO` for zenmium-updates (T3 releases repo), `UPDATE_MANIFEST_JSON` for cup2, `GITHUB_ORG` for crash.
 
-## Deploy (from the repo root, build context is services/)
+## Deploy (cd services; positional dir = build context, -c resolves relative to it)
 
 ```sh
 cd services
-fly deploy -c deploy/fly/ubo/fly.toml         --remote-only
-fly deploy -c deploy/fly/ext-proxy/fly.toml   --remote-only
-fly deploy -c deploy/fly/minipush/fly.toml    --remote-only
-fly deploy -c deploy/fly/cup2/fly.toml        --remote-only
-fly deploy -c deploy/fly/updates/fly.toml     --remote-only
-fly deploy -c deploy/fly/edge/fly.toml        --remote-only   # edge last
+fly deploy svc/ubo             -c ../../deploy/fly/ubo/fly.toml        --remote-only
+fly deploy svc/extension-proxy -c ../../deploy/fly/ext-proxy/fly.toml  --remote-only
+fly deploy svc/minipush        -c ../../deploy/fly/minipush/fly.toml   --remote-only
+fly deploy . -c deploy/fly/cup2/fly.toml    --dockerfile deploy/fly/cup2/Dockerfile    --remote-only
+fly deploy . -c deploy/fly/updates/fly.toml --dockerfile deploy/fly/updates/Dockerfile --remote-only
+fly deploy . -c deploy/fly/edge/fly.toml    --dockerfile deploy/fly/edge/Dockerfile    --remote-only   # edge last
 ```
 
 `--remote-only` builds on Fly's builders so no local docker daemon is needed. `deploy/fly/up.sh` runs the same sequence.
@@ -62,7 +62,7 @@ fly -a zenmium-svc-crash secrets set \
     GITHUB_CLIENT_ID=<oauth app> GITHUB_CLIENT_SECRET=<oauth> \
     SESSION_SECRET=$(openssl rand -hex 32) SYMBOL_UPLOAD_TOKEN=<vault>
 fly deploy -c deploy/fly/symbolicator/fly.toml --remote-only
-fly deploy -c deploy/fly/minidumpster/fly.toml --remote-only
+fly deploy svc/minidumpster -c ../../deploy/fly/minidumpster/fly.toml --remote-only
 ```
 
 The GitHub OAuth app's callback must be `https://zenmium-svc-crash.fly.dev/auth/callback`. Consider pinning `getsentry/symbolicator` to a digest instead of `latest`.

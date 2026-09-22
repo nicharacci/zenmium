@@ -39,7 +39,7 @@ const serveFile = async (dir: string, name: string): Promise<Response> => {
     }
 };
 
-Deno.serve({ port }, (req) => {
+Deno.serve({ port, hostname: "::" }, (req) => {
     const url = new URL(req.url);
     if (req.method !== "GET" && req.method !== "HEAD") {
         return new Response("method not allowed\n", { status: 405 });

@@ -5,8 +5,10 @@
 app = "zenmium-svc-ext"
 primary_region = "iad"
 
-[build]
-  context = "../../../svc/extension-proxy"
+# deno serve defaults to IPv4 0.0.0.0; Fly's private mesh is IPv6-only, so
+# override CMD to bind dual-stack without editing the vendored deno.json.
+[processes]
+  app = "deno serve --allow-env=HMAC_SECRET,PROXY_BASE_URL --allow-net --cached-only --parallel --host [::] main.ts"
 
 [env]
   # Public base URL this app's proxied CRX URLs are signed for (the edge host).

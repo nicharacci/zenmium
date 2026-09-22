@@ -1,6 +1,6 @@
-# Intended series entry (staged, T1-dependent)
+# Intended series entry (LANDED)
 
-`browser/` is not on this checkout (T1 in flight), so the patch and its series registration live here until the unification merges tracks.
+Landed: `browser/patches/zenmium/services-endpoints.patch` is registered as `zenmium/services-endpoints.patch` in `browser/patches/series` (zenmium block, after the identity entries) and recorded in `browser/patches/zenmium/SERIES.md`. The staging copy below is kept as the original receipt.
 
 ## Patch
 

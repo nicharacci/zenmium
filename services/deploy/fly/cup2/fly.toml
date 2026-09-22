@@ -5,16 +5,13 @@
 app = "zenmium-svc-cup2"
 primary_region = "iad"
 
-[build]
-  context = "../../.."
-  dockerfile = "deploy/fly/cup2/Dockerfile"
-
 [env]
   PORT = "8080"
   CUP2_KEY_ID = "1"
   # UPDATE_MANIFEST_JSON: inline JSON map of appid -> {version, codebase,
-  # hash_sha256, size} served to update clients.
-  # UPDATE_MANIFEST_JSON = '{"zenmium":{"version":"0.0.0","codebase":"","hash_sha256":"","size":0}}'
+  # hash_sha256, size} served to update clients. Placeholder until T1 wires
+  # the real component-update feed.
+  UPDATE_MANIFEST_JSON = '{"zenmium":{"version":"0.0.1","codebase":"https://zenmium-updates.fly.dev/assets/zenmium-0.0.1.dmg","hash_sha256":"0000000000000000000000000000000000000000000000000000000000000000","size":0}}'
   # CUP2_PRIVATE_KEY_PKCS8_B64: base64 PKCS8 ECDSA P-256 private key (secret).
   # Generate: deno eval 'const k=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},true,["sign"]); console.log(btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey("pkcs8",k.privateKey)))))'
 

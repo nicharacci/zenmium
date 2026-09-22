@@ -109,5 +109,5 @@ if (import.meta.main) {
         Deno.env.get("UPDATE_MANIFEST_JSON") ?? "{}",
     );
     const port = Number(Deno.env.get("PORT") ?? "8080");
-    Deno.serve({ port }, createHandler(new CupServer({ [keyId]: key }), manifest));
+    Deno.serve({ port, hostname: "::" }, createHandler(new CupServer({ [keyId]: key }), manifest));
 }

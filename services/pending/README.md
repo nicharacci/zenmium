@@ -6,7 +6,7 @@ T4 work that depends on T1's `browser/` tree, which is not on this checkout yet.
 
 | File | What it is | Blocks on |
 | --- | --- | --- |
-| `services-endpoints.patch` | Repoints every services/updater/crash endpoint from imput/helium hosts to the Solvys Fly lane | `browser/patches/` existing; applies after the helium patch group |
+| `services-endpoints.patch` | Repoints every services/updater/crash endpoint from imput/helium hosts to the Solvys Fly lane | LANDED at `browser/patches/zenmium/services-endpoints.patch` + series entry |
 | `SERIES.md` | The intended `patches/series` entry + ordering constraints | unification owns `series` |
 | `platform-updater-urls.md` | Platform updater URL notes (mac Sparkle + win WinSparkle shapes, what sparkler emits vs what the browser expects) | T3 releases repo + `win/appcast.xml` producer |
 | `import-path-note.md` | Text for the `docs/zenmium/S005-HELIUM-BASE.md` append section (file is T1-owned, absent here) | T1 |

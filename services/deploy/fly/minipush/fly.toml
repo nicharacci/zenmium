@@ -4,12 +4,10 @@
 app = "zenmium-svc-push"
 primary_region = "iad"
 
-[build]
-  context = "../../../svc/minipush"
-
 [env]
-  # Required on Fly: upstream defaults to 127.0.0.1 loopback.
-  MINIPUSH_BIND_HOSTNAME = "0.0.0.0"
+  # Required on Fly: upstream defaults to 127.0.0.1 loopback, and the proxy
+  # reaches the machine over IPv6-only 6PN, so bind dual-stack.
+  MINIPUSH_BIND_HOSTNAME = "::"
   MINIPUSH_PORT = "10001"
   MINIPUSH_BASE_URL = "wss://zenmium-svc-push.fly.dev/"
   # MINIPUSH_HMAC_SECRET and MINIPUSH_ENDPOINT_SECRET are required;
