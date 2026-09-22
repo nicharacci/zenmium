@@ -1,0 +1,50 @@
+# zenmium-services: public nginx edge for Solvys services (S005/T4).
+# Fly edge terminates TLS; the machine serves plain HTTP on :8080 internally.
+# Deploy from the services/ directory root (build context is ../.. relative paths).
+
+app = "zenmium-services"
+primary_region = "iad"
+
+[build]
+  context = "../../.."
+  dockerfile = "deploy/fly/edge/Dockerfile"
+
+[env]
+  # Public hostname for this app. Default works on the Fly-assigned hostname;
+  # replace when the custom services hostname is decided (TP gate).
+  SERVICES_HOSTNAME = "zenmium-services.fly.dev"
+  # Where GET / redirects (upstream sent users to helium.computer).
+  ROOT_REDIRECT_URL = "https://solvys.io"
+  # Internal upstreams on the Fly private network.
+  EXT_UPSTREAM = "zenmium-svc-ext.internal:8000"
+  UBO_UPSTREAM = "zenmium-svc-ubo.internal:8000"
+  # Optional: hourly refresh of bangs.json from a raw URL. Empty disables refresh.
+  # BANG_SOURCE = "https://raw.githubusercontent.com/nicharacci/zenmium/main/services/svc/bangs/bangs.json"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8080
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/connectivitycheck"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

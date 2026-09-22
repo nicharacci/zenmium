@@ -1,0 +1,7 @@
+---
+- name: Clone and set up compose environment
+  hosts: servers
+  gather_facts: false
+
+  tasks:
+    - ansible.builtin.include_tasks: ./tasks/01_repo.yml

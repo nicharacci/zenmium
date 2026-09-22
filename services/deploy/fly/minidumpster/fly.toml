@@ -1,0 +1,59 @@
+# zenmium-svc-crash: minidumpster crash-report ingest (upstream svc/minidumpster).
+# Public. Phase 2 per the T4 brief: deploy only after the crash endpoint is
+# wired in the browser and the GitHub OAuth app exists. Requires a persistent
+# volume for /data (`fly volumes create crash_data --size 1 -r iad`).
+
+app = "zenmium-svc-crash"
+primary_region = "iad"
+
+[build]
+  context = "../../../svc/minidumpster"
+
+[env]
+  PORT = "8080"
+  DATA_DIR = "/data"
+  SYMBOLICATOR_URL = "http://zenmium-svc-symbolicator.internal:3021"
+  PUBLIC_BASE_URL = "https://zenmium-svc-crash.fly.dev"
+  MAX_DUMP_SIZE_MB = "20"
+  RETENTION_DAYS = "30"
+  SYMBOLS_RETENTION_DAYS = "180"
+  ARTIFACT_CRAWLER_POLL_MS = "900000"
+  ARTIFACT_CRAWLER_MAX_MB = "20480"
+  ARTIFACT_CRAWLER_MAX_AGE_DAYS = "7"
+  # GitHub OAuth app (callback: $PUBLIC_BASE_URL/auth/callback); org membership
+  # gates the web UI. Set via `fly secrets set`: GITHUB_CLIENT_ID,
+  # GITHUB_CLIENT_SECRET, GITHUB_ARTIFACT_TOKEN, SESSION_SECRET,
+  # SYMBOL_UPLOAD_TOKEN. GITHUB_ORG is non-secret and also required.
+  # GITHUB_ORG = "solvys-technologies"
+
+[[mounts]]
+  source = "crash_data"
+  destination = "/data"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.checks]]
+    type = "http"
+    port = 8080
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/healthz"
+    protocol = "http"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

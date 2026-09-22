@@ -1,0 +1,16 @@
+---
+## Install acme.sh on the host machine and provision
+## a certificate for your FQDN. Afterwards, make a private/certs folder
+## inside of `deploy`, and run this command (adjust paths accordingly):
+# acme.sh --install-cert \
+#         --fullchain-file ~/helium-services/deploy/private/certs/fullchain.pem \
+#         --key-file ~/helium-services/deploy/private/certs/private.key \
+#         -d <your_fqdn>
+#         --reloadcmd "bash -c 'cd ~/helium-services/deploy && ansible-playbook services/02_tls.yml'"
+#
+- name: Push SSL certificates - multi-deployment only
+  hosts: servers
+  gather_facts: false
+
+  tasks:
+    - ansible.builtin.include_tasks: ./tasks/02_tls.yml

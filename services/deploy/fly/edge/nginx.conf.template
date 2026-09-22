@@ -1,0 +1,99 @@
+# Fly variant of svc/nginx/nginx.conf.j2 (S005/T4).
+# TLS, HTTP/2, and QUIC are handled by the Fly edge; this server speaks plain
+# HTTP on :8080 and proxies to sibling apps over the Fly private network.
+# ${VARS} are substituted by /entrypoint.sh via envsubst.
+user nginx;
+worker_processes auto;
+daemon off;
+
+error_log /dev/null crit;
+pid /tmp/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log off;
+    error_log /dev/null crit;
+
+    server_tokens off;
+    client_max_body_size 64k;
+
+    sendfile on;
+    tcp_nopush on;
+
+    gzip on;
+    gzip_vary on;
+    gzip_static on;
+    gzip_types text/plain application/json "application/xml; charset=utf-8" "application/json; charset=utf-8";
+
+    keepalive_timeout 20s;
+
+    client_body_temp_path /tmp/client_temp;
+    proxy_temp_path       /tmp/proxy_temp_path;
+    fastcgi_temp_path     /tmp/fastcgi_temp;
+    uwsgi_temp_path       /tmp/uwsgi_temp;
+    scgi_temp_path        /tmp/scgi_temp;
+    proxy_cache_path      /tmp/ubo_cache levels=1:2 keys_zone=ubo:512k;
+
+    # Fly private-network DNS. .internal names are AAAA-only, so IPv6 lookups
+    # must stay enabled; resolver + variable proxy_pass re-resolves per request
+    # (machine IPs under an app change across that app's redeploys).
+    resolver fdaa::3 valid=10s;
+    resolver_timeout 5s;
+
+    set $ext_upstream http://${EXT_UPSTREAM};
+    set $ubo_upstream http://${UBO_UPSTREAM};
+
+    server {
+        listen [::]:8080 ipv6only=off;
+        server_name ${SERVICES_HOSTNAME};
+
+        add_header Strict-Transport-Security "max-age=63072000" always;
+
+        location = / {
+            return 302 ${ROOT_REDIRECT_URL};
+        }
+
+        location = /robots.txt {
+            add_header Content-Type text/plain;
+            return 200 "User-agent: *\nDisallow: /\n";
+        }
+
+        location = /bangs.json {
+            add_header Cache-Control "public, max-age=86400, stale-if-error=604800";
+            add_header Access-Control-Allow-Origin *;
+            root /srv/bangs;
+        }
+
+        location = /connectivitycheck {
+            return 204;
+        }
+
+        location /dict {
+            gzip_static always;
+            root /srv/dictionaries;
+
+            autoindex on;
+            sub_filter ".gz" "";
+            sub_filter_once off;
+        }
+
+        location /ext/ {
+            proxy_pass $ext_upstream/;
+        }
+
+        location /com {
+            proxy_pass $ext_upstream/com;
+        }
+
+        location /ubo/ {
+            proxy_pass $ubo_upstream/;
+            proxy_pass_request_body off;
+        }
+    }
+}

@@ -1,0 +1,38 @@
+<% if (!it.hasTraces) { %>
+<p class="muted">No stacktraces in symbolicated output.</p>
+<% } else { %>
+
+<p class="muted">
+  <%= it.crashReason %><% if (it.sysInfo) { %> · <%= it.sysInfo %><% } %>
+</p>
+
+<% it.threads.forEach((t) => { %>
+<h3>Thread <%= t.id %><% if (t.name) { %> — <%= t.name %><% } %><% if (t.crashed) { %> (crashed)<% } %></h3>
+<div class="overflow">
+<table class="frames">
+  <thead>
+    <tr><th>#</th><th>Function</th><th>File</th><th>Module</th></tr>
+  </thead>
+  <tbody>
+    <% t.rows.forEach((row) => { %>
+    <% if (row.kind === 'fold') { const first = row.frames[0].index; const last = row.frames[row.frames.length - 1].index; %>
+    <tr class="stack-fold-summary">
+      <td colspan="4">
+        <button type="button" class="stack-fold-toggle mono" data-stack-fold-toggle="<%= row.id %>" aria-expanded="false">
+          frames #<%= first %>–#<%= last %> · <%= row.frames.length %> folded frames
+        </button>
+      </td>
+    </tr>
+    <% row.frames.forEach((frame) => { %>
+    <%~ include('frame-row', { frame, foldId: row.id, collapseCppName: it.collapseCppName }) %>
+    <% }) %>
+    <% } else { %>
+    <%~ include('frame-row', { frame: row.frame, foldId: null, collapseCppName: it.collapseCppName }) %>
+    <% } %>
+    <% }) %>
+  </tbody>
+</table>
+</div>
+<% }) %>
+
+<% } %>

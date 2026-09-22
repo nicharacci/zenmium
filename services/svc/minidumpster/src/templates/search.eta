@@ -1,0 +1,32 @@
+<% layout('layout') %>
+<h2>Search results for <span class="mono"><%= it.query %></span></h2>
+<% if (it.groups.length > 0) { %>
+<h3>Groups</h3>
+<div class="overflow">
+<table>
+  <thead>
+    <tr><th>Group</th><th class="num">Reports</th><th>Last seen</th></tr>
+  </thead>
+  <tbody>
+    <% it.groups.forEach((g) => { %>
+    <tr>
+      <td><a href="/groups/<%= g.id %>" class="mono"><%~ include('cpp-name', { name: g.title, collapseCppName: it.collapseCppName }) %></a></td>
+      <td class="num"><%= g.report_count %></td>
+      <td class="muted"><%= it.fmtTime(g.last_seen) %></td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+</div>
+<% } %>
+
+<% if (it.reports.length > 0) { %>
+<h3>Reports</h3>
+<%~ include('reports-table', { reports: it.reports, fmtTime: it.fmtTime }) %>
+<% } %>
+
+<% if (it.groups.length === 0 && it.reports.length === 0) { %>
+<p class="muted">No groups or reports match that signature, id, guid, or function name. Users find their
+report id in <span class="mono">helium://crashes</span> ("Uploaded Crash Report
+ID") — it is only assigned once the crash has actually been uploaded.</p>
+<% } %>

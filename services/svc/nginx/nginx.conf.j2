@@ -1,0 +1,144 @@
+user nginx;
+worker_processes auto;
+daemon off;
+
+error_log /dev/null crit;
+pid /tmp/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log off;
+    error_log /dev/null crit;
+
+    server_tokens off;
+    client_max_body_size 64k;
+
+    sendfile on;
+    tcp_nopush on;
+
+    ssl_protocols TLSv1.3;
+    ssl_ecdh_curve X25519:prime256v1:secp384r1;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_session_tickets off;
+
+    gzip on;
+    gzip_vary on;
+    gzip_static on;
+    gzip_types text/plain application/json "application/xml; charset=utf-8" "application/json; charset=utf-8";
+
+    keepalive_timeout 20s;
+
+    client_body_temp_path /tmp/client_temp;
+    proxy_temp_path       /tmp/proxy_temp_path;
+    fastcgi_temp_path     /tmp/fastcgi_temp;
+    uwsgi_temp_path       /tmp/uwsgi_temp;
+    scgi_temp_path        /tmp/scgi_temp;
+    proxy_cache_path      /tmp/ubo_cache levels=1:2 keys_zone=ubo:512k;
+
+    # HTTP fallback
+    server {
+        listen [::]:80 ipv6only=off default_server;
+        server_name _;
+
+        location = /connectivitycheck {
+            return 204;
+        }
+
+        location /.well-known/acme-challenge/ {
+            root /var/tmp/acme.sh/;
+        }
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+    }
+
+    # HTTPS fallback
+    server {
+        listen [::]:443 ipv6only=off ssl default_server;
+        listen [::]:443 ipv6only=off quic reuseport;
+        http2 on;
+        http3 on;
+        http3_hq on;
+        quic_retry on;
+
+        ssl_reject_handshake on;
+    }
+
+    upstream exts {
+        server ext_proxy:8000;
+        server ext_proxy_backup:8000 backup;
+    }
+
+    # services
+    server {
+        listen [::]:443 ssl;
+        listen [::]:443 quic;
+
+        http2 on;
+        http3 on;
+        http3_hq on;
+        quic_retry on;
+
+        ssl_certificate /certs/fullchain.pem;
+        ssl_certificate_key /certs/private.key;
+
+        server_name {{ services_hostname }};
+
+        add_header Strict-Transport-Security "max-age=63072000" always;
+        add_header Alt-Svc 'h3=":443"; ma=86400' always;
+
+        proxy_ssl_verify on;
+        proxy_ssl_server_name on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+
+        location = / {
+            return 302 https://helium.computer;
+        }
+
+        location = /robots.txt {
+            add_header Content-Type text/plain;
+            return 200 "User-agent: *\nDisallow: /\n";
+        }
+
+        location = /bangs.json {
+            add_header Cache-Control "public, max-age=86400, stale-if-error=604800";
+            add_header Access-Control-Allow-Origin *;
+            root /dev/shm/bangs;
+        }
+
+        location = /connectivitycheck {
+            return 204;
+        }
+
+        location /dict {
+            gzip_static always;
+            root /dev/shm/dictionaries;
+
+            autoindex on;
+            sub_filter ".gz" "";
+            sub_filter_once off;
+        }
+
+        location /ext/ {
+            proxy_pass http://exts/;
+        }
+
+        location /com {
+            proxy_pass http://exts/com;
+        }
+
+        location /ubo/ {
+            proxy_pass http://ubo_proxy:8000/;
+            proxy_pass_request_body off;
+        }
+    }
+}
