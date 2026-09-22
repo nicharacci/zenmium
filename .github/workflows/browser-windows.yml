@@ -61,12 +61,6 @@ jobs:
       - name: Python deps
         run: pip install httplib2==0.22.0 requests pillow
 
-      - name: Fetch Chromium sources
-        run: |
-          $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"
-          cd platform\windows
-          python helium-chromium\utils\clone.py -o build\src -p win64
-
       - name: Fetch deps, apply patches, build
         run: |
           $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"

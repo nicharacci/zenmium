@@ -104,7 +104,6 @@ jobs:
         run: |
           cd platform/macos
           source ./devutils/shared.sh
-          export SCCACHE_GHA_ENABLED=on SCCACHE_GHA_VERSION=${{ matrix.arch }}
           sccache --show-stats || true
           helium_build chrome/installer/mac
           sccache --show-stats || true
