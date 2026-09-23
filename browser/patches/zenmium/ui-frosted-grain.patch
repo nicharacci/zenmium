@@ -1,0 +1,96 @@
+Zenmium frosted glass: grain + 35% transparency
+
+--- a/chrome/browser/ui/views/helium/native_frame_materials_mac.mm
++++ b/chrome/browser/ui/views/helium/native_frame_materials_mac.mm
+@@ -6,12 +6,48 @@
+ 
+ #include "base/apple/foundation_util.h"
+ 
++#include <cstdlib>
++
+ namespace helium {
+ namespace {
+ 
+ // Low-alpha black or white overlay applied before the browser theme tint.
+ constexpr CGFloat kFrameMaterialNeutralOverlayAlpha = 0.12;
+ 
++// Zenmium frosted grain: a deterministic luminance-noise tile generated once
++// and tiled over the theme tint at low opacity, so the glass reads textured
++// instead of flat.
++constexpr CGFloat kFrameGrainOverlayOpacity = 0.08;
++
++CGImageRef CreateFrameGrainImage() {
++  static CGImageRef grain_image = nullptr;
++  static dispatch_once_t once;
++  dispatch_once(&once, ^{
++    constexpr NSUInteger kGrainSize = 160;
++    const NSUInteger bytes_per_row = kGrainSize * 4;
++    uint8_t* pixels =
++        static_cast<uint8_t*>(malloc(bytes_per_row * kGrainSize));
++    srand48(0x5eed);
++    for (NSUInteger i = 0; i < kGrainSize * kGrainSize; ++i) {
++      const uint8_t v =
++          static_cast<uint8_t>(128.0 + (drand48() - 0.5) * 96.0);
++      pixels[i * 4 + 0] = v;
++      pixels[i * 4 + 1] = v;
++      pixels[i * 4 + 2] = v;
++      pixels[i * 4 + 3] = 255;
++    }
++    CGColorSpaceRef space = CGColorSpaceCreateDeviceRGB();
++    CGContextRef context = CGBitmapContextCreate(
++        pixels, kGrainSize, kGrainSize, 8, bytes_per_row, space,
++        kCGImageAlphaPremultipliedLast);
++    grain_image = CGBitmapContextCreateImage(context);
++    CGContextRelease(context);
++    CGColorSpaceRelease(space);
++    free(pixels);
++  });
++  return grain_image;
++}
++
+ // Menu material is slightly brighter and more translucent in light mode,
+ // so we use it for the light theme instead of Sidebar.
+ NSVisualEffectMaterial GetFrameMaterial(bool is_dark) {
+@@ -19,12 +55,11 @@
+                  : NSVisualEffectMaterialMenu;
+ }
+ 
+-// Light material needs a stronger theme tint than dark material to avoid
+-// looking washed out.
+-// Zenmium liquid glass is a near-flat tint (canon shell alpha .88/.90),
+-// keeping the vibrancy layer mostly hidden behind the theme color.
+-CGFloat GetFrameMaterialThemeTintOverlayAlpha(bool is_dark) {
+-  return is_dark ? 0.88 : 0.9;
++// Zenmium frosted glass: the theme tint holds 65% opacity (35%
++// transparency) so AppKit's material blur reads through the shell, and the
++// grain layer above it carries the texture.
++CGFloat GetFrameMaterialThemeTintOverlayAlpha(bool /*is_dark*/) {
++  return 0.65;
+ }
+ 
+ NSColor* GetFrameMaterialNeutralOverlayColor(bool is_dark) {
+@@ -66,6 +101,7 @@
+ @interface HeliumFrameMaterialBackgroundView : NSVisualEffectView
+ @property(nonatomic, strong) NSView* neutralOverlay;
+ @property(nonatomic, strong) NSView* themeTintOverlay;
++@property(nonatomic, strong) NSView* grainOverlay;
+ @end
+ 
+ @implementation HeliumFrameMaterialBackgroundView
+@@ -89,6 +125,16 @@
+   material_view.themeTintOverlay =
+       CreateFrameMaterialTintView(material_view.bounds, [NSColor clearColor]);
+   [material_view addSubview:material_view.themeTintOverlay];
++
++  material_view.grainOverlay =
++      CreateFrameMaterialTintView(material_view.bounds, [NSColor clearColor]);
++  NSImage* grain_image =
++      [[NSImage alloc] initWithCGImage:CreateFrameGrainImage()
++                                  size:NSZeroSize];
++  material_view.grainOverlay.layer.backgroundColor =
++      [NSColor colorWithPatternImage:grain_image].CGColor;
++  material_view.grainOverlay.layer.opacity = kFrameGrainOverlayOpacity;
++  [material_view addSubview:material_view.grainOverlay];
+   return material_view;
+ }
+ 

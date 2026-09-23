@@ -4,7 +4,10 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: var(--background);
+  background-color: var(--glass-background);
+  background-image: var(--grain);
+  backdrop-filter: blur(24px) saturate(1.15);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15);
   color: var(--foreground);
 }
 
@@ -24,7 +27,8 @@
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--secondary);
+  background-color: var(--glass-secondary);
+  background-image: var(--grain);
 }
 .status[data-state="running"] { color: var(--primary); }
 .status[data-state="error"] { color: var(--destructive); }
@@ -56,7 +60,8 @@
 }
 .msg.assistant {
   align-self: flex-start;
-  background: var(--card);
+  background-color: var(--glass-card);
+  background-image: var(--grain);
   color: var(--card-foreground);
 }
 .msg.activity {
@@ -71,7 +76,8 @@
 .approval {
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--card);
+  background-color: var(--glass-card);
+  background-image: var(--grain);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -100,7 +106,8 @@
   gap: 8px;
   padding: 10px 12px;
   border-top: 1px solid var(--border);
-  background: var(--background);
+  background-color: var(--glass-background);
+  background-image: var(--grain);
 }
 .composer textarea {
   flex: 1;
@@ -110,7 +117,8 @@
   padding: 10px 12px;
   font: inherit;
   color: var(--foreground);
-  background: var(--card);
+  background-color: var(--glass-card);
+  background-image: var(--grain);
   border: 1px solid var(--input);
   border-radius: var(--radius);
 }

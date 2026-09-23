@@ -40,7 +40,8 @@
   gap: 8px;
 }
 .pair-caps li {
-  background: var(--secondary);
+  background-color: var(--glass-secondary);
+  background-image: var(--grain);
   color: var(--secondary-foreground);
   border: 1px solid var(--border);
   border-radius: var(--radius);

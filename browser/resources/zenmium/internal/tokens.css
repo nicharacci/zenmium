@@ -23,6 +23,15 @@
   --ring: oklch(0.705 0.015 286.067);
   --radius: 0.625rem;
 
+  /* Frosted-glass treatment: surfaces render at 65% opacity (35%
+     transparency) over a backdrop blur, with a luminance-noise grain tile
+     composited on top. */
+  --glass-alpha: 65%;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  --glass-background: color-mix(in oklch, var(--background) var(--glass-alpha), transparent);
+  --glass-card: color-mix(in oklch, var(--card) var(--glass-alpha), transparent);
+  --glass-secondary: color-mix(in oklch, var(--secondary) var(--glass-alpha), transparent);
+
   --font-sans: "Inter", ui-sans-serif, -apple-system, "Segoe UI", system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
@@ -66,7 +75,10 @@
 body {
   font-family: var(--font-sans);
   font-size: 14px;
-  background: var(--background);
+  background-color: var(--glass-background);
+  background-image: var(--grain);
+  backdrop-filter: blur(24px) saturate(1.15);
+  -webkit-backdrop-filter: blur(24px) saturate(1.15);
   color: var(--foreground);
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -106,7 +118,8 @@ body {
 .btn.danger:hover { background: color-mix(in oklch, var(--destructive) 90%, black); }
 
 .card {
-  background: var(--card);
+  background-color: var(--glass-card);
+  background-image: var(--grain);
   color: var(--card-foreground);
   border: 1px solid var(--border);
   border-radius: var(--radius);
