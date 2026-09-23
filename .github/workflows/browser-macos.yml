@@ -38,7 +38,7 @@ jobs:
   build:
     name: Build Zenmium (macOS, ${{ matrix.arch }})
     runs-on: macos-15-xlarge
-    timeout-minutes: 330
+    timeout-minutes: 355
     strategy:
       fail-fast: false
       matrix:
@@ -104,6 +104,9 @@ jobs:
           configure_build ${{ matrix.arch }} true false
 
       - name: Build chrome/installer/mac
+        env:
+          SCCACHE_GHA_ENABLED: 'true'
+          SCCACHE_GHA_VERSION: 'zenmium-macos-arm64-v1'
         run: |
           cd platform/macos
           source ./devutils/shared.sh
