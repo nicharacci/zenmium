@@ -61,6 +61,9 @@ jobs:
       - name: Python deps
         run: pip install httplib2==0.22.0 requests pillow
 
+      - name: Setup sccache (GHA cache backend)
+        uses: mozilla-actions/sccache-action@v0.0.11
+
       - name: Fetch deps, apply patches, build
         run: |
           $env:Path = "C:\Program Files\Git\usr\bin;$env:Path"

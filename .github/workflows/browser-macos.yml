@@ -59,8 +59,11 @@ jobs:
 
       - name: Install toolchain deps
         run: |
-          brew install coreutils sccache
+          brew install coreutils
           pip3 install httplib2==0.22.0 requests pillow --break-system-packages
+
+      - name: Setup sccache (GHA cache backend)
+        uses: mozilla-actions/sccache-action@v0.0.11
 
       - name: Prepare Xcode
         run: |
