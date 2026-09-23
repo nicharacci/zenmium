@@ -1,13 +1,13 @@
 ---
 version: 1
 projectId: zenmium
-stateRevision: 8
+stateRevision: 9
 activeSprint: S005 - Helium base
 sourceRef: 2026-09-22
-sourceCommit: 14bb5de
+sourceCommit: cce57fb
 authorityEnvironment: devin-cloud
 syncStatus: aligned
-lastVerifiedAt: 2026-09-22T22:45:00Z
+lastVerifiedAt: 2026-09-23T00:30:00Z
 latestReceipt: docs/zenmium/S004-receipt.md
 ---
 
@@ -31,8 +31,9 @@ TP directive (2026-09-22): rebuild everything Chromium-related to follow Helium 
 
 ## Current truth
 
-- S005 integrated on `2026-09-22` through `14bb5de`: T1 vendoring + identity (`00dab5f`), T1 workflow gate fixes (`7b3f1cd`), T2 chrome UI (`64133fc`), T4 services vendoring + Fly lane + endpoint patch (`615a749`, `c8311c8`), T3 internal products + agent rail (`e31a022`), orchestrator unification (`511e04c`) and patch-context repairs (`770959c`, `c8beaf2`, `14bb5de`). Checkpoints: `refs/sprints/S005/{P1,T1/P1,T2/P1,T3/P1,T4/P1,T4/P2}`.
-- Patch-series verification is now local and complete: all 338 upstream patches + 10 zenmium patches replayed in series order onto real Chromium `153.0.8010.52` files fetched at the pinned tag — zero rejects. CI `browser-macos` run 35792063577 confirmed 348/348 apply + resource substitution; failed at `gn gen` on a missing grit dep (fixed in `14bb5de`).
+- S005 integrated on `2026-09-22` through `cce57fb`: T1 vendoring + identity (`00dab5f`), T1 workflow gate fixes (`7b3f1cd`), T2 chrome UI (`64133fc`), T4 services vendoring + Fly lane + endpoint patch (`615a749`, `c8311c8`), T3 internal products + agent rail (`e31a022`), orchestrator unification (`511e04c`), patch-context repairs (`770959c`, `c8beaf2`, `14bb5de`), hunk-count corrections across the zenmium series (`31d8fc6`), sccache/Windows-workflow fixes (`4be1c77`), GRIT resource-ID ordering + fake-index removal (`6b10464`), malformed-hunk repair (`d6b8b8c`), frosted-grain glass treatment at 35% transparency (`afaff48`), and allowlist.cc context regen for Windows patch.exe (`cce57fb`). Checkpoints: `refs/sprints/S005/{P1,T1/P1,T2/P1,T3/P1,T4/P1,T4/P2}`.
+- Patch-series verification is local and complete: all upstream patches + 11 zenmium patches replayed in series order onto real Chromium `153.0.8010.52` files fetched at the pinned tag — zero rejects, and every `@@` hunk header re-validated against actual body line counts (GNU `patch` truncates silently on under-declared counts; that bug class produced the malformed `BUILD.gn` that broke run 35793569937).
+- CI truth: macOS has repeatedly reached the full `chrome/installer/mac` compile (gn gen passes); remaining historical failures were patch-application and resource-generation defects, all repaired through `cce57fb`. Windows `build.py --ci` now performs its own full setup (pre-clone removed in `4be1c77`); fake `index 0000000..` lines removed because Windows `patch.exe` read them as new-file markers and silently skipped 7 modify hunks; the final allowlist.cc context drift was regenerated in `cce57fb`. No verified installable artifact exists yet.
 - Services lane live on Fly org `solvys-technologies`: `zenmium-services` (edge: bangs 200, connectivitycheck 204, ubo assets 200 w/ br), `zenmium-updates` (appcast 200), `zenmium-svc-{cup2,ext,push,ubo}` deployed. `zenmium-svc-crash`/`zenmium-svc-symbolicator` deliberately deferred to phase 2 (GitHub OAuth app + new volume = human gate). Endpoint rewire patch targets `zenmium-*.fly.dev` hosts.
 - Fly auth resolved: token recovered from `~/.fly/config.yml`, delivered to the T4 Cloud box and registered as org secret `secret-c7fa4cea`; `flyctl` locally still reports no token — use `FLY_API_TOKEN` env lane.
 - Side-monitor lane verified live: `desktop/scripts/verify-side-monitor.mjs` exits 0 (DELL P2422H present). No built artifact exists yet — local launch proof pending CI artifact.
@@ -66,7 +67,7 @@ None recorded.
 
 ## Next safe action
 
-Wave 1 executes in Cloud sessions T1 (clone + rebrand + CI workflows) and T4 (services vendoring + deploy config; deploy gated on Fly auth). On T1's checkpoint `refs/sprints/S005/T1/P1`, dispatch T2 (chrome UI port) and T3 (internal-products contract + agent rail). Unification merges `patches/series` and updates this record. PR #8 merge decision remains TP's.
+Watch the `cce57fb` CI runs (`browser-macos`, `browser-windows`) through patch application, gn gen, compile, packaging, and smoke test; fix any further cross-platform patch or toolchain failures via the verified local replay loop. When an artifact uploads, pull it and launch-test on the DELL P2422H side monitor under `ZENMIUM_VERIFY_SIDE_MONITOR=1`. Do not push to `browser/**`, `platform/**`, or workflow paths while a compile is in flight — `concurrency.cancel-in-progress` will kill it. PR #8 merge decision remains TP's.
 
 ## Prior lane (V0.0.1 Electron, superseded but intact)
 
