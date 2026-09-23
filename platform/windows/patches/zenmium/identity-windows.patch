@@ -1,6 +1,6 @@
 --- a/chrome/install_static/chromium_install_modes.h
 +++ b/chrome/install_static/chromium_install_modes.h
-@@ -19,15 +19,15 @@ namespace install_static {
+@@ -19,13 +19,13 @@ namespace install_static {
  // The brand-specific company name to be included as a component of the install
  // and user data directory paths. May be empty if no such dir is to be used.
 -inline constexpr wchar_t kCompanyPathName[] = L"imput";
@@ -17,7 +17,7 @@
  
  // Note: This list of indices must be kept in sync with the brand-specific
  // resource strings in chrome/installer/util/prebuild/create_string_rc.
-@@ -55,34 +55,34 @@ inline constexpr auto kInstallModes = st
+@@ -55,35 +55,35 @@ inline constexpr auto kInstallModes = st
              L"",  // Empty install_suffix for the primary install mode.
          .logo_suffix = L"",  // No logo suffix for the primary install mode.
          .app_guid =
@@ -101,7 +101,7 @@
      'chrome_os': ['chrome_os'],
 --- a/chrome/installer/setup/setup_constants.cc
 +++ b/chrome/installer/setup/setup_constants.cc
-@@ -9,11 +9,11 @@ namespace installer {
+@@ -9,13 +9,13 @@ namespace installer {
  
  // Elements that make up install paths.
 -const wchar_t kChromeArchive[] = L"helium.7z";
@@ -131,7 +131,7 @@
    // Fallback to current directory if getting the secure or temp directory
 --- a/chrome/installer/mini_installer/BUILD.gn
 +++ b/chrome/installer/mini_installer/BUILD.gn
-@@ -161,8 +161,8 @@ action("mini_installer_archive") {
+@@ -161,6 +161,6 @@ action("mini_installer_archive") {
    outputs = [
 -    "$root_out_dir/helium.7z",
 -    "$root_out_dir/helium.packed.7z",
@@ -162,7 +162,7 @@
      parser.add_option(
 --- a/components/policy/tools/template_writers/writer_configuration.py
 +++ b/components/policy/tools/template_writers/writer_configuration.py
-@@ -30,10 +30,10 @@ def GetConfigurationForBuild(defines):
+@@ -30,22 +30,22 @@ def GetConfigurationForBuild(defines):
    if '_chromium' in defines:
      config = {
          'build': 'chromium',
