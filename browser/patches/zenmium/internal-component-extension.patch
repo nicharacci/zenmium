@@ -244,9 +244,7 @@ diff --git a/chrome/browser/extensions/component_loader.cc b/chrome/browser/exte
 diff --git a/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc b/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
 --- a/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
 +++ b/chrome/browser/extensions/component_extensions_allowlist/allowlist.cc
-@@ -21,8 +21,10 @@
- #include "components/helium_services/extension_ids.h"
- #include "extensions/buildflags/buildflags.h"
+@@ -25,6 +25,8 @@
  #include "extensions/common/constants.h"
  #include "printing/buildflags/buildflags.h"
  #include "third_party/ublock/resources/grit/ublock_resources.h"
@@ -255,19 +253,19 @@ diff --git a/chrome/browser/extensions/component_extensions_allowlist/allowlist.
  
  #if BUILDFLAG(IS_CHROMEOS)
  #include "ash/constants/ash_extension_constants.h"
-@@ -44,6 +46,7 @@ bool IsComponentExtensionAllowlisted(con
+@@ -46,6 +48,7 @@
        extension_misc::kPdfExtensionId,
        helium::kUBlockOriginComponentId,
+       helium::kExtstoreFixupsExtensionId,
 +      zenmium::kZenmiumInternalComponentId,
  #if BUILDFLAG(IS_CHROMEOS)
        extension_misc::kAssessmentAssistantExtensionId,
        extension_misc::kAccessibilityCommonExtensionId,
- #endif
-@@ -107,6 +110,7 @@ bool IsComponentExtensionAllowlisted(int
+@@ -110,6 +113,7 @@
      case IDR_WEBSTORE_MANIFEST:
      case IDR_UBLOCK_MANIFEST_JSON:
- 
+     case IDR_EXTSTORE_FIXUPS_MANIFEST_JSON:
 +    case IDR_ZENMIUM_INTERNAL_MANIFEST_JSON:
+ 
  #if BUILDFLAG(IS_CHROMEOS)
      // Separate ChromeOS list, as it is quite large.
-     case IDR_ACCESSIBILITY_COMMON_MANIFEST:
