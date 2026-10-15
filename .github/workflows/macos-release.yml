@@ -1,0 +1,99 @@
+name: Zenmium macOS release
+
+on:
+  pull_request:
+    paths:
+      - "desktop/**"
+      - ".github/workflows/macos-release.yml"
+  workflow_dispatch:
+  push:
+    branches:
+      - "2026-09-12"
+    tags:
+      - "v*"
+
+jobs:
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.0.8
+      - name: Install
+        working-directory: desktop
+        run: pnpm install --frozen-lockfile
+      - name: Secret scan (source)
+        working-directory: desktop
+        run: pnpm security:scan
+      - name: Typecheck
+        working-directory: desktop
+        run: pnpm typecheck
+      - name: Build
+        working-directory: desktop
+        run: pnpm build
+      - name: Unit tests
+        working-directory: desktop
+        run: pnpm test
+      - name: Package (ad-hoc signed, local test only)
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          # electron-builder skips signing on pull_request unless this is set.
+          # Safe here: signing is ad-hoc (identity "-"), so no certificate
+          # material exists to leak to fork code. Without it the bundle keeps
+          # Electron's partial shipped signature and the verify step fails.
+          CSC_FOR_PULL_REQUEST: "true"
+        run: |
+          node --input-type=commonjs <<'NODE'
+          const { createRequire } = require("node:module");
+          const { build, Platform, Arch } = require("electron-builder");
+          const builderRequire = createRequire(require.resolve("electron-builder"));
+          const appBuilderRequire = createRequire(builderRequire.resolve("app-builder-lib"));
+          const { signAsync } = appBuilderRequire("@electron/osx-sign");
+          build({
+            targets: Platform.MAC.createTarget(undefined, Arch.arm64),
+            publish: "never",
+            config: {
+              mac: {
+                notarize: false,
+                timestamp: "none",
+                // Ad-hoc signatures have no Team ID. With the hardened runtime
+                // flag set, dyld enforces same-team library validation and the
+                // app aborts at launch ("different Team IDs") when it loads
+                // Electron Framework, so the local-test build must not harden.
+                hardenedRuntime: false,
+                sign: (options) => signAsync({ ...options, identity: "-", identityValidation: false }),
+              },
+            },
+          }).catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+      - name: Verify local-test app signature
+        working-directory: desktop
+        run: |
+          codesign --verify --deep --strict --verbose=2 dist/mac-arm64/Zenmium.app
+          # A valid ad-hoc signature still crashes at launch if the hardened
+          # runtime flag is set, because dyld enforces same-team library
+          # validation and ad-hoc binaries share no Team ID. Guard the
+          # invariant codesign --verify cannot see.
+          if codesign -dv --verbose=4 dist/mac-arm64/Zenmium.app/Contents/MacOS/Zenmium 2>&1 | grep -q "flags=.*runtime"; then
+            echo "ad-hoc local-test build must not carry the hardened runtime flag"
+            exit 1
+          fi
+      - name: Secret scan (artifacts)
+        working-directory: desktop
+        run: pnpm security:scan:artifacts
+      - name: Upload DMG and ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zenmium-macOS-${{ github.event.pull_request.number || github.ref_name }}
+          path: |
+            desktop/dist/*.dmg
+            desktop/dist/*.zip
+          if-no-files-found: error

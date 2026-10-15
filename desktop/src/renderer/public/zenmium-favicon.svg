@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Zenmium canonical favicon derivative.
+  This is an SVG container around the approved raster artwork, not a claim of
+  true vectorization. Keeping the exterior transparent lets the host surface
+  apply its own icon treatment without changing the insignia.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Zenmium</title>
+  <image x="0" y="0" width="512" height="512" preserveAspectRatio="none" href="zenmium-favicon.png" xlink:href="zenmium-favicon.png" />
+</svg>

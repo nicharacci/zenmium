@@ -1,0 +1,31 @@
+/* Zenmium wrappers only. BeUI registry source remains unmodified. */
+.zen-chat-v1 { min-height: 0; height: 100%; width: 100%; }
+.zen-chat-v1 .zen-beui-chat-title-overlay { padding-right: 72px; border: 0; }
+.zen-chat-v1 .zen-chat-session-actions { position: absolute; top: 10px; right: 8px; z-index: 4; display: flex; gap: 2px; }
+.zen-chat-v1 .zen-chat-session-actions button { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 8px; background: transparent; color: var(--zo-muted); }
+.zen-chat-v1 .zen-chat-session-actions button:hover { background: var(--zo-hover); color: var(--zo-text); }
+.zen-chat-v1 .zen-beui-chat-message-list { overflow-wrap: anywhere; }
+.zen-chat-v1 .zen-chat-response-text { white-space: pre-wrap; }
+.zen-chat-v1 .zen-chat-response-text a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.zen-chat-v1 .zen-chat-file-receipt { display: inline-block; border-radius: 6px; padding: 3px 7px; background: color-mix(in srgb, var(--zo-text) 6%, transparent); color: var(--zo-muted); margin: 5px 4px 0 0; font-size: 10px; }
+.zen-chat-v1 .zen-chat-source-receipts { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; color: var(--zo-muted); font-size: 10px; }
+.zen-chat-v1 .zen-chat-source-receipts a { text-decoration: underline; }
+.zen-chat-v1 .zen-chat-response-actions { display: flex; gap: 10px; margin-top: 8px; }
+.zen-chat-v1 .zen-chat-response-actions button { color: var(--zo-muted); border: 0; background: transparent; font-size: 10px; }
+.zen-chat-v1 .zen-chat-context-list { display: flex; flex-wrap: wrap; gap: 4px; max-height: 88px; overflow: auto; }
+.zen-chat-v1 .zen-chat-status { margin: 0; padding: 2px 3px; color: var(--zo-muted); font-size: 11px; line-height: 1.5; }
+.zen-chat-v1 .zen-chat-inline-action { display: inline-flex; align-items: center; align-self: flex-start; gap: 6px; border: 0; background: transparent; color: var(--zo-text); font-size: 11px; padding: 3px; }
+.zen-chat-v1 .zen-chat-inline-action:disabled { opacity: .5; }
+.zen-chat-v1 .zen-beui-chat-composer-wrap { border: 0; background: transparent; }
+.zen-chat-v1 .zen-beui-chat-composer { position: relative; border: 1px solid color-mix(in srgb, var(--zen-workspace-color) 25%, transparent) !important; border-radius: 16px !important; outline: 0 !important; animation: none !important; transition: border-color var(--duration-slow) var(--ease-smooth-out), box-shadow var(--duration-slow) var(--ease-smooth-out), transform var(--duration-fast) var(--ease-smooth-out); }
+.zen-chat-v1 .zen-beui-chat-composer:focus-within { border-color: color-mix(in srgb, var(--zen-workspace-color) 74%, transparent) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 0 18px -8px color-mix(in srgb, var(--zen-workspace-color) 75%, transparent); }
+.zen-chat-v1 .zen-beui-chat-composer textarea,
+.zen-chat-v1 .zen-beui-chat-composer textarea:focus,
+.zen-chat-v1 .zen-beui-chat-composer textarea:focus-visible { outline: 0 !important; border: 0 !important; box-shadow: none !important; background: transparent !important; }
+.zen-chat-v1 .zen-beui-chat-composer > div:last-child > div:has(> button[aria-haspopup="listbox"]) { margin-left: auto; }
+.zen-chat-v1 .zen-beui-chat-composer > div:last-child > button:last-child { margin-left: 0 !important; }
+.zen-chat-v1 .zen-beui-chat-composer > div:last-child:not(:has(button[aria-haspopup="listbox"])) > button:last-child { margin-left: auto !important; }
+.zen-chat-history-error { padding: 4px 8px; font-size: 11px; color: var(--zen-text-secondary); }
+.zen-chat-history .zen-chat-history-tools { display: flex; align-items: center; gap: 3px; }
+.zen-chat-history .zen-chat-history-tools > button:last-child { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 7px; background: transparent; color: inherit; }
+@media (prefers-reduced-motion: reduce) { .zen-chat-v1 .zen-beui-chat-composer { transition: none !important; animation: none !important; } }

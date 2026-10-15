@@ -35,17 +35,17 @@
  * documented in `extension-host.ts` and `docs/zenmium/STORE-INSTALL.md`.
  */
 
-import { createHash } from "node:crypto";
+import { createHash, createPublicKey, verify } from "node:crypto";
 import { EventEmitter } from "node:events";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import AdmZip from "adm-zip";
-import { app } from "electron";
 import { request } from "undici";
 import { z } from "zod";
+import { STORE_INSTALL_IPC } from "../shared/browser-ui";
 
-import { ExtensionHost, type ExtensionRecord } from "./extension-host";
+import type { ExtensionHost, ExtensionRecord } from "./extension-host";
 
 /** Seam name used in failures. The renderer contract also carries `stage`. */
 export const STORE_INSTALL_SEAM = "store-install" as const;
@@ -55,11 +55,7 @@ export type StoreInstallSeam = typeof STORE_INSTALL_SEAM;
 export const STORE_INSTALL_PROGRESS_EVENT = "zenmium:store-install:progress" as const;
 
 /** IPC channel names the base lane should re-export from `src/shared/ipc.ts`. */
-export const STORE_INSTALL_IPC = {
-  start: "extensions:store-install:start",
-  cancel: "extensions:store-install:cancel",
-  progress: STORE_INSTALL_PROGRESS_EVENT,
-} as const;
+export { STORE_INSTALL_IPC };
 
 export const STORE_INSTALL_STAGES = [
   "idle",
@@ -198,6 +194,9 @@ export interface ParsedCrx {
   declaredId: string;
   /** Id derived from the embedded public key. Empty string when no key was found. */
   derivedId: string;
+  /** Canonical signed developer public key, used to preserve identity after unpacking. */
+  publicKey: string;
+  signatureVerified: true;
 }
 
 function fail(stage: StoreInstallStage, reason: string): StoreInstallResult {
@@ -284,153 +283,86 @@ function readBytesField(
   return { value: null, offset: message.length };
 }
 
-/**
- * CrxFileHeader protobuf:
- *   field 2: sha256_with_rsa (AsymmetricKeyProof)  -> field 1 public_key
- *   field 3: sha256_with_ecdsa (AsymmetricKeyProof)
- *   field 10000: signed_header_data (SignedData)   -> field 1 crx_id (16 bytes)
- */
-function extractPublicKey(header: Buffer): Buffer | null {
+/** Iterate length-delimited protobuf fields, rejecting malformed bounds. */
+function byteFields(message: Buffer): Array<{ field: number; value: Buffer }> {
+  const fields: Array<{ field: number; value: Buffer }> = [];
   let offset = 0;
-  while (offset < header.length) {
-    const key = readVarint(header, offset);
-    offset = key.offset;
-    const field = Math.floor(key.value / 8);
-    const wire = key.value & 0x7;
-    if (wire !== 2) {
-      if (wire === 0) {
-        const skipped = readVarint(header, offset);
-        offset = skipped.offset;
-        continue;
-      }
-      break;
+  while (offset < message.length) {
+    const key = readVarint(message, offset); offset = key.offset;
+    const field = Math.floor(key.value / 8), wire = key.value & 7;
+    if (!field) throw new StoreInstallError("verifying", "Invalid protobuf field.");
+    if (wire === 0) { offset = readVarint(message, offset).offset; continue; }
+    if (wire === 1 || wire === 5) {
+      offset += wire === 1 ? 8 : 4;
+      if (offset > message.length) throw new StoreInstallError("verifying", "Truncated protobuf field.");
+      continue;
     }
-    const length = readVarint(header, offset);
-    offset = length.offset;
+    if (wire !== 2) throw new StoreInstallError("verifying", "Unsupported protobuf field.");
+    const length = readVarint(message, offset); offset = length.offset;
     const end = offset + length.value;
-    if (end > header.length) {
-      break;
-    }
-    if (field === 2 || field === 3) {
-      const proof = header.subarray(offset, end);
-      const publicKey = readBytesField(proof, 1).value;
-      if (publicKey !== null && publicKey.length > 0) {
-        return publicKey;
-      }
-    }
+    if (end > message.length) throw new StoreInstallError("verifying", "Truncated protobuf field.");
+    fields.push({ field, value: message.subarray(offset, end) });
     offset = end;
   }
-  return null;
+  return fields;
 }
-
-function extractDeclaredCrxId(header: Buffer): Buffer | null {
-  let offset = 0;
-  while (offset < header.length) {
-    const key = readVarint(header, offset);
-    offset = key.offset;
-    const field = Math.floor(key.value / 8);
-    const wire = key.value & 0x7;
-    if (wire !== 2) {
-      if (wire === 0) {
-        const skipped = readVarint(header, offset);
-        offset = skipped.offset;
-        continue;
-      }
-      break;
-    }
-    const length = readVarint(header, offset);
-    offset = length.offset;
-    const end = offset + length.value;
-    if (end > header.length) {
-      break;
-    }
-    if (field === 10000) {
-      const signedHeaderData = header.subarray(offset, end);
-      const crxId = readBytesField(signedHeaderData, 1).value;
-      if (crxId !== null && crxId.length === 16) {
-        return crxId;
-      }
-    }
-    offset = end;
-  }
-  return null;
+function keyId(publicKey: Buffer): string {
+  return hexToExtensionId(createHash("sha256").update(publicKey).digest().subarray(0, 16).toString("hex"));
 }
-
-/**
- * Parse a CRX2 or CRX3 container and read the declared/derived extension ids.
- * Throws `StoreInstallError("verifying", …)` for any structural problem.
- */
+/** Verify signed package identity and archive integrity; not a Web Store publisher attestation. */
 export function parseCrx(bytes: Buffer): ParsedCrx {
-  if (bytes.length < 16 || bytes.subarray(0, 4).toString("ascii") !== "Cr24") {
-    throw new StoreInstallError(
-      "verifying",
-      "The downloaded file is not a CRX package (missing Cr24 magic).",
-    );
-  }
+  const invalid = (reason: string): never => { throw new StoreInstallError("verifying", reason); };
+  if (bytes.length < 12 || bytes.subarray(0, 4).toString("ascii") !== "Cr24")
+    return invalid("The downloaded file is not a CRX package.");
   const version = bytes.readUInt32LE(4);
-  if (version !== 2 && version !== 3) {
-    throw new StoreInstallError(
-      "verifying",
-      `Unsupported CRX container version ${version}.`,
-    );
-  }
-
   if (version === 3) {
-    if (bytes.length < 12) {
-      throw new StoreInstallError("verifying", "The CRX3 header is truncated.");
+    const size = bytes.readUInt32LE(8), end = 12 + size;
+    if (size <= 0 || size > 1024 * 1024 || end >= bytes.length) return invalid("Invalid CRX3 header bounds.");
+    const header = byteFields(bytes.subarray(12, end));
+    const signedFields = header.filter(value => value.field === 10000);
+    if (signedFields.length !== 1) return invalid("Missing or ambiguous CRX3 signed header.");
+    const signedHeader = signedFields[0]!.value;
+    const ids = byteFields(signedHeader).filter(value => value.field === 1);
+    if (ids.length !== 1 || ids[0]!.value.length !== 16) return invalid("Invalid CRX3 extension identity.");
+    const declaredId = hexToExtensionId(ids[0]!.value.toString("hex"));
+    const payload = bytes.subarray(end), length = Buffer.alloc(4);
+    length.writeUInt32LE(signedHeader.length);
+    const signedBytes = Buffer.concat([Buffer.from("CRX3 SignedData\0", "utf8"), length, signedHeader, payload]);
+    const proofs = header.filter(value => value.field === 2 || value.field === 3);
+    if (!proofs.length || proofs.length > 32) return invalid("Missing or excessive CRX3 proofs.");
+    let developerKey: Buffer | undefined;
+    for (const proof of proofs) {
+      const fields = byteFields(proof.value);
+      const keys = fields.filter(value => value.field === 1), signatures = fields.filter(value => value.field === 2);
+      if (keys.length !== 1 || signatures.length !== 1) return invalid("Invalid CRX3 proof.");
+      const publicKey = keys[0]!.value, signature = signatures[0]!.value;
+      try {
+        const key = createPublicKey({ key: publicKey, format: "der", type: "spki" });
+        if ((proof.field === 2 && key.asymmetricKeyType !== "rsa") || (proof.field === 3 && key.asymmetricKeyType !== "ec") ||
+            !verify("sha256", signedBytes, key, signature)) return invalid("The CRX3 signature does not verify.");
+      } catch { return invalid("The CRX3 signature does not verify."); }
+      if (keyId(publicKey) === declaredId) developerKey = publicKey;
     }
-    const headerLength = bytes.readUInt32LE(8);
-    const headerEnd = 12 + headerLength;
-    if (headerLength <= 0 || headerEnd > bytes.length) {
-      throw new StoreInstallError("verifying", "The CRX3 header length is invalid.");
-    }
-    const header = bytes.subarray(12, headerEnd);
-    const payload = bytes.subarray(headerEnd);
-    if (payload.length === 0) {
-      throw new StoreInstallError("verifying", "The CRX3 package has an empty payload.");
-    }
-    const publicKey = extractPublicKey(header);
-    const declared = extractDeclaredCrxId(header);
-    return {
-      version,
-      payload,
-      declaredId:
-        declared === null ? "" : hexToExtensionId(declared.toString("hex")),
-      derivedId:
-        publicKey === null
-          ? ""
-          : hexToExtensionId(
-              createHash("sha256").update(publicKey).digest().subarray(0, 16).toString("hex"),
-            ),
-    };
+    if (!developerKey) return invalid("No verified developer key matches the declared extension identity.");
+    return { version, payload, declaredId, derivedId: keyId(developerKey),
+      publicKey: developerKey.toString("base64"), signatureVerified: true };
   }
-
-  // CRX2: [magic 4][version 4][pubkey len 4][sig len 4][pubkey][sig][zip]
-  if (bytes.length < 16) {
-    throw new StoreInstallError("verifying", "The CRX2 header is truncated.");
+  if (version === 2) {
+    if (bytes.length < 16) return invalid("Truncated CRX2 header.");
+    const keyLength = bytes.readUInt32LE(8), sigLength = bytes.readUInt32LE(12);
+    const end = 16 + keyLength + sigLength;
+    if (!keyLength || !sigLength || end >= bytes.length || end > 1024 * 1024) return invalid("Invalid CRX2 header bounds.");
+    const publicKey = bytes.subarray(16, 16 + keyLength);
+    const signature = bytes.subarray(16 + keyLength, end), payload = bytes.subarray(end);
+    try {
+      const key = createPublicKey({ key: publicKey, format: "der", type: "spki" });
+      if (key.asymmetricKeyType !== "rsa" || !verify("RSA-SHA1", payload, key, signature))
+        return invalid("The CRX2 signature does not verify.");
+    } catch { return invalid("The CRX2 signature does not verify."); }
+    return { version, payload, declaredId: "", derivedId: keyId(publicKey),
+      publicKey: publicKey.toString("base64"), signatureVerified: true };
   }
-  const publicKeyLength = bytes.readUInt32LE(8);
-  const signatureLength = bytes.readUInt32LE(12);
-  const headerEnd = 16 + publicKeyLength + signatureLength;
-  if (headerEnd > bytes.length) {
-    throw new StoreInstallError("verifying", "The CRX2 header length is invalid.");
-  }
-  const publicKey = bytes.subarray(16, 16 + publicKeyLength);
-  const payload = bytes.subarray(headerEnd);
-  if (payload.length === 0) {
-    throw new StoreInstallError("verifying", "The CRX2 package has an empty payload.");
-  }
-  return {
-    version,
-    payload,
-    declaredId: "",
-    derivedId:
-      publicKeyLength > 0
-        ? hexToExtensionId(
-            createHash("sha256").update(publicKey).digest().subarray(0, 16).toString("hex"),
-          )
-        : "",
-  };
+  return invalid("Unsupported CRX container version.");
 }
 
 /** Reject zip entries that could escape the extraction root. */
@@ -508,7 +440,7 @@ export class StoreInstaller {
     this.host = options.host;
     this.events = options.events;
     this.extensionsRoot =
-      options.extensionsRoot ?? path.join(app.getPath("userData"), "zenmium", "extensions");
+      options.extensionsRoot ?? options.host.managedRoot;
     this.chromeVersion = options.chromeVersion ?? process.versions.chrome ?? FALLBACK_CHROME_VERSION;
   }
 
@@ -545,92 +477,7 @@ export class StoreInstaller {
 
       const updateUrl = buildCrxUpdateUrl(id, this.chromeVersion);
       const downloaded = await this.download(updateUrl, id, controller.signal);
-
-      this.emit({
-        stage: "verifying",
-        id,
-        name: null,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      const parsed = parseCrx(downloaded.bytes);
-
-      // The requested id must match what the package declares. Fail closed on any mismatch
-      // or when the header did not carry enough to verify (ZEN-004).
-      const declared = parsed.declaredId;
-      const derived = parsed.derivedId;
-      if (declared === "" && derived === "") {
-        return this.emitFailure(
-          "verifying",
-          "The package header did not declare an extension id, so it could not be verified.",
-          id,
-        );
-      }
-      if (declared !== "" && declared !== id) {
-        return this.emitFailure(
-          "verifying",
-          `The package declares extension id ${declared}, which does not match ${id}.`,
-          id,
-        );
-      }
-      if (derived !== "" && derived !== id) {
-        return this.emitFailure(
-          "verifying",
-          `The public key in the package resolves to ${derived}, which does not match ${id}.`,
-          id,
-        );
-      }
-      if (declared !== "" && derived !== "" && declared !== derived) {
-        return this.emitFailure(
-          "verifying",
-          "The package declares one id and its public key resolves to another.",
-          id,
-        );
-      }
-
-      const target = path.join(this.extensionsRoot, id);
-      await this.extract(parsed.payload, target, controller.signal);
-
-      this.emit({
-        stage: "installing",
-        id,
-        name: null,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      const manifest = await readManifestSummary(target, id);
-      const record: ExtensionRecord = {
-        id,
-        path: target,
-        version: manifest.version,
-        enabled: true,
-        name: manifest.name,
-      };
-      const loaded = await this.host.load(record);
-      if (!loaded.ok) {
-        return this.emitFailure("installing", loaded.reason, id);
-      }
-
-      this.emit({
-        stage: "done",
-        id,
-        name: loaded.value.name,
-        receivedBytes: downloaded.bytes.byteLength,
-        totalBytes: downloaded.bytes.byteLength,
-        percent: 100,
-        reason: null,
-      });
-      return {
-        ok: true,
-        id,
-        path: target,
-        version: loaded.value.version,
-        name: loaded.value.name,
-      };
+      return await this.installBytes(id, downloaded.bytes, controller.signal);
     } catch (error) {
       if (isAbortError(error)) {
         return this.emitFailure("error", "The install was cancelled.", id);
@@ -644,6 +491,101 @@ export class StoreInstaller {
         this.active = null;
       }
     }
+  }
+
+  /** Install a pinned local CRX, used for bundled compatibility helpers. */
+  async installLocal(crxPath: string, expectedId: string): Promise<StoreInstallResult> {
+    this.cancel();
+    const controller = new AbortController();
+    this.active = controller;
+    const id = parseExtensionId(expectedId);
+    if (id === null) return this.emitFailure("resolving", "The bundled extension id is invalid.", null);
+    try {
+      this.emit({
+        stage: "resolving",
+        id,
+        name: null,
+        receivedBytes: 0,
+        totalBytes: null,
+        percent: null,
+        reason: null,
+      });
+      const bytes = await fs.readFile(crxPath);
+      if (bytes.byteLength > MAX_CRX_BYTES)
+        throw new StoreInstallError("verifying", "The bundled extension package is too large.");
+      return await this.installBytes(id, bytes, controller.signal);
+    } catch (error) {
+      if (isAbortError(error)) return this.emitFailure("error", "The install was cancelled.", id);
+      if (error instanceof StoreInstallError) return this.emitFailure(error.stage, error.message, id);
+      return this.emitFailure("error", errorMessage(error), id);
+    } finally {
+      if (this.active === controller) this.active = null;
+    }
+  }
+
+  private async installBytes(id: string, bytes: Buffer, signal: AbortSignal): Promise<StoreInstallResult> {
+    this.emit({
+      stage: "verifying",
+      id,
+      name: null,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    const parsed = parseCrx(bytes);
+
+    // The requested id must match what the package declares. Fail closed on any mismatch
+    // or when the header did not carry enough to verify (ZEN-004).
+    const declared = parsed.declaredId;
+    const derived = parsed.derivedId;
+    if (declared === "" && derived === "")
+      return this.emitFailure("verifying", "The package header did not declare an extension id, so it could not be verified.", id);
+    if (declared !== "" && declared !== id)
+      return this.emitFailure("verifying", `The package declares extension id ${declared}, which does not match ${id}.`, id);
+    if (derived !== "" && derived !== id)
+      return this.emitFailure("verifying", `The public key in the package resolves to ${derived}, which does not match ${id}.`, id);
+    if (declared !== "" && derived !== "" && declared !== derived)
+      return this.emitFailure("verifying", "The package declares one id and its public key resolves to another.", id);
+
+    const target = path.join(this.extensionsRoot, id);
+    await this.extract(parsed.payload, target, signal, parsed.publicKey);
+    this.emit({
+      stage: "installing",
+      id,
+      name: null,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    const manifest = await readManifestSummary(target, id);
+    const record: ExtensionRecord = {
+      id,
+      path: target,
+      version: manifest.version,
+      enabled: true,
+      name: manifest.name,
+      source: "store",
+    };
+    const loaded = await this.host.load(record);
+    if (!loaded.ok) return this.emitFailure("installing", loaded.reason, id);
+    this.emit({
+      stage: "done",
+      id,
+      name: loaded.value.name,
+      receivedBytes: bytes.byteLength,
+      totalBytes: bytes.byteLength,
+      percent: 100,
+      reason: null,
+    });
+    return {
+      ok: true,
+      id,
+      path: target,
+      version: loaded.value.version,
+      name: loaded.value.name,
+    };
   }
 
   private async download(
@@ -761,7 +703,7 @@ export class StoreInstaller {
     };
   }
 
-  private async extract(payload: Buffer, target: string, signal: AbortSignal): Promise<void> {
+  private async extract(payload: Buffer, target: string, signal: AbortSignal, publicKey: string): Promise<void> {
     let zip: AdmZip;
     try {
       zip = new AdmZip(payload);
@@ -776,15 +718,24 @@ export class StoreInstaller {
     if (entries.length === 0) {
       throw new StoreInstallError("extracting", "The package payload contained no files.");
     }
+    let expandedBytes = 0;
+    const names = new Set<string>();
     for (const entry of entries) {
       assertSafeEntry(entry.entryName);
+      const name = entry.entryName.replace(/\\/g, "/").toLowerCase();
+      if (names.has(name)) throw new StoreInstallError("extracting", "Duplicate package path.");
+      names.add(name);
+      // Refuse symlinks and compression bombs before touching the target directory.
+      if (((entry.attr >>> 16) & 0o170000) === 0o120000)
+        throw new StoreInstallError("extracting", "Symbolic links are not permitted in an extension package.");
+      expandedBytes += entry.header.size;
+      if (expandedBytes > MAX_CRX_BYTES || entries.length > 20_000)
+        throw new StoreInstallError("extracting", "The expanded package exceeds the resource limit.");
     }
 
     const parent = path.dirname(target);
     await fs.mkdir(parent, { recursive: true });
-    const staging = `${target}.staging-${process.pid}-${Date.now()}`;
-    await fs.rm(staging, { recursive: true, force: true });
-    await fs.mkdir(staging, { recursive: true });
+    const staging = await fs.mkdtemp(`${target}.staging-`);
 
     try {
       await new Promise<void>((resolve, reject) => {
@@ -802,7 +753,15 @@ export class StoreInstaller {
       }
 
       // A real extension always has a manifest. Refuse to swap in a package without one.
-      await fs.access(path.join(staging, "manifest.json"));
+      const manifestPath = path.join(staging, "manifest.json");
+      const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8"));
+      if (typeof manifest !== "object" || !manifest || typeof manifest.name !== "string" || typeof manifest.version !== "string")
+        throw new StoreInstallError("extracting", "The package manifest is invalid.");
+      if (manifest.key !== undefined && manifest.key !== publicKey)
+        throw new StoreInstallError("verifying", "The manifest key does not match the signed developer key.");
+      // This is a public key from the verified CRX, not an invented extension identity.
+      manifest.key = publicKey;
+      await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", { mode: 0o600 });
 
       const backup = `${target}.previous-${process.pid}-${Date.now()}`;
       let hadPrevious = false;

@@ -1,0 +1,1905 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+/* Zen 1.22b: installed-source popup geometry. */
+:root {
+  --zo-primary: var(--zen-workspace-color, #6ee7a8);
+  --zo-text: var(--foreground, #ededee);
+  --zo-muted: var(--muted-foreground, #a7a8ad);
+  --zo-panel: color-mix(in srgb, var(--zo-primary) 8%, rgb(24 24 24 / 94%));
+  --zo-fill: var(--secondary, rgb(255 255 255 / 6%));
+  --zo-hover: var(--accent, rgb(255 255 255 / 10%));
+}
+html[data-zen-overlay-surface="true"],
+html[data-zen-overlay-surface="true"] body,
+html[data-zen-overlay-surface="true"] #root {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+html[data-zen-overlay-surface="true"] {
+  --zo-primary: var(--zen-workspace-color, var(--zen-primary-color, #6ee7a8));
+  --zo-text: #ededee;
+  --zo-muted: #a7a8ad;
+  --zo-panel: color-mix(
+    in srgb,
+    var(--zo-primary) 8%,
+    rgb(24 24 24 / 94%)
+  );
+  --zo-fill: rgb(255 255 255 / 6%);
+  --zo-hover: rgb(255 255 255 / 10%);
+  --zo-selected: color-mix(
+    in srgb,
+    rgb(255 255 255 / 18%) 95%,
+    var(--zo-primary)
+  );
+  --zo-border: rgb(255 255 255 / 11%);
+  --zo-danger: #f5a1a1;
+  /* Workspace accent is not Zen's tonal frame color. Mixing the bright
+     workspace swatch here incorrectly made the whole address card green. */
+  --zo-address: rgb(27 28 24 / 94%);
+  --zo-address-selection: #4a43c5;
+  --zo-address-shadow: 0 30px 140px -15px rgb(0 0 0 / 60%);
+  --zo-shadow:
+    0 24px 90px rgb(0 0 0 / 36%), 0 4px 18px rgb(0 0 0 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 5%);
+  color-scheme: dark;
+}
+
+html[data-zen-overlay-theme="light"] {
+  --zo-text: #252829;
+  --zo-muted: #646b68;
+  --zo-panel: color-mix(
+    in srgb,
+    var(--zo-primary) 8%,
+    rgb(248 248 248 / 94%)
+  );
+  --zo-fill: rgb(0 0 0 / 4%);
+  --zo-hover: rgb(0 0 0 / 6%);
+  --zo-selected: color-mix(in srgb, var(--zo-primary) 16%, rgb(0 0 0 / 5%));
+  --zo-border: rgb(0 0 0 / 11%);
+  --zo-danger: #ac3434;
+  --zo-address: rgb(251 251 251 / 94%);
+  --zo-address-shadow: 0 30px 140px -15px rgb(0 0 0 / 80%);
+  --zo-shadow:
+    0 24px 90px rgb(0 0 0 / 16%), 0 4px 18px rgb(0 0 0 / 9%),
+    inset 0 1px 0 rgb(255 255 255 / 70%);
+  color-scheme: light;
+}
+
+.zen-utility-docked {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--zo-text);
+  background: transparent;
+  font-size: 13px;
+  z-index: 0;
+}
+.zen-native-panel-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 0 14px 14px;
+}
+.zen-native-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.zen-native-bookmark-list { flex: 1; min-height: 64px; overflow: auto; scrollbar-width: thin; }
+.zen-native-bookmark-row { display: flex; align-items: center; gap: 3px; border-radius: 10px; }
+.zen-native-bookmark-row:hover { background: var(--zo-fill); }
+.zen-native-bookmark-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 10px 5px; border: 0; background: transparent; color: inherit; text-align: left; }
+.zen-native-bookmark-open svg { flex: 0 0 auto; }
+.zen-native-bookmark-open span { min-width: 0; }
+.zen-native-bookmark-open strong, .zen-native-bookmark-open small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zen-native-bookmark-open strong { font-weight: 500; }
+.zen-native-bookmark-open small { color: var(--zo-muted); font-size: 11px; }
+.zen-native-bookmark-row .zen-overlay-icon-button { opacity: 0; }
+.zen-native-bookmark-row:hover .zen-overlay-icon-button, .zen-native-bookmark-row:focus-within .zen-overlay-icon-button { opacity: 1; }
+.zen-native-editor { display: grid; gap: 10px; padding: 12px; border-radius: 12px; background: var(--zo-fill); }
+.zen-native-editor > label { display: grid; gap: 5px; }
+.zen-native-editor select { width: 100%; background: var(--zo-panel); color: var(--zo-text); padding: 7px; border: 1px solid var(--zo-border); border-radius: 8px; }
+.zen-native-page-actions { margin: 0 12px 12px; padding-top: 10px; border-top: 1px solid var(--zo-border); }
+.zen-native-zoom { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+.zen-native-zoom > span { flex: 1; }
+.zen-native-find-surface { height: 100dvh; width: 100vw; display: flex; flex-direction: column; color: var(--zo-text); background: var(--zo-panel); border: 2px solid var(--zo-border); border-left-color: var(--zo-primary); border-radius: 12px; overflow: hidden; }
+.zen-native-find-surface .zen-overlay-header { padding: 8px 12px 4px; }
+.zen-native-find-surface .zen-overlay-header h1 { font-size: 12px; }
+.zen-native-find { padding: 0 10px 8px; display: grid; gap: 5px; }
+.zen-native-find output { min-width: 62px; margin-right: auto; font-size: 11px; color: var(--zo-muted); }
+.zen-native-find label { display: flex; align-items: center; gap: 4px; font-size: 11px; }
+.zen-native-find .zen-overlay-button { min-height: 25px; padding: 4px; }
+.zen-native-permission { display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+.zen-native-permission > span { flex: 1; min-width: 0; }
+.zen-native-permission strong, .zen-native-permission small { display: block; overflow-wrap: anywhere; }
+.zen-native-permission strong { font-size: 12px; font-weight: 500; }
+.zen-native-permission small { font-size: 11px; color: var(--zo-muted); }
+.zen-native-protection-status { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; color: var(--zo-muted); }
+.zen-native-protection-status[data-active="true"] { color: var(--zo-primary); }
+.zen-native-protection-status small { flex-basis: 100%; color: var(--zo-muted); }
+.zen-overlay-panel--onboarding { width: min(560px, 100%); }
+.zen-onboarding { padding: 28px; }
+.zen-onboarding-brand { display: flex; align-items: center; gap: 14px; }
+.zen-onboarding-brand img { width: 62px; height: 62px; object-fit: contain; border-radius: 50%; }
+.zen-onboarding-brand > span { font-size: 13px; font-weight: 600; letter-spacing: 0.2em; }
+.zen-onboarding-brand small { display: block; margin-top: 5px; font-size: 10px; font-weight: 400; letter-spacing: 0.03em; color: var(--zo-muted); }
+.zen-onboarding-steps { display: flex; align-items: center; gap: 12px; margin: 24px 0; padding: 0; list-style: none; }
+.zen-onboarding-steps li { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--zo-muted); }
+.zen-onboarding-steps li[aria-current="step"] { color: var(--zo-primary); }
+.zen-onboarding h1 { margin: 14px 0; font-weight: 500; font-size: 29px; line-height: 1.2; letter-spacing: -0.04em; }
+.zen-onboarding section > p { color: var(--zo-muted); font-size: 13px; line-height: 1.6; }
+.zen-onboarding-note { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0; padding: 14px; border-radius: 12px; background: linear-gradient(90deg, color-mix(in srgb, var(--zo-primary) 12%, transparent), transparent); }
+.zen-onboarding-note > svg { flex: 0 0 auto; color: var(--zo-primary); }
+.zen-onboarding-note > p { margin: 0; font-size: 12px; color: var(--zo-muted); }
+.zen-onboarding-choice { display: flex; align-items: center; gap: 10px; padding: 14px 0; }
+.zen-onboarding-choice > span { flex: 1; }
+.zen-onboarding-choice strong, .zen-onboarding-choice small { display: block; }
+.zen-onboarding-choice small { margin-top: 5px; font-size: 11px; color: var(--zo-muted); }
+.zen-onboarding-choice input, .zen-onboarding input[type="range"] { accent-color: var(--zo-primary); }
+.zen-onboarding-token { margin-top: 18px; }
+.zen-onboarding-token .zen-overlay-help { display: flex; align-items: center; gap: 6px; }
+.zen-onboarding-chrome-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 8px; color: var(--zo-muted); font-size: 11px; }
+.zen-chrome-import-actions { display: flex; align-items: center; gap: 6px; }
+.zen-onboarding-chrome-toolbar .zen-overlay-button { flex: 0 0 auto; padding: 7px 10px; }
+.zen-onboarding-chrome-list { display: grid; gap: 7px; max-height: 245px; overflow: auto; padding: 2px; overscroll-behavior: contain; }
+.zen-onboarding-chrome-row { display: flex; align-items: flex-start; gap: 11px; padding: 11px 12px; border: 1px solid color-mix(in srgb, var(--zo-text) 9%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--zo-text) 4%, transparent); cursor: pointer; transition: border-color var(--duration-quick) var(--ease-out), background var(--duration-quick) var(--ease-out), opacity var(--duration-quick) var(--ease-out); }
+.zen-onboarding-chrome-row:hover { border-color: color-mix(in srgb, var(--zo-primary) 42%, transparent); background: color-mix(in srgb, var(--zo-primary) 8%, transparent); }
+.zen-onboarding-chrome-row[data-imported="true"] { cursor: default; opacity: .72; }
+.zen-onboarding-chrome-row > input { flex: 0 0 auto; margin: 3px 0 0; accent-color: var(--zo-primary); }
+.zen-onboarding-chrome-row > span { min-width: 0; flex: 1; }
+.zen-onboarding-chrome-row > svg { flex: 0 0 auto; margin-top: 2px; color: var(--zo-primary); }
+.zen-onboarding-chrome-row strong, .zen-onboarding-chrome-row small { display: block; overflow-wrap: anywhere; }
+.zen-onboarding-chrome-row strong { font-size: 12px; font-weight: 600; }
+.zen-onboarding-chrome-row strong em { display: inline-block; margin-left: 7px; padding: 2px 6px; border-radius: 999px; color: var(--zo-primary); background: color-mix(in srgb, var(--zo-primary) 12%, transparent); font-size: 9px; font-style: normal; font-weight: 600; }
+.zen-onboarding-chrome-row small { margin-top: 4px; color: var(--zo-muted); font-size: 10px; }
+.zen-onboarding-chrome-row .zen-onboarding-imported, .zen-onboarding-chrome-row .zen-onboarding-password-note { display: flex; align-items: center; gap: 4px; }
+.zen-onboarding-chrome-row .zen-onboarding-imported { color: var(--zo-primary); }
+.zen-onboarding-chrome-row .zen-onboarding-password-note { color: color-mix(in srgb, var(--zo-muted) 82%, var(--zo-primary)); }
+.zen-chrome-import-capabilities { display: flex; flex-wrap: wrap; gap: 5px 9px; margin-top: 7px; color: var(--zo-muted); font-size: 10px; }
+.zen-chrome-import-capabilities span { display: inline-flex; align-items: center; gap: 3px; opacity: .58; }
+.zen-chrome-import-capabilities span[data-present="true"] { color: var(--zo-primary); opacity: .95; }
+.zen-chrome-import-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--zo-border); color: var(--zo-muted); font-size: 10px; }
+.zen-chrome-import-footer .zen-overlay-button { flex: 0 0 auto; }
+.zen-chrome-import-picker { min-width: 0; }
+.zen-onboarding-chrome-list + .zen-overlay-help { margin-top: 13px; }
+.zen-onboarding-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 18px; margin-top: 14px; }
+.zen-overlay-root {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--zo-text);
+  font:
+    13px / 1.45 ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "SF Pro Text",
+    sans-serif;
+  isolation: isolate;
+  -webkit-app-region: no-drag;
+}
+.zen-overlay-root *,
+.zen-overlay-root *::before,
+.zen-overlay-root *::after {
+  box-sizing: border-box;
+}
+.zen-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: rgb(8 10 12 / 19%);
+  backdrop-filter: blur(3px) saturate(105%);
+  -webkit-backdrop-filter: blur(3px) saturate(105%);
+  animation: zen-overlay-backdrop-in var(--duration-quick) var(--ease-out) both;
+}
+html[data-zen-overlay-kind="address"] .zen-overlay-backdrop,
+html[data-zen-overlay-kind="new-tab"] .zen-overlay-backdrop {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+/* CSS blur only samples pixels Chromium exposes to this view; the live native page stays visible beneath it. */
+.zen-overlay-panel {
+  --zo-edge-color: var(--zen-workspace-preview, var(--zo-primary));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 2px solid color-mix(in srgb, var(--zo-text) 22%, transparent);
+  border-left-color: var(--zo-edge-color);
+  border-radius: 16px;
+  background: var(--zo-panel);
+  box-shadow: var(--zo-shadow), -8px 0 24px -16px var(--zo-edge-color);
+  backdrop-filter: blur(24px) saturate(1.25);
+  -webkit-backdrop-filter: blur(24px) saturate(1.25);
+  animation: zen-overlay-panel-in var(--modal-open-dur) var(--modal-ease) both;
+  scrollbar-width: thin;
+  scrollbar-color: var(--zo-border) transparent;
+}
+.zen-overlay-root[data-side="right"] .zen-overlay-panel {
+  border-left-color: color-mix(in srgb, var(--zo-text) 22%, transparent);
+  border-right-color: var(--zo-edge-color);
+  box-shadow: var(--zo-shadow), 8px 0 24px -16px var(--zo-edge-color);
+}
+.zen-overlay-panel.zen-overlay-panel--address {
+  position: absolute;
+  width: min(66.6667vw, 750px);
+  max-height: calc(100dvh - 48px);
+  border-radius: 12px;
+  background: var(--zo-address);
+  box-shadow: var(--zo-address-shadow);
+  outline: 0;
+}
+html[data-zen-overlay-theme="light"] .zen-overlay-panel--address {
+  outline: 0;
+}
+.zen-overlay-panel--history {
+  width: min(600px, 100%);
+}
+.zen-overlay-panel--agent {
+  width: min(420px, 100%);
+}
+.zen-overlay-panel--menu,
+.zen-overlay-panel--tab-menu,
+.zen-overlay-panel--site-info {
+  width: min(360px, 100%);
+}
+.zen-overlay-panel--workspace {
+  width: min(390px, 100%);
+}
+.zen-overlay-panel:has([data-workspace-preview]) {
+  --zen-workspace-preview-color: var(
+    --zen-workspace-preview,
+    var(--zo-primary)
+  );
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--zen-workspace-preview-color) 18%, transparent),
+      transparent 58%
+    ),
+    var(--zo-panel);
+}
+.zen-overlay-panel:has([data-workspace-preview]) .zen-overlay-button--primary {
+  background: var(--zen-workspace-preview-color, var(--zo-primary));
+  box-shadow: 0 5px 18px -10px
+    color-mix(in srgb, var(--zen-workspace-preview-color, var(--zo-primary)) 80%, transparent);
+}
+.zen-overlay-panel:has([data-workspace-preview])
+  .zen-overlay-button--primary:hover:not(:disabled) {
+  background: color-mix(
+    in srgb,
+    var(--zen-workspace-preview-color, var(--zo-primary)) 84%,
+    white
+  );
+}
+.zen-overlay-panel--menu,
+.zen-overlay-panel--tab-menu,
+.zen-overlay-panel--workspace,
+.zen-overlay-panel--site-info {
+  border-radius: 10px;
+}
+.is-anchored .zen-overlay-panel {
+  position: absolute;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  transform-origin: top left;
+}
+.is-anchored[data-side="right"] .zen-overlay-panel {
+  transform-origin: top right;
+}
+.zen-overlay-root.is-drawer {
+  padding: 0;
+  place-items: stretch;
+}
+.zen-overlay-panel--drawer {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(420px, 100vw);
+  max-width: 100vw;
+  max-height: none;
+  height: 100dvh;
+  overflow: hidden;
+  border-radius: 18px 0 0 18px;
+  border: 1px solid transparent;
+  animation-name: zen-overlay-drawer-in;
+  animation-duration: var(--panel-open-dur);
+  animation-timing-function: var(--panel-ease);
+}
+.zen-overlay-root.is-drawer:not(.is-chat-themed) .zen-overlay-panel--drawer {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.zen-overlay-root.is-drawer.is-chat-themed .zen-overlay-panel--drawer {
+  background:
+    radial-gradient(
+      circle at 12% 4%,
+      color-mix(in srgb, var(--zo-primary) 17%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(145deg, var(--zen-glass-highlight), transparent 48%),
+    repeating-linear-gradient(
+      112deg,
+      rgb(255 255 255 / 2.6%) 0 1px,
+      transparent 1px 7px
+    ),
+    repeating-radial-gradient(
+      circle at 19% 24%,
+      rgb(255 255 255 / 2.2%) 0 0.7px,
+      transparent 0.7px 4.5px
+    ),
+    linear-gradient(115deg, var(--zen-glass-tint), transparent 85%),
+    var(--zen-glass-surface);
+  background-blend-mode: screen, screen, soft-light, soft-light, normal, normal;
+  border-color: color-mix(in srgb, var(--zo-text) 16%, transparent);
+  border-left-color: color-mix(in srgb, var(--zo-primary) 78%, white 10%);
+  box-shadow:
+    -20px 0 44px -25px
+      color-mix(in srgb, var(--zo-primary) 82%, transparent),
+    -3px 0 12px -8px color-mix(in srgb, var(--zo-primary) 52%, transparent),
+    0 0 0 1px rgb(255 255 255 / 3%),
+    0 1px 0 var(--zen-glass-edge),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15);
+  backdrop-filter: blur(28px) saturate(1.15);
+}
+.zen-overlay-root.is-drawer.is-chat-themed .zen-overlay-panel--drawer::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.52;
+  background:
+    repeating-linear-gradient(
+      168deg,
+      transparent 0 3px,
+      rgb(255 255 255 / 2.2%) 3px 4px,
+      transparent 4px 8px
+    ),
+    radial-gradient(
+      ellipse at 80% 100%,
+      color-mix(in srgb, var(--zo-primary) 8%, transparent),
+      transparent 58%
+    );
+  mix-blend-mode: soft-light;
+}
+.zen-overlay-root.is-drawer.is-chat-themed .zen-overlay-panel--drawer > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* The agent is a docked sibling of the live Chromium page, not a modal
+   overlay. Its transparent mode leaves the page/shell visible around BeUI;
+   themed mode supplies the same liquid-glass pane and app-facing glow. */
+.zen-agent-docked {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 14px 0 0 14px;
+  pointer-events: auto;
+}
+.zen-agent-docked.is-chat-themed {
+  background:
+    radial-gradient(
+      circle at 12% 4%,
+      color-mix(in srgb, var(--zo-primary) 17%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(145deg, var(--zen-glass-highlight), transparent 48%),
+    repeating-linear-gradient(
+      112deg,
+      rgb(255 255 255 / 2.6%) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(115deg, var(--zen-glass-tint), transparent 85%),
+    var(--zen-glass-surface);
+  background-blend-mode: screen, screen, soft-light, normal, normal;
+  border-color: color-mix(in srgb, var(--zo-text) 16%, transparent);
+  border-left-color: color-mix(in srgb, var(--zo-primary) 78%, white 10%);
+  box-shadow:
+    -20px 0 44px -25px
+      color-mix(in srgb, var(--zo-primary) 82%, transparent),
+    -3px 0 12px -8px color-mix(in srgb, var(--zo-primary) 52%, transparent),
+    0 0 0 1px rgb(255 255 255 / 3%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15);
+  backdrop-filter: blur(28px) saturate(1.15);
+}
+
+/* The agent surface is the complete BeUI composition. The host is only a
+   sizing/skin layer; BeUI's sidebar, history affordances, composer actions,
+   model picker, and message rail stay intact. */
+.zen-beui-chat-drawer {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+.zen-beui-chat-app[data-slot="sidebar-wrapper"] {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+.zen-beui-chat-app > [data-slot="sidebar"] {
+  display: block !important;
+  height: 100%;
+  min-height: 0;
+}
+.zen-beui-chat-app > [data-slot="sidebar"] > div {
+  position: relative;
+  top: auto;
+  height: 100%;
+  min-height: 0;
+  background: color-mix(in srgb, var(--zo-panel) 58%, transparent);
+  border-color: color-mix(in srgb, var(--zo-text) 12%, transparent);
+}
+.zen-beui-chat-history-panel {
+  background: color-mix(in srgb, var(--zo-panel) 72%, transparent) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.12);
+  backdrop-filter: blur(22px) saturate(1.12);
+}
+.zen-beui-chat-main {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  flex-direction: column;
+  background: transparent;
+}
+.zen-beui-chat-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 58px;
+  padding: 10px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--zo-text) 11%, transparent);
+  background: color-mix(in srgb, var(--zo-panel) 34%, transparent);
+}
+.zen-beui-chat-title-overlay {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 58px;
+  padding: 14px 16px 12px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--zo-panel) 82%, transparent),
+    color-mix(in srgb, var(--zo-panel) 46%, transparent) 68%,
+    transparent
+  );
+  -webkit-backdrop-filter: blur(18px) saturate(1.14);
+  backdrop-filter: blur(18px) saturate(1.14);
+}
+.zen-beui-chat-title-overlay strong,
+.zen-beui-chat-title-overlay span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-beui-chat-title-overlay strong {
+  color: var(--zo-text);
+  font-size: 13px;
+  font-weight: 650;
+}
+.zen-beui-chat-title-overlay span {
+  color: var(--zo-muted);
+  font-size: 11px;
+}
+.zen-beui-chat-heading {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+}
+.zen-beui-chat-heading strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 650;
+}
+.zen-beui-chat-heading span {
+  overflow: hidden;
+  color: var(--zo-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.zen-beui-chat-icon-button {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  color: var(--zo-muted);
+  background: transparent;
+}
+.zen-beui-chat-icon-button:hover {
+  color: var(--zo-text);
+  background: var(--zo-hover);
+}
+.zen-beui-chat-history-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.zen-beui-chat-history-title button {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+}
+.zen-beui-chat-new {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid color-mix(in srgb, var(--zo-primary) 32%, transparent);
+  border-radius: 9px;
+  color: var(--zo-text);
+  background: color-mix(in srgb, var(--zo-primary) 11%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+}
+.zen-beui-chat-new:hover {
+  background: color-mix(in srgb, var(--zo-primary) 18%, transparent);
+}
+.zen-beui-chat-resources {
+  min-width: 0;
+}
+.zen-beui-chat-history-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--zo-muted);
+  font-size: 10px;
+}
+.zen-beui-chat-messages {
+  min-height: 0;
+  flex: 1;
+  background: transparent;
+}
+.zen-beui-chat-message-list {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 12px;
+  padding: 70px 14px 12px;
+}
+.zen-beui-chat-message-list [data-slot="message-content"] {
+  max-width: min(92%, 32rem);
+  padding: 9px 11px;
+  border: 1px solid color-mix(in srgb, var(--zo-text) 10%, transparent);
+  border-radius: 13px;
+  color: var(--zo-text);
+  background: color-mix(in srgb, var(--zo-panel) 68%, transparent);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.zen-beui-chat-message-list [data-from="user"] [data-slot="message-content"] {
+  border-color: color-mix(in srgb, var(--zo-primary) 38%, transparent);
+  background: color-mix(in srgb, var(--zo-primary) 15%, var(--zo-panel));
+}
+.zen-beui-chat-empty {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 100%;
+  gap: 8px;
+  padding: 24px;
+  color: var(--zo-muted);
+  text-align: center;
+}
+.zen-beui-chat-empty strong {
+  color: var(--zo-text);
+  font-size: 13px;
+}
+.zen-beui-chat-empty p {
+  max-width: 240px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.zen-beui-chat-empty-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--zo-primary) 42%, transparent);
+  border-radius: 11px;
+  color: var(--zo-primary);
+  background: color-mix(in srgb, var(--zo-primary) 12%, transparent);
+}
+.zen-beui-chat-composer-wrap {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 12px 12px;
+  border-top: 0;
+  background: transparent;
+}
+.zen-beui-chat-context {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 24px;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--zo-primary) 28%, transparent);
+  border-radius: 999px;
+  color: var(--zo-text);
+  background: color-mix(in srgb, var(--zo-primary) 10%, transparent);
+  font-size: 10px;
+}
+.zen-beui-chat-context span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-beui-chat-composer {
+  border: 1px solid color-mix(in srgb, var(--zen-workspace-color) 28%, transparent) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--zen-workspace-color) 18%, transparent),
+      transparent 82%
+    ),
+    color-mix(in srgb, var(--zo-text) 5%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 5%),
+    0 5px 18px -16px color-mix(in srgb, var(--zen-workspace-color) 72%, transparent);
+  transition:
+    border-color var(--duration-quick) var(--ease-out),
+    background var(--duration-quick) var(--ease-out),
+    box-shadow var(--duration-quick) var(--ease-out);
+}
+.zen-beui-chat-composer:focus-within {
+  border-color: color-mix(in srgb, var(--zen-workspace-color) 72%, white 8%) !important;
+  animation: zen-chat-composer-glow var(--duration-very-slow) var(--ease-out) both;
+}
+.zen-beui-chat-composer textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.zen-beui-chat-composer [aria-haspopup="listbox"] {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.zen-beui-chat-composer
+  > div:last-child
+  > div:has(> button[aria-haspopup="listbox"]) {
+  margin-left: auto;
+}
+.zen-beui-chat-composer > div:last-child > button[type="submit"] {
+  margin-left: 0 !important;
+}
+@keyframes zen-chat-composer-glow {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 5%),
+      0 0 0 0 color-mix(in srgb, var(--zen-workspace-color) 0%, transparent),
+      0 5px 18px -16px color-mix(in srgb, var(--zen-workspace-color) 72%, transparent);
+  }
+  55% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 7%),
+      0 0 0 3px color-mix(in srgb, var(--zen-workspace-color) 15%, transparent),
+      0 0 24px -10px color-mix(in srgb, var(--zen-workspace-color) 82%, transparent);
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 5%),
+      0 0 0 0 color-mix(in srgb, var(--zen-workspace-color) 0%, transparent),
+      0 5px 18px -16px color-mix(in srgb, var(--zen-workspace-color) 72%, transparent);
+  }
+}
+.zen-overlay-root.is-closing {
+  pointer-events: none;
+}
+.is-closing .zen-overlay-backdrop {
+  animation: zen-overlay-backdrop-out var(--modal-close-dur) var(--ease-smooth-out) both;
+}
+.is-closing .zen-overlay-panel {
+  animation: zen-overlay-panel-out var(--modal-close-dur) var(--modal-ease) both;
+}
+.is-closing .zen-overlay-panel--drawer {
+  animation-name: zen-overlay-drawer-out;
+  animation-duration: var(--panel-close-dur);
+  animation-timing-function: var(--panel-ease);
+}
+.zen-overlay-root button,
+.zen-overlay-root input,
+.zen-overlay-root select,
+.zen-overlay-root textarea {
+  font: inherit;
+  color: inherit;
+  -webkit-app-region: no-drag;
+}
+.zen-overlay-root button {
+  cursor: pointer;
+}
+.zen-overlay-root button:disabled,
+.zen-overlay-root input:disabled,
+.zen-overlay-root select:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+.zen-overlay-root :focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--zo-primary) 75%, var(--zo-text));
+  outline-offset: 2px;
+}
+.zen-overlay-panel:focus {
+  outline: none;
+}
+.zen-overlay-root h1,
+.zen-overlay-root h2,
+.zen-overlay-root p {
+  margin: 0;
+}
+.zen-overlay-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 19px 18px 14px;
+}
+.zen-overlay-header > div {
+  min-width: 0;
+}
+.zen-overlay-header h1 {
+  font-size: 16px;
+  font-weight: 620;
+  letter-spacing: -0.25px;
+  line-height: 28px;
+}
+.zen-overlay-header p {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--zo-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-overlay-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--zo-fill);
+  white-space: nowrap;
+  transition:
+    background var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
+}
+.zen-overlay-button:hover:not(:disabled) {
+  background: var(--zo-hover);
+}
+.zen-overlay-button:active:not(:disabled) {
+  transform: scale(0.985);
+}
+.zen-overlay-button--primary {
+  background: var(--zo-primary);
+  color: #102019 !important;
+  font-weight: 600;
+}
+.zen-overlay-button--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--zo-primary) 85%, white);
+}
+.zen-overlay-button--danger,
+.zen-overlay-danger {
+  color: var(--zo-danger) !important;
+}
+.zen-overlay-icon-button {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  background: transparent;
+}
+.zen-overlay-pad {
+  padding: 0 12px 12px;
+}
+.zen-overlay-menu {
+  padding: 0 7px 8px;
+}
+.zen-overlay-menu-item {
+  display: flex;
+  align-items: center;
+  width: calc(100% - 8px);
+  min-height: 36px;
+  gap: 14px;
+  padding: 8px 14px;
+  margin: 2px 4px;
+  text-align: left;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  transition:
+    background var(--duration-quick) var(--ease-out),
+    transform var(--duration-micro) var(--ease-out);
+}
+.zen-overlay-menu-item > span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-overlay-menu-item > svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+.zen-overlay-menu-item small {
+  color: var(--zo-muted);
+  font-size: 11px;
+}
+.zen-overlay-menu-item:hover:not(:disabled),
+.zen-overlay-menu-item:focus-visible {
+  background: var(--zo-hover);
+}
+.zen-overlay-menu-item:active:not(:disabled) {
+  transform: scale(0.985);
+}
+.zen-overlay-menu hr,
+.zen-overlay-divider {
+  height: 1px;
+  border: 0;
+  background: var(--zo-border);
+  margin: 2px 1px;
+}
+.zen-overlay-status,
+.zen-overlay-error {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+}
+.zen-overlay-status {
+  color: var(--zo-muted);
+}
+.zen-overlay-error {
+  color: var(--zo-danger);
+  overflow-wrap: anywhere;
+  background: color-mix(in srgb, var(--zo-danger) 7%, transparent);
+}
+.zen-overlay-error svg {
+  flex-shrink: 0;
+}
+.zen-overlay-spin {
+  animation: zen-overlay-spin 900ms linear infinite;
+  flex-shrink: 0;
+}
+.zen-overlay-empty {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 9px;
+  padding: 35px 20px 42px;
+  color: var(--zo-muted);
+}
+.zen-overlay-empty h2 {
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--zo-text);
+}
+.zen-overlay-empty p {
+  font-size: 12px;
+  max-width: 290px;
+}
+.zen-overlay-text {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.zen-overlay-text strong,
+.zen-overlay-text h2,
+.zen-overlay-text small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-overlay-text strong,
+.zen-overlay-text h2 {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zen-overlay-text small {
+  color: var(--zo-muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+.zen-overlay-tab-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  object-fit: contain;
+  line-height: 16px;
+  text-align: center;
+}
+.zen-overlay-form {
+  display: grid;
+  gap: 15px;
+  padding: 4px 18px 20px;
+}
+.zen-overlay-form-fields {
+  display: grid;
+  gap: 14px;
+}
+.zen-overlay-form label,
+.zen-overlay-form-fields label {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--zo-muted);
+}
+.zen-overlay-form input,
+.zen-overlay-setting input,
+.zen-overlay-setting select {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid var(--zo-border);
+  border-radius: 8px;
+  background: var(--zo-fill);
+  color: var(--zo-text);
+  padding: 7px 10px;
+}
+.zen-overlay-form input[type="color"] {
+  padding: 4px;
+}
+.zen-overlay-form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.zen-overlay-help {
+  font-size: 12px;
+  color: var(--zo-muted);
+}
+.zen-overlay-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.zen-overlay-swatches {
+  display: flex;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.zen-overlay-swatches button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  color: #17271f;
+}
+.zen-overlay-swatches button[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--zo-panel),
+    0 0 0 3px var(--zo-muted);
+}
+.zen-overlay-list {
+  padding: 0 8px 10px;
+}
+.zen-overlay-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--zo-border) transparent;
+}
+.zen-overlay-list-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.zen-overlay-row-main,
+.zen-overlay-history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  padding: 11px;
+  text-align: left;
+}
+.zen-overlay-row-main:hover:not(:disabled),
+.zen-overlay-history-row:hover:not(:disabled) {
+  background: var(--zo-hover);
+}
+.zen-overlay-row-main[aria-current="true"] {
+  background: var(--zo-selected);
+}
+.zen-overlay-workspace-row {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--zen-space-color) 24%, transparent),
+    transparent 84%
+  );
+}
+.zen-overlay-workspace-row:hover {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--zen-space-color) 34%, transparent),
+    color-mix(in srgb, var(--zo-hover) 70%, transparent) 76%,
+    transparent
+  );
+}
+.zen-overlay-workspace-row .zen-overlay-row-main {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+.zen-overlay-workspace-row .zen-overlay-row-main[aria-current="true"] {
+  background: color-mix(in srgb, var(--zen-space-color) 14%, transparent);
+}
+.zen-overlay-space-tag {
+  flex: 0 0 4px;
+  width: 4px;
+  height: 31px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--zen-space-color) 92%, white 8%),
+    color-mix(in srgb, var(--zen-space-color) 15%, transparent)
+  );
+}
+.zen-overlay-workspace-rename {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px 5px 11px;
+}
+.zen-overlay-workspace-rename input {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--zen-space-color) 55%, var(--zo-border));
+  border-radius: 8px;
+  background: var(--zo-fill);
+}
+.zen-overlay-list-row + .zen-overlay-list-row {
+  margin-top: 4px;
+}
+.zen-overlay-confirm {
+  margin: 8px 16px;
+  padding: 13px;
+  border: 1px solid color-mix(in srgb, var(--zo-danger) 30%, transparent);
+  border-radius: 12px;
+}
+.zen-overlay-form .zen-overlay-confirm {
+  margin: 0;
+}
+.zen-overlay-confirm p {
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.zen-overlay-folder-manager {
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+}
+.zen-overlay-folder-manager h2 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--zo-muted);
+}
+.zen-overlay-folder-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.zen-overlay-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 16px 14px;
+}
+.zen-overlay-segmented {
+  display: inline-flex;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--zo-fill);
+}
+.zen-overlay-segmented button {
+  border: 0;
+  border-radius: 7px;
+  padding: 6px 10px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--zo-muted);
+}
+.zen-overlay-segmented button[aria-pressed="true"] {
+  color: var(--zo-text);
+  background: var(--zo-selected);
+  box-shadow: 0 0.8px 1.5px rgb(0 0 0 / 5%);
+}
+.zen-overlay-search {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 9px;
+  margin: 0 16px 12px;
+  padding: 0 11px;
+  border: 1px solid var(--zo-border);
+  border-radius: 10px;
+  color: var(--zo-muted);
+}
+.zen-overlay-search input {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 0;
+  background: transparent;
+}
+.zen-overlay-search:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--zo-primary) 50%, transparent);
+  outline-offset: 1px;
+}
+.zen-overlay-search input:focus-visible {
+  outline: none;
+}
+.zen-overlay-history-row > svg {
+  flex-shrink: 0;
+  color: var(--zo-muted);
+}
+.zen-overlay-history-meta {
+  flex-shrink: 0;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+  font-size: 11px;
+  color: var(--zo-muted);
+}
+.zen-overlay-history-meta small {
+  opacity: 0.7;
+}
+.zen-overlay-download {
+  display: grid;
+  gap: 11px;
+  padding: 15px 10px;
+}
+.zen-overlay-download + .zen-overlay-download {
+  border-top: 1px solid var(--zo-border);
+}
+.zen-overlay-file-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--zo-fill);
+  color: var(--zo-muted);
+}
+.zen-overlay-download progress {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 3px;
+  accent-color: var(--zo-primary);
+}
+.zen-overlay-download progress::-webkit-progress-bar {
+  background: var(--zo-hover);
+}
+.zen-overlay-download progress::-webkit-progress-value {
+  border-radius: 3px;
+  background: var(--zo-primary);
+}
+.zen-overlay-download .zen-overlay-button {
+  font-size: 11px;
+  min-height: 28px;
+}
+.zen-overlay-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 16px 15px !important;
+  padding: 11px;
+  border-radius: 10px;
+  background: var(--zo-fill);
+  color: var(--zo-muted);
+  font-size: 12px;
+}
+.zen-overlay-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.zen-extension-store-install {
+  display: grid;
+  gap: 10px;
+  margin: 0 16px 15px;
+  padding: 12px;
+  color: var(--zo-text);
+  background: color-mix(in srgb, var(--zo-primary) 7%, var(--zo-fill));
+  border: 1px solid color-mix(in srgb, var(--zo-primary) 24%, var(--zo-border));
+  border-radius: 12px;
+}
+.zen-extension-store-form {
+  max-width: none !important;
+  --zenmium-accent: var(--zo-primary);
+  --zenmium-surface: var(--zo-surface, var(--zo-fill));
+  --zenmium-text: var(--zo-text);
+}
+.zen-extension-store-form input {
+  border-color: var(--zo-border) !important;
+  background: var(--zo-surface, var(--zo-fill)) !important;
+  color: var(--zo-text) !important;
+}
+.zen-extension-store-form button {
+  border-color: color-mix(in srgb, var(--zo-primary) 38%, var(--zo-border)) !important;
+  background: var(--zo-primary) !important;
+}
+.zen-overlay-extension {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 10px;
+}
+.zen-overlay-extension + .zen-overlay-extension {
+  border-top: 1px solid var(--zo-border);
+}
+.zen-extension-pin-toggle {
+  display: inline-grid;
+  flex: 0 0 28px;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--zo-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+.zen-extension-pin-toggle:hover,
+.zen-extension-pin-toggle[aria-pressed="true"] {
+  color: var(--zo-primary);
+  background: color-mix(in srgb, var(--zo-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--zo-primary) 26%, transparent);
+}
+.zen-extension-pin-toggle[aria-pressed="true"] svg {
+  fill: color-mix(in srgb, var(--zo-primary) 35%, transparent);
+}
+.zen-overlay-switch {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+  width: 32px;
+  height: 20px;
+}
+.zen-overlay-switch input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  width: 32px !important;
+  height: 20px !important;
+  cursor: pointer;
+  opacity: 0;
+}
+.zen-overlay-switch > span {
+  display: block;
+  width: 32px;
+  height: 20px;
+  background: var(--zo-hover);
+  border: 1px solid var(--zo-border);
+  border-radius: 20px;
+  transition: background var(--duration-quick) var(--ease-out);
+}
+.zen-overlay-switch > span::after {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--zo-muted);
+  margin: 2px;
+  transition:
+    transform var(--duration-quick) var(--ease-out),
+    background var(--duration-quick) var(--ease-out);
+}
+.zen-overlay-switch input:checked + span {
+  background: var(--zo-primary);
+}
+.zen-overlay-switch input:checked + span::after {
+  transform: translateX(12px);
+  background: #173126;
+}
+.zen-overlay-switch input:focus-visible + span {
+  outline: 2px solid var(--zo-primary);
+  outline-offset: 3px;
+}
+.zen-overlay-switch input:disabled + span {
+  opacity: 0.4;
+}
+.zen-overlay-settings {
+  padding: 0 18px 20px;
+}
+.zen-overlay-settings h2 {
+  margin: 15px 0 7px;
+  font-size: 11px;
+  color: var(--zo-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.zen-overlay-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 52px;
+  border-bottom: 1px solid var(--zo-border);
+}
+.zen-overlay-setting > span:first-child {
+  flex: 1;
+}
+.zen-overlay-setting small {
+  display: block;
+  color: var(--zo-muted);
+  font-size: 11px;
+}
+.zen-overlay-setting select {
+  width: auto;
+  max-width: 56%;
+  padding-right: 20px;
+}
+.zen-overlay-theme-setting {
+  position: relative;
+}
+.zen-color-picker {
+  position: relative;
+  flex: 0 0 auto;
+  max-width: 58%;
+}
+.zen-color-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--zo-border);
+  border-radius: 8px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--zen-space-color) 24%, transparent), transparent 90%), var(--zo-fill);
+  color: var(--zo-text);
+  font-size: 12px;
+}
+.zen-color-select > span:first-child {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-color-select:hover:not(:disabled),
+.zen-color-select[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--zo-primary) 46%, var(--zo-border));
+  background: var(--zo-hover);
+}
+.zen-color-swatch {
+  display: inline-block;
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 24%);
+}
+.zen-color-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  width: max-content;
+  min-width: 190px;
+  max-width: 260px;
+  padding: 5px;
+  border: 2px solid var(--zo-border);
+  border-left-color: var(--zo-primary);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--zo-panel) 94%, black 6%);
+  box-shadow: var(--zo-shadow);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.zen-color-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--zen-space-color) 25%, transparent), transparent 92%);
+  text-align: left;
+}
+.zen-color-option > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-color-option > svg {
+  flex: 0 0 auto;
+  color: var(--zo-primary);
+}
+.zen-color-option:hover:not(:disabled),
+.zen-color-option:focus-visible,
+.zen-color-option[aria-selected="true"] {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--zen-space-color) 42%, transparent), transparent 92%), var(--zo-hover);
+}
+.zen-overlay-range-setting {
+  align-items: flex-start;
+  padding: 10px 0;
+}
+.zen-overlay-range-control {
+  display: flex;
+  flex: 0 0 142px;
+  align-items: center;
+  gap: 8px;
+}
+.zen-overlay-range-control input[type="range"] {
+  width: 100%;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  accent-color: var(--zo-primary);
+  background: transparent;
+}
+.zen-overlay-range-control output {
+  flex: 0 0 34px;
+  color: var(--zo-muted);
+  font-size: 11px;
+  text-align: right;
+}
+.zen-overlay-setting input[type="number"] {
+  width: 86px;
+}
+.zen-overlay-width-form {
+  padding-bottom: 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--zo-border);
+}
+.zen-overlay-width-form .zen-overlay-setting {
+  text-align: left;
+  border: 0;
+}
+.zen-overlay-site-info {
+  display: grid;
+  justify-items: center;
+  gap: 13px;
+  padding: 12px 24px 30px;
+  text-align: center;
+}
+.zen-overlay-site-info h2 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  font-weight: 600;
+}
+.zen-overlay-site-info strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.zen-overlay-site-info p {
+  color: var(--zo-muted);
+  font-size: 12px;
+}
+.zen-overlay-agent {
+  min-height: 160px;
+  padding: 0 12px 14px;
+}
+.zen-overlay-agent > section {
+  border: 0;
+}
+.zen-overlay-agent > section > div {
+  height: min(520px, 65dvh);
+}
+.zen-overlay-agent > section > button {
+  min-height: 38px;
+  border-radius: 8px;
+  background: var(--zo-fill);
+}
+.zen-agent-drawer-body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.zen-drawer-bookmarks {
+  flex: 0 0 auto;
+  margin: 0 12px 18px;
+  padding-top: 11px;
+  border-top: 1px solid var(--zo-border);
+}
+.zen-drawer-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 7px;
+  color: var(--zo-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.zen-drawer-bookmark-list {
+  display: grid;
+  gap: 2px;
+}
+.zen-drawer-bookmark {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+}
+.zen-drawer-bookmark:hover {
+  background: var(--zo-hover);
+}
+.zen-drawer-bookmark > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.zen-drawer-bookmark-dot {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 12%, transparent);
+}
+.zen-drawer-empty {
+  padding: 6px 9px;
+  color: var(--zo-muted);
+  font-size: 12px;
+}
+.zen-address-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 62px;
+  padding: 0 12px;
+}
+.zen-address-input-row > svg {
+  flex-shrink: 0;
+  color: var(--zo-muted);
+}
+.zen-address-input-row input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  /* The native reference's 1.5em resolves near 16px, not the port's 13px body × 1.5. */
+  font-size: 16px;
+  caret-color: var(--zo-primary);
+}
+.zen-address-input-row input:focus-visible {
+  outline: none;
+}
+.zen-address-input-row:focus-within {
+  box-shadow: inset 0 -1px 0
+    color-mix(in srgb, var(--zo-primary) 20%, transparent);
+}
+.zen-address-input-row input::placeholder {
+  color: var(--zo-muted);
+  opacity: 0.85;
+}
+.zen-address-suggestions {
+  max-height: min(252px, calc(100dvh - 140px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 8px 8px;
+  scrollbar-width: none;
+}
+.zen-address-suggestions::-webkit-scrollbar {
+  display: none;
+}
+.zen-address-suggestion {
+  display: flex;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  align-items: center;
+  gap: 0;
+  min-height: 46px;
+  padding: 10px 8px;
+  margin: 2px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background var(--duration-micro) var(--ease-out);
+}
+.zen-address-suggestion .zen-overlay-text strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.zen-address-suggestion .zen-overlay-text small {
+  color: #aaa;
+}
+html[data-zen-overlay-theme="light"]
+  .zen-address-suggestion
+  .zen-overlay-text
+  small {
+  color: #4f4f4f;
+}
+.zen-address-suggestion.is-selected {
+  background: var(--zo-address-selection);
+  color: white;
+}
+html[data-zen-overlay-theme="light"] .zen-address-suggestion.is-selected {
+  background: color-mix(in srgb, var(--zo-primary), rgb(0 0 0 / 50%));
+}
+.zen-address-suggestion.is-selected .zen-overlay-text small,
+.zen-address-suggestion.is-selected .zen-address-suggestion-tag {
+  color: rgb(255 255 255 / 80%);
+}
+.zen-address-suggestion-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  margin-right: 12px;
+  border-radius: 3px;
+  color: var(--zo-muted);
+}
+.zen-address-suggestion.is-selected .zen-address-suggestion-icon {
+  background: white;
+  color: #454545;
+}
+.zen-address-suggestion-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--zo-muted);
+}
+.zen-overlay-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keep the installed BeUI block intact. These overrides only apply in its native overlay surface. */
+html[data-zen-overlay-kind="commands"] [aria-label="Close command palette"] {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-zen-overlay-kind="commands"] [inert] {
+  pointer-events: none;
+}
+html[data-zen-overlay-kind="commands"]
+  [role="dialog"][aria-label="Command palette"] {
+  width: min(560px, calc(100vw - 48px));
+  max-width: 560px;
+  background: var(--zo-panel);
+  color: var(--zo-text);
+  border: 2px solid var(--zo-primary);
+  border-radius: 16px;
+  box-shadow: var(--zo-shadow);
+}
+html[data-zen-overlay-kind="commands"]
+  body
+  > div:has(> [role="dialog"][aria-label="Command palette"]) {
+  top: 24px;
+  bottom: 24px;
+  align-items: center;
+}
+html[data-zen-overlay-kind="commands"] [role="dialog"] .text-muted-foreground {
+  color: var(--zo-muted);
+}
+html[data-zen-overlay-kind="commands"] [role="dialog"] .text-foreground {
+  color: var(--zo-text);
+}
+html[data-zen-overlay-kind="commands"] [role="dialog"] input {
+  color: var(--zo-text);
+}
+.zen-overlay-command-status {
+  position: fixed;
+  z-index: 110;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 48px));
+  border-radius: 10px;
+  background: var(--zo-panel);
+  box-shadow: var(--zo-shadow);
+  overflow: hidden;
+}
+
+@keyframes zen-overlay-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes zen-overlay-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes zen-overlay-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes zen-overlay-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.985);
+  }
+}
+@keyframes zen-overlay-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes zen-overlay-drawer-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+@keyframes zen-overlay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zen-overlay-panel,
+  .zen-overlay-panel--drawer,
+  .zen-overlay-backdrop,
+  .is-closing .zen-overlay-panel,
+  .is-closing .zen-overlay-backdrop {
+    animation-duration: 1ms;
+  }
+  .zen-overlay-root *,
+  .zen-overlay-root *::before,
+  .zen-overlay-root *::after {
+    transition-duration: 0ms !important;
+  }
+  .zen-overlay-spin {
+    animation: none;
+  }
+}
+@media (max-width: 480px) {
+  .zen-overlay-root {
+    padding: 12px;
+  }
+  .zen-overlay-root.is-drawer {
+    padding: 0;
+  }
+  .zen-overlay-panel {
+    max-height: calc(100dvh - 24px);
+  }
+  .zen-overlay-panel--drawer {
+    height: 100dvh;
+    max-height: none;
+  }
+  .zen-address-suggestion-tag {
+    max-width: 65px;
+    text-align: right;
+  }
+  .zen-overlay-setting {
+    gap: 10px;
+  }
+}

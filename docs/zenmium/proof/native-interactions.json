@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "Native chrome surfaces and real new-tab entry",
+      "passed": true
+    },
+    {
+      "name": "New-tab submission focuses the newly selected live page",
+      "passed": true
+    },
+    {
+      "name": "Page navigation, browser history, back and forward",
+      "passed": true
+    },
+    {
+      "name": "Pinned destination reset and custom title survive navigation",
+      "passed": true
+    },
+    {
+      "name": "Inline keyboard rename commits through the actual sidebar editor",
+      "passed": true
+    },
+    {
+      "name": "DOM drag handlers pin and move tabs into real folders (not an OS gesture test)",
+      "passed": true
+    },
+    {
+      "name": "Compact gutter reveal keeps live page geometry and input intact",
+      "passed": true
+    },
+    {
+      "name": "Overlay owns native focus above live page and restores it",
+      "passed": true
+    },
+    {
+      "name": "Popup session ownership prevents stale dismissal",
+      "passed": true
+    },
+    {
+      "name": "Trusted Alt-click opens a live Glance without navigating its parent",
+      "passed": true
+    },
+    {
+      "name": "Workspace and folder changes persist in Arc",
+      "passed": true
+    },
+    {
+      "name": "Split panes, Glance, and close/reopen use actual tabs",
+      "passed": true
+    },
+    {
+      "name": "Utilities mount with real data and keyboard-dismissable dialogs",
+      "passed": true
+    },
+    {
+      "name": "Right sidebar and collapsed rail retain content margins",
+      "passed": true
+    }
+  ],
+  "unavailable": [
+    "CDP click did not focus the second native child view; macOS gesture verification required"
+  ],
+  "scope": "Scripted integration, not native gesture certification",
+  "date": "2026-09-12T22:57:07.162Z"
+}
